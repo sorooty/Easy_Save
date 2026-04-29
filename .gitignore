@@ -1,0 +1,53 @@
+# Obsidian vault
+Base_de_Connaissance/
+
+# Agent / Copilot instructions (local dev only)
+.github/
+copilot-instructions.md
+
+# Build results
+bin/
+obj/
+out/
+
+# Visual Studio / VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.assets.json
+
+# .NET
+*.dll
+*.exe
+!EasyLog.dll
+
+# Test data — track sources, ignore outputs
+TestEasySave/Dest*/
+TestEasySave/logs/
+TestEasySave/state.json
+TestEasySave/jobs.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Test results
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
