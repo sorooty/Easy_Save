@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text.Json;
 
-namespace EasyLogs;
+namespace EasyLog;
 public class JsonLogger : Ilogger
 {
     private readonly string _logDirectory;
