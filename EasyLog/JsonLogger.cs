@@ -2,7 +2,7 @@ using System.IO;
 using System.Text.Json;
 
 namespace EasyLog;
-public class JsonLogger : Ilogger
+public class JsonLogger : ILogger
 {
     private readonly string _logDirectory;
     private readonly string _logFilePath;

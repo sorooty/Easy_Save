@@ -69,7 +69,9 @@ namespace EasySave.Core.Model.Strategies
                     error = ex.Message;
                 }
 
-                _logger.Log(new LogEntry(job.Name, sourceFile, targetFile, fileSize, transferMs, error));
+                _logger.Log(new LogEntry(job.Name, sourceFile, targetFile, fileSize, transferMs,
+                    state: error == string.Empty ? "OK" : "ERROR",
+                    errorMessage: error));
 
                 remaining--;
                 remainingBytes -= fileSize;
