@@ -1,4 +1,4 @@
-namespace EasyLog;
+namespace EasyLogs;
 
 public interface Ilogger
 {

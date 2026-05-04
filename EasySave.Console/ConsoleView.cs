@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
 namespace EasySave.View
@@ -138,7 +134,7 @@ namespace EasySave.View
                     DisplayMessage("Exemple 2 : « EasySave.exe 1;3 »  pour exécuter automatiquement les sauvegardes 1 et 3");
                     DisplayMessage("\nVous ne pouvez exécuter qu'entre 1 et 5 et travaux");
 
-                } else if (Regex.IsMatch(command, @" \d[-;]\d$"))
+                } else if (Regex.IsMatch(command, @"^\d[-;]\d$"))  // ancre ^ obligatoire pour éviter les faux positifs
                 {
                     
                     DisplayMessage("\nBonne syntaxe, envoie vers ViewModel");
