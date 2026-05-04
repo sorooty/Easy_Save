@@ -1,6 +1,6 @@
-namespace EasyLogs;
+namespace EasyLog;
 
-public interface Ilogger
+public interface ILogger
 {
     void Log(LogEntry entry);
 }
