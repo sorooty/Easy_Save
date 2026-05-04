@@ -1,2 +1,1 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿// Ce fichier est intentionnellement vide — EasySave.Core est une bibliothèque de classes.
