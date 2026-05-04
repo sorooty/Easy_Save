@@ -1,6 +1,4 @@
-using System.Diagnostics.Contracts;
-
-namespace EasyLogs;
+namespace EasyLog;
 
 public class LogEntry
 {
