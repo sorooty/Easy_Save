@@ -2,6 +2,7 @@
 Base_de_Connaissance/
 
 # Agent / Copilot instructions (local dev only)
+AGENTS.md
 .github/
 copilot-instructions.md
 
