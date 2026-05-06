@@ -1,17 +1,24 @@
-﻿using System;
+﻿using EasySave.ViewModel;
+using System;
 using System.Text.RegularExpressions;
 
 namespace EasySave.View
 {
     public class ConsoleView
     {
-        public ConsoleView() { }
-        public void Run()
+        private readonly SaveJobListViewModel _viewModel;
+
+        private const string CancelCommand = ":cancel";
+
+        public ConsoleView(SaveJobListViewModel viewModel)
         {
-            Console.WriteLine("Bienvenue !\n");
-            ShowMenu();
+            _viewModel = viewModel;
         }
-        private void ShowMenu()
+        public async Task Run()
+        {
+            await ShowMenu();
+        }
+        private async Task ShowMenu()
         {
             bool running = true;
 
@@ -20,44 +27,50 @@ namespace EasySave.View
                 DisplayMessage("====================================");
                 DisplayMessage("        EasySave v1.0");
                 DisplayMessage("====================================\n");
-                DisplayMessage("1. Lister les travaux de sauvegarde");
-                DisplayMessage("2. Ajouter un travail de sauvegarde");
-                DisplayMessage("3. Exécuter un ou plusieurs travaux");
-                DisplayMessage("4. Supprimer un travail de sauvegarde");
-                DisplayMessage("5. Change Language");
-                DisplayMessage("0. Quitter\n");
-                string choice = ReadUserChoice("Choissez une option : ");
+
+                DisplayMessage(_viewModel.GetText("menu.list"));
+                DisplayMessage(_viewModel.GetText("menu.add"));
+                DisplayMessage(_viewModel.GetText("menu.remove"));
+                DisplayMessage(_viewModel.GetText("menu.run"));
+                DisplayMessage(_viewModel.GetText("menu.language"));
+                DisplayMessage(_viewModel.GetText("menu.quit"));
+                string choice = ReadUserChoice(_viewModel.GetText("menu.choice"));
 
                 switch (choice)
                 {
                     case "5":
-                        DisplayMessage("La demande de changement de langue a été transmis au ViewModel.");
+                        DisplayMessage(_viewModel.GetText("language.prompt"));
+                        string languageCode = ReadUserChoice("");
+
+                        _viewModel.ChangeLanguage(languageCode);
+
+                        DisplayMessage(_viewModel.GetText("language.changed"));
+
                         break;
 
                     case "4":
-                        DisplayFakeDeleteJobs();
+                        await DisplayExecuteJobs();
                         break;
 
                     case "3":
-                        DisplayFakeExecuteJobs();
+                        DisplayDeleteJobs();
                         break;
 
                     case "2":
-                        DisplayFakeAddJobs();
+                        DisplayAddJob();
                         break;
 
                     case "1":
-                        DisplayMessage("La demande de liste a été transmis au ViewModel.");
-                        DisplayFakeSaveJobs();
+                        DisplaySaveJobs();
                         break;
 
-                    case "0":
-                        DisplayMessage("Fermeture de l'application...");
+                    case "6":
+                        DisplayMessage(_viewModel.GetText("close.application"));
                         running = false;
                         break;
 
                     default:
-                        DisplayMessage("Choix invalide.");
+                        DisplayMessage(_viewModel.GetText("error.invalid_choice"));
                         break;
                 }
 
@@ -77,84 +90,210 @@ namespace EasySave.View
             Console.WriteLine(message);
         }
 
-        private void DisplayFakeSaveJobs()
+        private void DisplaySaveJobs()
         {
-            DisplayMessage("\nListe des travaux de sauvegarde :");
-            DisplayMessage("--------------------------------");
-
-            DisplayMessage("\n1. Projet C#");
-            DisplayMessage("   Source : C:\\Users\\Star\\Documents\\ProjetCSharp");
-            DisplayMessage("   Cible  : D:\\Backups\\ProjetCSharp");
-            DisplayMessage("   Type   : Complète");
-
-            DisplayMessage("\n2. Documents");
-            DisplayMessage("   Source : C:\\Users\\Star\\Documents");
-            DisplayMessage("   Cible  : D:\\Backups\\Documents");
-            DisplayMessage("   Type   : Différentielle");
-        }
-
-        private void DisplayFakeAddJobs()
-        {
-            DisplayMessage("\nAjouter un travail de sauvegarde :");
-            DisplayMessage("--------------------------------");
-
-            ReadUserChoice("\nChoisissez un nom : ");
-            ReadUserChoice("\nChoisissez un Dossier Source : ");
-            ReadUserChoice("\nChoisissez un Dossier Cible : ");
-            while (true)
+            if (!_viewModel.Jobs.Any())
             {
-                DisplayMessage("\nChoisissez un Type:");
-                DisplayMessage("1. Complète");
-                DisplayMessage("2. Différentiel");
-
-                string input = Console.ReadLine() ?? "";
-
-                if (input == "1" || input == "2")
-                {
-                    break;
-                }
-
-                DisplayMessage("Choix invalide, veuillez entrer 1 ou 2.");
+                DisplayMessage("\n" + _viewModel.GetText("job.no_jobs"));
+                return;
             }
-            DisplayMessage("Les champs ont été transmis au ViewModel.");
-        }
 
-        private void DisplayFakeExecuteJobs()
-        {
-            DisplayMessage("\nExecuter des travaux de sauvegarde :");
-            DisplayMessage("--------------------------------");
+            DisplayMessage("\n" + _viewModel.GetText("job.list"));
 
-            while (true)
+            for (int i = 0; i < _viewModel.Jobs.Count; i++)
             {
-                string command = ReadUserChoice("\nEntrer une commande d'execution (taper 'help' pour afficher la syntaxe)\n");
-                if (command == "help")
-                {
-                    DisplayMessage("\nSyntaxe :");
-                    DisplayMessage("\nExemple 1 : « EasySave.exe 1-3 » pour exécuter automatiquement les sauvegardes 1 à 3");
-                    DisplayMessage("Exemple 2 : « EasySave.exe 1;3 »  pour exécuter automatiquement les sauvegardes 1 et 3");
-                    DisplayMessage("\nVous ne pouvez exécuter qu'entre 1 et 5 et travaux");
+                var job = _viewModel.Jobs[i];
 
-                } else if (Regex.IsMatch(command, @"^\d[-;]\d$"))  // ancre ^ obligatoire pour éviter les faux positifs
-                {
-                    
-                    DisplayMessage("\nBonne syntaxe, envoie vers ViewModel");
-                    break;
-                }
-                else
-                {
-                    DisplayMessage("\nMauvaise syntaxe");
-                }
+                DisplayMessage($"{i + 1}. {_viewModel.GetText("job.name")} : {job.Name}");
+                DisplayMessage($"   {_viewModel.GetText("job.source")} : {job.SourceFolder}");
+                DisplayMessage($"   {_viewModel.GetText("job.target")} : {job.TargetFolder}");
+                DisplayMessage($"   {_viewModel.GetText("job.type")} : {job.Type}");
+                DisplayMessage($"   {_viewModel.GetText("job.status")} : {job.Status}");
+                DisplayMessage("");
             }
         }
 
-        private void DisplayFakeDeleteJobs()
+        private void DisplayAddJob()
         {
-            DisplayMessage("\nSupprimer un travail de sauvegarde :");
+            DisplayMessage("\n" + _viewModel.GetText("menu.add"));
             DisplayMessage("--------------------------------");
+            DisplayMessage("\n" + _viewModel.GetText("command.cancel"));
 
-            ReadUserChoice("\nChoisissez un nom : ");
+            string name;
+            do
+            {
+                name = ReadUserChoice("\n" + _viewModel.GetText("job.name"));
 
-            DisplayMessage("Le nom a été transmis au ViewModel.");
+                if (IsCancelCommand(name))
+                {
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(name))
+                    DisplayMessage("\n" + _viewModel.GetText("error.invalid_choice"));
+
+            } while (string.IsNullOrWhiteSpace(name));
+
+            string sourceFolder;
+            do
+            {
+                sourceFolder = ReadUserChoice("\n" + _viewModel.GetText("job.source"));
+
+                if (IsCancelCommand(sourceFolder))
+                {
+                    return;
+                }
+
+                if (!Directory.Exists(sourceFolder))
+                    DisplayMessage("\n" + _viewModel.GetText("error.source_not_found"));
+
+            } while (!Directory.Exists(sourceFolder));
+
+            string targetFolder;
+            while (true)
+            {
+                targetFolder = ReadUserChoice("\n" + _viewModel.GetText("job.target"));
+
+                if (IsCancelCommand(targetFolder))
+                {
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(targetFolder))
+                {
+                    DisplayMessage("\n" + _viewModel.GetText("error.invalid_choice"));
+                    continue;
+                }
+
+                if (!Path.IsPathFullyQualified(targetFolder))
+                {
+                    DisplayMessage("\n" + _viewModel.GetText("error.target_not_found"));
+                    continue;
+                }
+
+                if (_viewModel.HasReachedMaxJobs())
+                {
+                    DisplayMessage("\n" + _viewModel.GetText("job.max_reached"));
+                    return;
+                }
+
+                try
+                {
+                    if (!Directory.Exists(targetFolder))
+                        Directory.CreateDirectory(targetFolder);
+
+                    break;
+                }
+                catch
+                {
+                    DisplayMessage("\n" + _viewModel.GetText("error.target_not_found"));
+                }
+            }
+
+            string typeInput;
+            while (true)
+            {
+                typeInput = ReadUserChoice("\n" + _viewModel.GetText("job.type"));
+
+                if (IsCancelCommand(typeInput))
+                {
+                    return;
+                }
+
+                if (typeInput == "1" || typeInput == "2")
+                    break;
+
+                DisplayMessage("\n" + _viewModel.GetText("error.invalid_choice"));
+            }
+
+            bool added = _viewModel.AddJob(name, sourceFolder, targetFolder, typeInput);
+
+            DisplayMessage(added
+                ? "\n" + _viewModel.GetText("job.added")
+                : "\n" + _viewModel.GetText("error.invalid_choice"));
+        }
+
+        private async Task DisplayExecuteJobs()
+        {
+            DisplayMessage("\n" + _viewModel.GetText("menu.run"));
+            DisplayMessage("--------------------------------");
+            DisplayMessage("\n" + _viewModel.GetText("command.cancel"));
+
+            if (!_viewModel.Jobs.Any())
+            {
+                DisplayMessage("\n" + _viewModel.GetText("job.no_jobs"));
+                return;
+            }
+
+            DisplayMessage("\n" + _viewModel.GetText("job.found"));
+
+            for (int i = 0; i < _viewModel.Jobs.Count; i++)
+            {
+                DisplayMessage($"{i + 1}. {_viewModel.Jobs[i].Name}");
+            }
+
+            while (true)
+            {
+                string command = ReadUserChoice("\n" + _viewModel.GetText("job.run_which") + "\n");
+
+                if (command.Equals(":cancel", StringComparison.OrdinalIgnoreCase))
+                {
+                    return;
+                }
+
+                if (command.Equals(":help", StringComparison.OrdinalIgnoreCase))
+                {
+                    DisplayMessage("\n" + _viewModel.GetText("execute.help"));
+                    continue;
+                }
+
+                bool success = await _viewModel.ExecuteJobs(command);
+
+                if (success)
+                {
+                    DisplayMessage("\n" + _viewModel.GetText("run.completed"));
+                    break;
+                }
+
+                DisplayMessage("\n" + _viewModel.GetText("error.invalid_choice"));
+            }
+        }
+
+        private void DisplayDeleteJobs()
+        {
+            DisplayMessage("\n" + _viewModel.GetText("menu.remove"));
+            DisplayMessage("--------------------------------");
+            DisplayMessage("\n" + _viewModel.GetText("command.cancel"));
+
+            bool removed = false;
+
+            while (!removed)
+            {
+                string name = ReadUserChoice("\n" + _viewModel.GetText("job.name"));
+
+                if (IsCancelCommand(name))
+                {
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    DisplayMessage("\n" + _viewModel.GetText("error.invalid_choice"));
+                    continue;
+                }
+
+                removed = _viewModel.RemoveJobByName(name);
+
+                if (!removed)
+                    DisplayMessage("\n" + _viewModel.GetText("job.not_found"));
+            }
+
+            DisplayMessage("\n" + _viewModel.GetText("job.removed"));
+        }
+
+        private bool IsCancelCommand(string input)
+        {
+            return input.Trim().Equals(CancelCommand, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

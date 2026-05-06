@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using EasySave.Core.Model.Entities;
 using EasySave.Core.Model.Service;
-using System.Security.AccessControl;
 using System.Threading;
+using System.IO;
 
 namespace EasySave.ViewModel;
 
@@ -17,13 +17,13 @@ public class SaveJobViewModel : ViewModelBase
     private readonly SaveExecutor _saveExecutor;
     private readonly LanguageService _languageService;
 
-    // Backing fields pour les propriétés
+    // Backing fields
     private string _name = string.Empty;
     private string _sourceFolder = string.Empty;
     private string _targetFolder = string.Empty;
     private string _status = string.Empty;
     private string _resultMessage = string.Empty;
-    private string _strategyName = "Full";
+    public SaveType Type { get; set; }
 
     // Propriétés publiques (liées à l'interface)
 
@@ -46,8 +46,8 @@ public class SaveJobViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Dossier de destination.
-    /// </,summary>
+    /// Destination folder.
+    /// </summary>
     public string TargetFolder
     {
         get => _targetFolder;
@@ -73,15 +73,6 @@ public class SaveJobViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// Type de stratégie (Full ou Differential).
-    /// </summary>
-    public string StrategyName
-    {
-        get => _strategyName;
-        set => Set(ref _strategyName, value);
-    }
-
-    /// <summary>
     /// Constructeur du ViewModel.
     /// </summary>
     /// <param name="saveExecutor">Service d'exécution des sauvegardes</param>
@@ -91,18 +82,18 @@ public class SaveJobViewModel : ViewModelBase
         _saveExecutor = saveExecutor;
         _languageService = languageService;
         _job = new SaveJob();
-        Status = "Prêt";
+        Status = _languageService.GetText("status.ready");
     }
 
     /// <summary>
-    /// Vérifie que le job est correctement configuré.
+    /// Returns true if all required fields are set and the source folder exists.
     /// </summary>
-    /// <returns>Vrai si le job est valide</returns>
     public bool IsValid()
     {
         return !string.IsNullOrWhiteSpace(Name) &&
                !string.IsNullOrWhiteSpace(SourceFolder) &&
-               !string.IsNullOrWhiteSpace(TargetFolder);
+               !string.IsNullOrWhiteSpace(TargetFolder) &&
+               Directory.Exists(SourceFolder);
     }
 
     /// <summary>
@@ -114,41 +105,40 @@ public class SaveJobViewModel : ViewModelBase
         _job.Name = Name;
         _job.SourceFolder = SourceFolder;
         _job.TargetFolder = TargetFolder;
-        _job.Type = StrategyName.Equals("Full", StringComparison.OrdinalIgnoreCase)
-            ? SaveType.Full
-            : SaveType.Differential;
+        _job.Type = Type;
 
         return _job;
     }
 
     /// <summary>
-    /// Exécute la sauvegarde de manière asynchrone.
+    /// Executes the backup asynchronously.
     /// </summary>
-    public async void Execute()
+    public async Task Execute()
     {
         if (!IsValid())
         {
-            ResultMessage = "❌ Job invalide - Vérifiez les champs obligatoires";
+            ResultMessage = _languageService.GetText("job.invalid");
             return;
         }
 
-        Status = "🔄 En cours...";
+        Status = _languageService.GetText("status.running");
         ResultMessage = string.Empty;
 
         try
         {
-            var job = CreateJob();
+            if (!Directory.Exists(TargetFolder))
+                Directory.CreateDirectory(TargetFolder);
 
-            // Appel au service métier du Core
+            var job = CreateJob();
             await _saveExecutor.ExecuteAsync(job, null, CancellationToken.None);
 
-            Status = "✅ Terminé";
-            ResultMessage = "Sauvegarde réussie avec succès";
+            Status = _languageService.GetText("status.done");
+            ResultMessage = _languageService.GetText("job.success");
         }
         catch (Exception ex)
         {
-            Status = "❌ Erreur";
-            ResultMessage = $"Erreur lors de la sauvegarde: {ex.Message}";
+            Status = _languageService.GetText("status.error");
+            ResultMessage = _languageService.GetText("job.error") + ex.Message;
         }
     }
 }
