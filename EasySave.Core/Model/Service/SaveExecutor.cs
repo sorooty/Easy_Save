@@ -10,26 +10,30 @@ namespace EasySave.Core.Model.Service
     /// </summary>
     public class SaveExecutor
     {
-        private readonly ISaveStrategy _strategy;
+        private readonly ISaveStrategy _fullStrategy;
+        private readonly ISaveStrategy _differentialStrategy;
         private readonly ILogger _logger;
         private readonly IStateService _stateService;
 
-        public SaveExecutor(ISaveStrategy strategy, ILogger logger, IStateService stateService)
+        public SaveExecutor(ISaveStrategy fullStrategy, ISaveStrategy differentialStrategy, ILogger logger, IStateService stateService)
         {
-            _strategy = strategy;
+            _fullStrategy = fullStrategy;
+            _differentialStrategy = differentialStrategy;
             _logger = logger;
             _stateService = stateService;
         }
 
         /// <summary>
         /// Exécute un seul travail de sauvegarde de façon asynchrone.
-        /// Rapporte la progression via <paramref name="progress"/> si fourni.
+        /// Sélectionne la stratégie (Full ou Differential) selon <see cref="SaveJob.Type"/>.
         /// </summary>
         public async Task ExecuteAsync(
             SaveJob job,
             IProgress<SaveState>? progress,
             CancellationToken cancellationToken)
         {
+            var strategy = job.Type == SaveType.Full ? _fullStrategy : _differentialStrategy;
+
             // Exécution sur thread pool pour ne pas bloquer le thread appelant (UI ou console)
             await Task.Run(() =>
             {
@@ -47,7 +51,7 @@ namespace EasySave.Core.Model.Service
 
                 try
                 {
-                    _strategy.ExecuteSaveJob(job);
+                    strategy.ExecuteSaveJob(job);
                 }
                 finally
                 {

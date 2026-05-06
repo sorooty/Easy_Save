@@ -12,6 +12,9 @@ public class LogEntry
     public string State { get; set; }
     public string ErrorMessage { get; set; }
 
+    /// <summary>Parameterless constructor required for JSON deserialization.</summary>
+    public LogEntry() { }
+
     // Initialiser les attributs
     public LogEntry(
         string jobName,
