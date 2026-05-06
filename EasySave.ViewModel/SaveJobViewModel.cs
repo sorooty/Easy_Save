@@ -3,6 +3,7 @@ using EasySave.Core.Model.Entities;
 using EasySave.Core.Model.Service;
 using System.Security.AccessControl;
 using System.Threading;
+using System.IO;
 
 namespace EasySave.ViewModel;
 
@@ -24,6 +25,7 @@ public class SaveJobViewModel : ViewModelBase
     private string _status = string.Empty;
     private string _resultMessage = string.Empty;
     private string _strategyName = "Full";
+    public SaveType Type { get; set; }
 
     // Propriétés publiques (liées à l'interface)
 
@@ -100,9 +102,33 @@ public class SaveJobViewModel : ViewModelBase
     /// <returns>Vrai si le job est valide</returns>
     public bool IsValid()
     {
-        return !string.IsNullOrWhiteSpace(Name) &&
-               !string.IsNullOrWhiteSpace(SourceFolder) &&
-               !string.IsNullOrWhiteSpace(TargetFolder);
+        if (string.IsNullOrWhiteSpace(Name) ||
+            string.IsNullOrWhiteSpace(SourceFolder) ||
+            string.IsNullOrWhiteSpace(TargetFolder))
+        {
+            return false;
+        }
+
+        // Vérifier que la source existe
+        if (!Directory.Exists(SourceFolder))
+        {
+            return false;
+        }
+
+        // Créer la cible si elle n'existe pas
+        if (!Directory.Exists(TargetFolder))
+        {
+            try
+            {
+                Directory.CreateDirectory(TargetFolder);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -114,9 +140,7 @@ public class SaveJobViewModel : ViewModelBase
         _job.Name = Name;
         _job.SourceFolder = SourceFolder;
         _job.TargetFolder = TargetFolder;
-        _job.Type = StrategyName.Equals("Full", StringComparison.OrdinalIgnoreCase)
-            ? SaveType.Full
-            : SaveType.Differential;
+        _job.Type = Type;
 
         return _job;
     }
@@ -124,30 +148,29 @@ public class SaveJobViewModel : ViewModelBase
     /// <summary>
     /// Exécute la sauvegarde de manière asynchrone.
     /// </summary>
-    public async void Execute()
+    public async Task Execute()
     {
         if (!IsValid())
         {
-            ResultMessage = "❌ Job invalide - Vérifiez les champs obligatoires";
+            ResultMessage = "Job invalide - Vérifiez les champs obligatoires";
             return;
         }
 
-        Status = "🔄 En cours...";
+        Status = "En cours...";
         ResultMessage = string.Empty;
 
         try
         {
             var job = CreateJob();
 
-            // Appel au service métier du Core
             await _saveExecutor.ExecuteAsync(job, null, CancellationToken.None);
 
-            Status = "✅ Terminé";
+            Status = "Terminé";
             ResultMessage = "Sauvegarde réussie avec succès";
         }
         catch (Exception ex)
         {
-            Status = "❌ Erreur";
+            Status = "Erreur";
             ResultMessage = $"Erreur lors de la sauvegarde: {ex.Message}";
         }
     }
