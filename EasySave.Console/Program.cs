@@ -23,7 +23,7 @@ class Program
         var differentialStrategy = new DifferentialSaveStrategy(logger, stateService);
 
 
-        var saveExecutor = new SaveExecutor(fullStrategy, logger, stateService);
+        var saveExecutor = new SaveExecutor(fullStrategy, differentialStrategy, logger, stateService);
 
         // ViewModel
         var viewModel = new SaveJobListViewModel(
