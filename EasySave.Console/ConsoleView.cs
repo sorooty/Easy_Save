@@ -1,7 +1,6 @@
 ﻿using EasySave.ViewModel;
 using System;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace EasySave.View
 {
@@ -140,7 +139,7 @@ namespace EasySave.View
             {
                 sourceFolder = ReadUserChoice("\n" + _viewModel.GetText("job.source"));
 
-                if (IsCancelCommand(name))
+                if (IsCancelCommand(sourceFolder))
                 {
                     return;
                 }
@@ -155,7 +154,7 @@ namespace EasySave.View
             {
                 targetFolder = ReadUserChoice("\n" + _viewModel.GetText("job.target"));
 
-                if (IsCancelCommand(name))
+                if (IsCancelCommand(targetFolder))
                 {
                     return;
                 }
@@ -196,7 +195,7 @@ namespace EasySave.View
             {
                 typeInput = ReadUserChoice("\n" + _viewModel.GetText("job.type"));
 
-                if (IsCancelCommand(name))
+                if (IsCancelCommand(typeInput))
                 {
                     return;
                 }

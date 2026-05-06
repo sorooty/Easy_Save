@@ -33,7 +33,6 @@ class Program
         );
 
         viewModel.LoadJobs();
-        Console.WriteLine(pathService.JobsFile);
 
         // View
         var view = new ConsoleView(viewModel);

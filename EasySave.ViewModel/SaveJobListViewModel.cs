@@ -11,7 +11,6 @@ namespace EasySave.ViewModel;
 public class SaveJobListViewModel : ViewModelBase
 {
     // Champs privés
-    private readonly List<SaveJobViewModel> _jobs;
     private readonly SaveExecutor _saveExecutor;
     private readonly ConfigService _configservice;
     private readonly LanguageService _languageService;
@@ -32,7 +31,6 @@ public class SaveJobListViewModel : ViewModelBase
         _saveExecutor = saveExecutor;
         _configservice = configservice;
         _languageService = languageService;
-        _jobs = new List<SaveJobViewModel>();
         Jobs = new ObservableCollection<SaveJobViewModel>();
     }
 
@@ -66,7 +64,6 @@ public class SaveJobListViewModel : ViewModelBase
             return false;
         }
 
-        _jobs.Add(newJob);
         Jobs.Add(newJob);
 
         SaveJobs();
@@ -95,7 +92,6 @@ public class SaveJobListViewModel : ViewModelBase
             return false;
 
         Jobs.Remove(jobToRemove);
-        _jobs.Remove(jobToRemove);
 
         SaveJobs();
 
@@ -211,15 +207,10 @@ public class SaveJobListViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Charge les jobs existants depuis la configuration.
-    /// TODO: À implémenter avec ConfigService
-    /// </summary>
     public void LoadJobs()
     {
         var savedJobs = _configservice.LoadJobs();
 
-        _jobs.Clear();
         Jobs.Clear();
 
         foreach (var savedJob in savedJobs)
@@ -232,7 +223,6 @@ public class SaveJobListViewModel : ViewModelBase
                 Type = savedJob.Type
             };
 
-            _jobs.Add(jobVm);
             Jobs.Add(jobVm);
         }
     }

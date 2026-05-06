@@ -49,7 +49,15 @@ namespace EasySave.Core.Model.Service
                     ["language.changed"]        = "Language changed.",
                     ["close.application"]       = "Close the app...",
                     ["command.cancel"]          = "Type ':cancel' to return to the main menu.",
-                    ["execute.help"] = "Syntax:\n1     : execute job 1\n1-3   : execute jobs 1 to 3\n1;3   : execute jobs 1 and 3",
+                    ["execute.help"]            = "Syntax:\n1     : execute job 1\n1-3   : execute jobs 1 to 3\n1;3   : execute jobs 1 and 3",
+                    ["job.status"]              = "Status",
+                    ["status.ready"]            = "Ready",
+                    ["status.running"]          = "Running...",
+                    ["status.done"]             = "Done",
+                    ["status.error"]            = "Error",
+                    ["job.invalid"]             = "Invalid job - check required fields.",
+                    ["job.success"]             = "Backup completed successfully.",
+                    ["job.error"]               = "Backup failed: ",
                 },
                 ["fr"] = new()
                 {
@@ -84,8 +92,14 @@ namespace EasySave.Core.Model.Service
                     ["close.application"]       = "Fermeture de l'application...",
                     ["command.cancel"]          = "Tapez ':cancel' pour revenir au menu principal.",
                     ["execute.help"]            = "\nSyntaxe :\n1     : exécuter le travail 1\n1-3   : exécuter les travaux 1 à 3\n1;3   : exécuter les travaux 1 et 3",
-
-
+                    ["job.status"]              = "Statut",
+                    ["status.ready"]            = "Prêt",
+                    ["status.running"]          = "En cours...",
+                    ["status.done"]             = "Terminé",
+                    ["status.error"]            = "Erreur",
+                    ["job.invalid"]             = "Job invalide - Vérifiez les champs obligatoires.",
+                    ["job.success"]             = "Sauvegarde réussie avec succès.",
+                    ["job.error"]               = "Erreur lors de la sauvegarde : ",
                 }
             };
         }
