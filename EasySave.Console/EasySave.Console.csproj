@@ -7,4 +7,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EasyLog\EasyLog.csproj" />
+    <ProjectReference Include="..\EasySave.Core\EasySave.Core.csproj" />
+    <ProjectReference Include="..\EasySave.ViewModel\EasySave.ViewModel.csproj" />
+  </ItemGroup>
+
 </Project>

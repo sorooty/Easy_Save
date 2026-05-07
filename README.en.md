@@ -20,22 +20,24 @@ A file backup application built in C# / .NET 8.0, developed as part of an academ
 
 - Up to 5 configurable backup jobs (full or differential)
 - Execution via interactive menu or CLI args (`EasySave.exe 1-3`, `1;3`)
-- Per-file JSON daily log (size, transfer time, paths, error flag)
+- Per-file JSON log (size, transfer time, paths, status)
 - Real-time state file (`state.json`) updated during each backup run
-- Bilingual UI — **FR / EN** (auto-detected from system culture)
+- Bilingual UI — **FR / EN** (switchable from the menu)
 
 ---
 
 ## Architecture
 
 ```
-EasySave.slnx
+Easy_Save.sln
 ├── EasyLog/                Logging library (ILogger, LogEntry, JsonLogger)
 ├── EasySave.Core/          Shared business logic — reused in v2 without changes
-│   ├── Models/             BackupJob, BackupState, BackupType
-│   └── Services/           BackupEngine, ConfigService, StateWriter, AppPaths
-└── EasySave.Console/       Console UI v1 (entry point, menu, CLI arg parsing)
-    └── Resources/          FR / EN localisation (.resx)
+│   ├── Model/Entities/     SaveJob, SaveState, SaveType
+│   ├── Model/Service/      SaveExecutor, ConfigService, StateService, AppPaths, LanguageService
+│   └── Model/Strategies/   FullSaveStrategy, DifferentialSaveStrategy
+├── EasySave.ViewModel/     MVVM ViewModels (SaveJobListViewModel, SaveJobViewModel)
+├── EasySave.Console/       Console UI v1 (entry point, menu)
+└── EasySave.Tests/         Unit tests (.NET 8.0, MSTest)
 ```
 
 All runtime files are written to `%AppData%\EasySave\` — no hardcoded paths.
@@ -45,8 +47,8 @@ All runtime files are written to `%AppData%\EasySave\` — no hardcoded paths.
 ## Getting started
 
 ```bash
-git clone https://github.com/sorooty/EasySave
-cd EasySave
+git clone https://github.com/sorooty/Easy_Save
+cd Easy_Save
 dotnet build
 dotnet run --project EasySave.Console
 ```
@@ -59,11 +61,11 @@ dotnet run --project EasySave.Console
 
 | Branch | Role |
 |---|---|
-| `master` | Stable released version — merged via tagged PR only |
+| `main` | Stable released version — merged via tagged PR only |
 | `develop` | Shared integration branch — always buildable |
 | `feature/name` | Feature development |
-| `debug/name` | Bug fix during development |
-| `hotfix/name` | Urgent fix on master |
+| `release/name` | Release preparation |
+| `hotfix/name` | Urgent fix on main |
 
 ---
 
@@ -71,7 +73,8 @@ dotnet run --project EasySave.Console
 
 | Version | Description | Status |
 |---|---|---|
-| v1.0 | Console application | 🔧 In progress |
+| v1.0 | Console application | ✅ Released |
+| v1.1 | XML log support + format selection | 🔧 In progress |
 | v2.0 | WPF GUI + MVVM architecture | 🔲 Upcoming |
 | v3.0 | Advanced features (TBD) | 🔲 Upcoming |
 
@@ -79,9 +82,7 @@ dotnet run --project EasySave.Console
 
 ## Engineering constraints
 
-- Code and filenames in **English**
-- Comments in **French**
-- Commits in **French** (conventional format: `feat:`, `fix:`, `refactor:`...)
+- Code, comments and commits in **English** (conventional format: `feat:`, `fix:`, `refactor:`...)
 - Zero code duplication — shared logic extracted into services
 - Extensible architecture designed for v2/v3 without breaking v1 compatibility
 - `EasyLog.dll` must remain backward-compatible across all versions

@@ -1,0 +1,35 @@
+# TEST D - Sauvegarde Full (après modifications)
+Date: 2026-05-06
+
+## Résultat : PASS ✅
+
+Contexte : Après Test C — destination a 5 fichiers (readme.txt v2, notes.txt absent)
+Job       : vault-full (Full)
+Source    : 6 fichiers (5 originaux + notes.txt ajouté au Test C)
+
+### Destination après exécution (6/6 fichiers)
+
+Name          Length  État
+----          ------  ----
+config.txt        84  OK
+notes.txt         39  OK   ← ajouté
+rapport.txt       87  OK
+readme.txt       125  OK   ← mis à jour (était 66 B)
+changelog.txt     43  OK
+manuel.txt        36  OK
+
+### Log EasySave (6 entrées)
+
+JobName    | Fichier       | Taille | Durée | État
+-----------|---------------|--------|-------|-----
+vault-full | config.txt    |  84 B  |  ?    | OK
+vault-full | notes.txt     |  39 B  |  ?    | OK
+vault-full | rapport.txt   |  87 B  |  ?    | OK
+vault-full | readme.txt    | 125 B  |  ?    | OK
+vault-full | changelog.txt |  43 B  |  ?    | OK
+vault-full | manuel.txt    |  36 B  |  ?    | OK
+
+### Comportement vérifié
+Full copie TOUS les fichiers source sans distinction de timestamp ✅
+Nouveau fichier (notes.txt) inclus ✅
+Fichier modifié (readme.txt v2) écrase l'ancienne version ✅
