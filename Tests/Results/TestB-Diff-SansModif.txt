@@ -1,0 +1,16 @@
+# TEST B - Sauvegarde Différentielle (aucune modification)
+Date: 2026-05-06
+
+## Résultat : PASS ✅
+
+Contexte : Test B exécuté juste après Test A (destination = copie conforme de la source)
+Job       : vault-diff (Differential)
+
+### Destination inchangée
+Aucun fichier copié — les timestamps source == destination.
+
+### Log EasySave
+0 entrées (attendu: 0) ✅
+
+### Comportement vérifié
+La stratégie différentielle ne copie rien quand source et destination sont identiques.

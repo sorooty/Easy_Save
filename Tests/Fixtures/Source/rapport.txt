@@ -1,0 +1,5 @@
+# Rapport de sauvegarde
+Date: 2026-05-06
+Statut: OK
+Fichiers: 5
+Taille totale: 500 Ko
