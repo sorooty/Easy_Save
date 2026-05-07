@@ -11,6 +11,7 @@ public class LogEntry
     public long TransferDurationMs { get; set; }
     public string State { get; set; }
     public string ErrorMessage { get; set; }
+    public long EncryptionTimeMs { get; set; }
 
     // Initialiser les attributs
     public LogEntry(
@@ -20,7 +21,8 @@ public class LogEntry
         long fileSizeBytes,
         long transferDuration,
         string state,
-        string errorMessage
+        string errorMessage,
+        long encryptionTimeMs = 0
     ) 
     {
         TimeStamp = DateTime.Now;
@@ -31,5 +33,6 @@ public class LogEntry
         TransferDurationMs = transferDuration;
         State = state;
         ErrorMessage = errorMessage;
+        EncryptionTimeMs = encryptionTimeMs;
     }
 }

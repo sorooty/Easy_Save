@@ -17,13 +17,12 @@ public class XmlLogger : ILogger
     /// <remarks>
     /// Les logs sont stockés sous forme de liste dans un fichier XML.
     /// Chaque appel à cette méthode ajoute une nouvelle entrée à la liste existante.
+    /// Si le répertoire spécifié n'existe pas, il est créé automatiquement. Le fichier de journal sera nommé "YYYY-MM-DD.xml" dans ce répertoire.
     /// </remarks>
     public XmlLogger(string logDirectory)
     {
         _logDirectory = logDirectory;
-        _logFilePath = Path.Combine(_logDirectory, "log.xml");
-
-        Console.WriteLine($"LOG FILE PATH: {_logFilePath}");
+        _logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd}.xml");
         
         if (!Directory.Exists(_logDirectory))
         {
@@ -66,7 +65,7 @@ public class XmlLogger : ILogger
                     logs = serializer.Deserialize(fs) as List<LogEntry> ?? new List<LogEntry>();
                 }
             }
-            catch (Exception ex)
+            catch (InvalidOperationException ex)
             {
                 // Si le contenu XML est invalide, on initialise une nouvelle liste de logs
                 Console.WriteLine($"Error reading log file: {ex.Message}");
