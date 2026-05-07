@@ -1,0 +1,23 @@
+# TEST C - Sauvegarde Différentielle (après modifications)
+Date: 2026-05-06
+
+## Résultat : PASS ✅
+
+Contexte : readme.txt modifié (contenu enrichi, taille 66→125 B), notes.txt ajouté (nouveau fichier)
+Job       : vault-diff (Differential)
+
+### Fichiers copiés (2/6)
+
+JobName    | Fichier   | Taille | Durée | État
+-----------|-----------|--------|-------|-----
+vault-diff | notes.txt |  39 B  |  1 ms | OK   ← nouveau fichier
+vault-diff | readme.txt| 125 B  |  0 ms | OK   ← modifié (était 66 B)
+
+### Fichiers NON copiés (4/6 — correct)
+config.txt, rapport.txt, docs/changelog.txt, docs/manuel.txt
+→ Inchangés depuis le Test A — ignorés par la stratégie différentielle ✅
+
+### Comportement vérifié
+- Fichier modifié détecté (LastWriteTime source > destination) ✅
+- Nouveau fichier absent de la destination détecté ✅
+- Fichiers identiques ignorés ✅
