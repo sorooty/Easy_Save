@@ -11,19 +11,13 @@ public class XmlLogger : ILogger
     /// Création le cheimin pour enregistrer les logs dans un fichier XML.
     /// Si le dossier n'existe pas, il sera créé automatiquement.
     /// </summary>
-    /// <param name="entry">
-    /// L'objet <see cref="LogEntry"/> représentant les informations du log à enregistrer.
+    /// <param name="logDirectory">
+    /// Le chemin du dossier où les logs seront enregistrés.
     /// </param>
     /// <remarks>
-    /// les logs sont stockés sous forme de liste dans un fichier XML.
-    /// Chaque appel à cette méthode ajoute une nouvelle entrée à la liste existante
+    /// Les logs sont stockés sous forme de liste dans un fichier XML.
+    /// Chaque appel à cette méthode ajoute une nouvelle entrée à la liste existante.
     /// </remarks>
-    /// <exception cref="IOException">
-    /// Peut être levée en cas de problème d'accès au fichier.
-    /// </exception>
-    /// <exception cref="JsonException">
-    /// Peut être levée si le contenu XML existant est invalide. 
-    /// </exception>
     public XmlLogger(string logDirectory)
     {
         _logDirectory = logDirectory;
@@ -42,8 +36,18 @@ public class XmlLogger : ILogger
     /// Sinon, un noveau fichier est créé.
     /// </summary>
     /// <param name="entry">
-    /// 
+    /// L'objet <see cref="LogEntry"/> représentant les informations du log à enregistrer.
     /// </param>
+    /// <remarks>
+    /// les logs sont stockés sous forme de liste dans un fichier XML.
+    /// Chaque appel à cette méthode ajoute une nouvelle entrée à la liste existante.   
+    /// </remarks>
+    /// <exception cref="IOException">
+    /// Peut être levée en cas de problème d'accès au fichier.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// Peut être levée si le contenu XML existant est invalide. 
+    /// </exception>
 
 
     public void Log(LogEntry entry)
