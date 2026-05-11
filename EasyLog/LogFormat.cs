@@ -1,6 +1,7 @@
 namespace EasyLog;
 
-public enum Format 
-{ Json, 
-  Xml 
+public enum LogFormat
+{
+    JSON,
+    XML
 }

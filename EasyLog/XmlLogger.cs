@@ -52,26 +52,23 @@ public class XmlLogger : ILogger
     public void Log(LogEntry entry)
     {
         List<LogEntry> logs;
+        XmlSerializer serializer = new XmlSerializer(typeof(List<LogEntry>));
 
         // Si le fichier existe --> lire le log ancien
         if (File.Exists(_logFilePath))
         {
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(List<LogEntry>));
-
                 using (FileStream fs = new FileStream(_logFilePath, FileMode.Open))
                 {
                     logs = serializer.Deserialize(fs) as List<LogEntry> ?? new List<LogEntry>();
                 }
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             {
-                // Si le contenu XML est invalide, on initialise une nouvelle liste de logs
-                Console.WriteLine($"Error reading log file: {ex.Message}");
+                // Contenu XML invalide : on repart d'une liste vide
                 logs = new List<LogEntry>();
             }
-
         }
         else
         {
@@ -81,11 +78,9 @@ public class XmlLogger : ILogger
         // Ajouter la nouvelle entrée de log à la liste
         logs.Add(entry);
 
-        XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<LogEntry>));
-
         using (FileStream fs = new FileStream(_logFilePath, FileMode.Create))
         {
-            xmlSerializer.Serialize(fs, logs);
+            serializer.Serialize(fs, logs);
         }
     }
 }

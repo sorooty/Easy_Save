@@ -9,12 +9,12 @@ public static class LoggerFactory
     /// <param name="logDirectory">Le répertoire où les fichiers de log seront stockés.</param>
     /// <returns>Une instance de <see cref="ILogger"/> correspondant au format demandé.</returns>
     /// <exception cref="ArgumentException">Levée si le format spécifié n'est pas supporté.</exception>
-    public static ILogger CreateLogger(Format format, string logDirectory)
+    public static ILogger CreateLogger(LogFormat format, string logDirectory)
     {
         return format switch
         {
-            Format.Json => new JsonLogger(logDirectory),
-            Format.Xml => new XmlLogger(logDirectory),
+            LogFormat.JSON => new JsonLogger(logDirectory),
+            LogFormat.XML => new XmlLogger(logDirectory),
             _ => throw new ArgumentException($"Format de log non supporté: {format}")
         };
     }

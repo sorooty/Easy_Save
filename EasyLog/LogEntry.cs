@@ -13,6 +13,9 @@ public class LogEntry
     public string ErrorMessage { get; set; }
     public long EncryptionTimeMs { get; set; }
 
+    /// <summary>Parameterless constructor required for JSON/XML deserialization.</summary>
+    public LogEntry() { }
+
     // Initialiser les attributs
     public LogEntry(
         string jobName,
