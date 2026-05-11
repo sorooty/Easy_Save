@@ -16,9 +16,6 @@ public class LogEntry
     /// <summary>Parameterless constructor required for JSON/XML deserialization.</summary>
     public LogEntry() { }
 
-    /// <summary>Parameterless constructor required for JSON deserialization.</summary>
-    public LogEntry() { }
-
     // Initialiser les attributs
     public LogEntry(
         string jobName,
