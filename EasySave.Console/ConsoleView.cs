@@ -1,4 +1,5 @@
-﻿using EasySave.ViewModel;
+﻿using EasyLog;
+using EasySave.ViewModel;
 using System;
 using System.Text.RegularExpressions;
 
@@ -25,7 +26,7 @@ namespace EasySave.View
             while (running)
             {
                 DisplayMessage("====================================");
-                DisplayMessage("        EasySave v1.0");
+                DisplayMessage("        EasySave v1.1");
                 DisplayMessage("====================================\n");
 
                 DisplayMessage(_viewModel.GetText("menu.list"));
@@ -33,6 +34,7 @@ namespace EasySave.View
                 DisplayMessage(_viewModel.GetText("menu.remove"));
                 DisplayMessage(_viewModel.GetText("menu.run"));
                 DisplayMessage(_viewModel.GetText("menu.language"));
+                DisplayMessage(_viewModel.GetText("menu.settings"));
                 DisplayMessage(_viewModel.GetText("menu.quit"));
                 string choice = ReadUserChoice(_viewModel.GetText("menu.choice"));
 
@@ -46,6 +48,10 @@ namespace EasySave.View
 
                         DisplayMessage(_viewModel.GetText("language.changed"));
 
+                        break;
+
+                    case "6":
+                        DisplaySettings();
                         break;
 
                     case "4":
@@ -64,7 +70,7 @@ namespace EasySave.View
                         DisplaySaveJobs();
                         break;
 
-                    case "6":
+                    case "7":
                         DisplayMessage(_viewModel.GetText("close.application"));
                         running = false;
                         break;
@@ -294,6 +300,35 @@ namespace EasySave.View
         private bool IsCancelCommand(string input)
         {
             return input.Trim().Equals(CancelCommand, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void DisplaySettings()
+        {
+            DisplayMessage("\n" + _viewModel.GetText("settings.title"));
+            DisplayMessage("--------------------------------");
+
+            LogFormat current = _viewModel.GetLogFormat();
+            DisplayMessage(_viewModel.GetText("settings.log_format.current") + current);
+            DisplayMessage("\n" + _viewModel.GetText("settings.log_format.prompt"));
+
+            string input = ReadUserChoice("").Trim();
+
+            if (IsCancelCommand(input))
+                return;
+
+            LogFormat chosen;
+            if (input == "1")
+                chosen = LogFormat.JSON;
+            else if (input == "2")
+                chosen = LogFormat.XML;
+            else
+            {
+                DisplayMessage("\n" + _viewModel.GetText("error.invalid_choice"));
+                return;
+            }
+
+            _viewModel.SetLogFormat(chosen);
+            DisplayMessage("\n" + _viewModel.GetText("settings.log_format.changed"));
         }
     }
 }
