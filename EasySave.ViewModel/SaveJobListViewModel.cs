@@ -1,4 +1,5 @@
-﻿using EasySave.Core.Model.Entities;
+﻿using EasyLog;
+using EasySave.Core.Model.Entities;
 using EasySave.Core.Model.Service;
 using System.Collections.ObjectModel;
 
@@ -231,6 +232,10 @@ public class SaveJobListViewModel : ViewModelBase
     {
         _languageService.SetLanguage(languageCode);
     }
+
+    public LogFormat GetLogFormat() => _configservice.GetLogFormat();
+
+    public void SetLogFormat(LogFormat format) => _configservice.SetLogFormat(format);
 
     public string GetText(string key)
     {

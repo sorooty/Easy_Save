@@ -9,6 +9,7 @@ namespace EasySave.Core.Model.Service
         string JobsFile { get; }
         string StateFile { get; }
         string LogsDirectory { get; }
+        string SettingsFile { get; }
 
         /// <summary>Crée les répertoires nécessaires s'ils n'existent pas encore.</summary>
         void EnsureDirectoriesExist();
