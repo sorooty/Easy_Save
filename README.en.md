@@ -10,7 +10,7 @@ A file backup application built in C# / .NET 8.0, developed as part of an academ
 
 - **C# / .NET 8.0** — console app (v1), WPF + MVVM (v2)
 - **EasyLog.dll** — custom logging library, fully decoupled from the main application
-- **JSON** — unified format for config, logs and real-time state
+- **JSON / XML** — selectable log formats; JSON for config and real-time state
 - **NuGet** — dependency management
 - **GitHub + GitFlow** — versioning and branch management
 
@@ -24,13 +24,20 @@ A file backup application built in C# / .NET 8.0, developed as part of an academ
 - Real-time state file (`state.json`) updated during each backup run
 - Bilingual UI — **FR / EN** (switchable from the menu)
 
+## Features (v1.1)
+
+- **XML log format**: choose between JSON and XML from the Settings menu
+- **Format persistence**: preference saved in `settings.json` and applied on next launch
+- **LoggerFactory**: logger selected automatically at startup based on saved preference
+- **EasyLog**: extended with `XmlLogger`, `LogFormat` enum, and `LoggerFactory`
+
 ---
 
 ## Architecture
 
 ```
 Easy_Save.sln
-├── EasyLog/                Logging library (ILogger, LogEntry, JsonLogger)
+├── EasyLog/                Logging library (ILogger, LogEntry, JsonLogger, XmlLogger, LogFormat, LoggerFactory)
 ├── EasySave.Core/          Shared business logic — reused in v2 without changes
 │   ├── Model/Entities/     SaveJob, SaveState, SaveType
 │   ├── Model/Service/      SaveExecutor, ConfigService, StateService, AppPaths, LanguageService
@@ -74,7 +81,7 @@ dotnet run --project EasySave.Console
 | Version | Description | Status |
 |---|---|---|
 | v1.0 | Console application | ✅ Released |
-| v1.1 | XML log support + format selection | 🔧 In progress |
+| v1.1 | XML log support + format selection | ✅ Released |
 | v2.0 | WPF GUI + MVVM architecture | 🔲 Upcoming |
 | v3.0 | Advanced features (TBD) | 🔲 Upcoming |
 
