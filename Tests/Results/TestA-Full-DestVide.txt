@@ -1,0 +1,32 @@
+# TEST A - Sauvegarde Full (destination vide)
+Date initiale: 2026-05-06 16:39:47  ← avant correction Bug 2 (résultat partiel : 2/5 fichiers)
+Date corrigée: 2026-05-06           ← après fix LogEntry constructeur
+
+## Résultat : PASS ✅ (après correction Bug 2)
+
+Source  : Tests/Fixtures/Source — 5 fichiers
+Destination: Tests/Fixtures/Destination — vide avant le test
+
+### Destination après exécution (5/5 fichiers)
+
+Name          Length  LastWriteTime
+----          ------  -------------
+config.txt        84  06/05/2026 15:46:42
+rapport.txt       87  06/05/2026 15:46:42
+readme.txt        66  06/05/2026 15:46:42
+changelog.txt     43  06/05/2026 15:46:42
+manuel.txt        36  06/05/2026 15:46:42
+
+### Log EasySave (5 entrées)
+
+JobName    | Fichier       | Taille | Durée | État
+-----------|---------------|--------|-------|-----
+vault-full | config.txt    |  84 B  |  2 ms | OK
+vault-full | rapport.txt   |  87 B  |  1 ms | OK
+vault-full | readme.txt    |  66 B  |  1 ms | OK
+vault-full | changelog.txt |  43 B  |  3 ms | OK
+vault-full | manuel.txt    |  36 B  |  2 ms | OK
+
+### Note
+Le résultat initial (avant fix) montrait seulement 2/5 fichiers copiés et 1/5 entrée de log.
+Bug 2 corrigé : ajout du constructeur sans paramètre sur LogEntry (EasyLog/LogEntry.cs).

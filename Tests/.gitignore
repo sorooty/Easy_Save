@@ -1,0 +1,3 @@
+# Destination folder is reset before each test run — do not track its contents
+Fixtures/Destination/**
+!Fixtures/Destination/.gitkeep
