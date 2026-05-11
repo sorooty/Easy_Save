@@ -1,10 +1,12 @@
 using System.Text.Json;
+using EasyLog;
 using EasySave.Core.Model.Entities;
 
 namespace EasySave.Core.Model.Service
 {
     /// <summary>
-    /// Charge et persiste la liste des travaux de sauvegarde dans jobs.json.
+    /// Charge et persiste la liste des travaux de sauvegarde dans jobs.json,
+    /// et les paramètres de l'application (format de log) dans settings.json.
     /// </summary>
     public class ConfigService
     {
@@ -39,6 +41,39 @@ namespace EasySave.Core.Model.Service
         public void SaveJobs(List<SaveJob> jobs)
         {
             File.WriteAllText(_paths.JobsFile, JsonSerializer.Serialize(jobs, JsonOptions));
+        }
+
+        /// <summary>
+        /// Retourne le format de log persisté dans settings.json.
+        /// Retourne <see cref="LogFormat.JSON"/> par défaut (rétrocompatibilité v1.0).
+        /// </summary>
+        public LogFormat GetLogFormat()
+        {
+            if (!File.Exists(_paths.SettingsFile))
+                return LogFormat.JSON;
+
+            try
+            {
+                var json = File.ReadAllText(_paths.SettingsFile);
+                var doc = JsonSerializer.Deserialize<AppSettings>(json);
+                return doc?.LogFormat ?? LogFormat.JSON;
+            }
+            catch
+            {
+                return LogFormat.JSON;
+            }
+        }
+
+        /// <summary>Persiste le format de log dans settings.json.</summary>
+        public void SetLogFormat(LogFormat format)
+        {
+            var settings = new AppSettings { LogFormat = format };
+            File.WriteAllText(_paths.SettingsFile, JsonSerializer.Serialize(settings, JsonOptions));
+        }
+
+        private class AppSettings
+        {
+            public LogFormat LogFormat { get; set; } = LogFormat.JSON;
         }
     }
 }

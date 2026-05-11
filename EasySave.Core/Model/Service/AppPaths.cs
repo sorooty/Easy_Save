@@ -15,6 +15,7 @@ namespace EasySave.Core.Model.Service
         public string JobsFile => Path.Combine(BaseDir, "jobs.json");
         public string StateFile => Path.Combine(BaseDir, "state.json");
         public string LogsDirectory => Path.Combine(BaseDir, "Logs");
+        public string SettingsFile => Path.Combine(BaseDir, "settings.json");
 
         public void EnsureDirectoriesExist()
         {
