@@ -10,7 +10,7 @@ Logiciel de sauvegarde de fichiers développé en C# / .NET 8.0, dans le cadre d
 
 - **C# / .NET 8.0** — application console (v1), WPF + MVVM (v2)
 - **EasyLog.dll** — bibliothèque de logging maison, découplée de l'application principale
-- **JSON** — format universel pour la config, les logs et l'état temps réel
+- **JSON / XML** — formats de log sélectionnables ; JSON pour la config et l'état temps réel
 - **NuGet** — gestion des dépendances
 - **GitHub + GitFlow** — versioning et gestion des branches
 
@@ -24,13 +24,20 @@ Logiciel de sauvegarde de fichiers développé en C# / .NET 8.0, dans le cadre d
 - Fichier d'état temps réel (`state.json`) mis à jour pendant chaque sauvegarde
 - Interface bilingue **FR / EN** (changement de langue depuis le menu)
 
+## Fonctionnalités (v1.1)
+
+- **Log XML** : choix du format de log (JSON ou XML) depuis le menu Paramètres
+- **Persistance du format** : préférence sauvegardée dans `settings.json` et appliquée au prochain lancement
+- **LoggerFactory** : sélection automatique du logger au démarrage
+- **EasyLog** : architecture étendue avec `XmlLogger`, `LogFormat` et `LoggerFactory`
+
 ---
 
 ## Architecture
 
 ```
 Easy_Save.sln
-├── EasyLog/                Bibliothèque de logging (ILogger, LogEntry, JsonLogger)
+├── EasyLog/                Bibliothèque de logging (ILogger, LogEntry, JsonLogger, XmlLogger, LogFormat, LoggerFactory)
 ├── EasySave.Core/          Logique métier partagée — réutilisée en v2 sans modification
 │   ├── Model/Entities/     SaveJob, SaveState, SaveType
 │   ├── Model/Service/      SaveExecutor, ConfigService, StateService, AppPaths, LanguageService
@@ -74,7 +81,7 @@ dotnet run --project EasySave.Console
 | Version | Description | Statut |
 |---|---|---|
 | v1.0 | Application console | ✅ Livré |
-| v1.1 | Support log XML + choix du format | 🔧 En cours |
+| v1.1 | Support log XML + choix du format | ✅ Livré |
 | v2.0 | Interface graphique WPF + MVVM | 🔲 À venir |
 | v3.0 | Fonctionnalités avancées (TBD) | 🔲 À venir |
 
