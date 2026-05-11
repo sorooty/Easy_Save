@@ -12,12 +12,15 @@ class Program
     {
         // Paths
         IPathService pathService = new AppPaths();
+        pathService.EnsureDirectoriesExist();
 
         // Services
         var languageService = new LanguageService();
         var configService = new ConfigService(pathService);
 
-        var logger = new JsonLogger(pathService.LogsDirectory);
+        LogFormat logFormat = configService.GetLogFormat();
+        var logger = LoggerFactory.CreateLogger(logFormat, pathService.LogsDirectory);
+
         var stateService = new StateService(pathService);
         var fullStrategy = new FullSaveStrategy(logger, stateService);
         var differentialStrategy = new DifferentialSaveStrategy(logger, stateService);
