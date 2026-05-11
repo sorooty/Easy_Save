@@ -7,11 +7,16 @@ public class JsonLogger : ILogger
     private readonly string _logDirectory;
     private readonly string _logFilePath;
 
-    // Contructeur : Initialiser le chemin pour sauvegarder le log
+    /// <summary>
+    /// Initialise une nouvelle instance de la classe JsonLogger qui écrit les journaux au format JSON dans le
+    /// répertoire spécifié.
+    /// </summary>
+    /// <remarks>Si le répertoire spécifié n'existe pas, il est créé automatiquement. Le fichier de journal sera nommé "YYYY-MM-DD.json" dans ce répertoire.</remarks>
+    /// <param name="logDirectory">Le chemin du répertoire dans lequel les fichiers journaux JSON seront stockés. Ne peut pas être null ou vide.</param>
     public JsonLogger(string logDirectory)
     {
         _logDirectory = logDirectory;
-        _logFilePath = Path.Combine(_logDirectory, "log.json");
+        _logFilePath = Path.Combine(_logDirectory, $"{DateTime.Now:yyyy-MM-dd}.json");
 
         // si le dossier n'existe pas. 
         if (!Directory.Exists(_logDirectory))
@@ -19,7 +24,7 @@ public class JsonLogger : ILogger
             Directory.CreateDirectory(_logDirectory);        // Création d'une nouvelle dossier pour enregistrer les fichiers logs
         }
 
-    }   
+    }
 
     /// <summary>
     /// Enregistre une entrée de log dans un fichier JSON.
@@ -46,10 +51,12 @@ public class JsonLogger : ILogger
         // Si le fichier existe --> lire le log ancien
         if (File.Exists(_logFilePath))
         {
-            string json = File.ReadAllText(_logFilePath);
-            logs = string.IsNullOrWhiteSpace(json) 
-                ? new List<LogEntry>() 
+                string json = File.ReadAllText(_logFilePath);
+
+            logs = string.IsNullOrWhiteSpace(json)
+                ? new List<LogEntry>()
                 : JsonSerializer.Deserialize<List<LogEntry>>(json) ?? new List<LogEntry>();
+
         }
         else
         {
@@ -65,8 +72,5 @@ public class JsonLogger : ILogger
         });
 
         File.WriteAllText(_logFilePath, newJson);
-
-    }
-    
+    }   
 }
-

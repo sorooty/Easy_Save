@@ -25,7 +25,8 @@ namespace EasySave.Core.Model.Service
                     ["menu.remove"]             = "3. Remove a backup job",
                     ["menu.run"]                = "4. Run backup job(s)",
                     ["menu.language"]           = "5. Change language/Changer de langue",
-                    ["menu.quit"]               = "6. Quit",
+                    ["menu.settings"]           = "6. Settings",
+                    ["menu.quit"]               = "7. Quit",
                     ["menu.choice"]             = "Your choice: ",
                     ["job.list"]                = "=== List of backup jobs ===",
                     ["job.name"]                = "Job name: ",
@@ -58,6 +59,10 @@ namespace EasySave.Core.Model.Service
                     ["job.invalid"]             = "Invalid job - check required fields.",
                     ["job.success"]             = "Backup completed successfully.",
                     ["job.error"]               = "Backup failed: ",
+                    ["settings.title"]          = "=== Settings ===",
+                    ["settings.log_format.current"]  = "Current log format: ",
+                    ["settings.log_format.prompt"]   = "Log format (1=JSON, 2=XML): ",
+                    ["settings.log_format.changed"]  = "Log format saved. Will take effect on next launch.",
                 },
                 ["fr"] = new()
                 {
@@ -67,7 +72,8 @@ namespace EasySave.Core.Model.Service
                     ["menu.remove"]             = "3. Supprimer un travail de sauvegarde",
                     ["menu.run"]                = "4. Exécuter un/des travail(s)",
                     ["menu.language"]           = "5. Change language/Changer de langue",
-                    ["menu.quit"]               = "6. Quitter",
+                    ["menu.settings"]           = "6. Paramètres",
+                    ["menu.quit"]               = "7. Quitter",
                     ["menu.choice"]             = "Votre choix : ",
                     ["job.list"]                = "=== Liste des travaux de sauvegarde ===",
                     ["job.name"]                = "Nom du travail : ",
@@ -100,6 +106,10 @@ namespace EasySave.Core.Model.Service
                     ["job.invalid"]             = "Job invalide - Vérifiez les champs obligatoires.",
                     ["job.success"]             = "Sauvegarde réussie avec succès.",
                     ["job.error"]               = "Erreur lors de la sauvegarde : ",
+                    ["settings.title"]          = "=== Paramètres ===",
+                    ["settings.log_format.current"]  = "Format de log actuel : ",
+                    ["settings.log_format.prompt"]   = "Format de log (1=JSON, 2=XML) : ",
+                    ["settings.log_format.changed"]  = "Format de log enregistré. Prendra effet au prochain lancement.",
                 }
             };
         }
