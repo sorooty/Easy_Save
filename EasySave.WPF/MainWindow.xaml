@@ -21,16 +21,18 @@
 
         <!-- ===== SIDEBAR ===== -->
         <Border Grid.Column="0"
-                Background="{StaticResource SidebarBrush}">
+                Background="{StaticResource SidebarBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,1,0">
             <DockPanel>
                 <!-- Logo / App name -->
                 <Border DockPanel.Dock="Top"
                         Padding="20,24,20,20"
-                        BorderBrush="#FF1E293B"
+                        BorderBrush="{StaticResource BorderBrush}"
                         BorderThickness="0,0,0,1">
                     <StackPanel>
                         <TextBlock Text="EasySave"
-                                   Foreground="White"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
                                    FontFamily="{StaticResource FontMain}"
                                    FontSize="18"
                                    FontWeight="Bold"/>
@@ -46,9 +48,17 @@
                 <StackPanel DockPanel.Dock="Top" Margin="0,12,0,0">
                     <Button Command="{Binding ShowJobsCommand}"
                             Height="44">
-                        <TextBlock Text="{x:Static res:Strings.Nav_Jobs}"
-                                   FontFamily="{StaticResource FontMain}"
-                                   FontSize="{StaticResource FontSizeBase}"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="&#xE74E;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0"/>
+                            <TextBlock Text="{x:Static res:Strings.Nav_Jobs}"
+                                       FontFamily="{StaticResource FontMain}"
+                                       FontSize="{StaticResource FontSizeBase}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource NavButtonStyle}">
                                 <Style.Triggers>
@@ -62,9 +72,17 @@
 
                     <Button Command="{Binding ShowSettingsCommand}"
                             Height="44">
-                        <TextBlock Text="{x:Static res:Strings.Nav_Settings}"
-                                   FontFamily="{StaticResource FontMain}"
-                                   FontSize="{StaticResource FontSizeBase}"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="&#xE713;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0"/>
+                            <TextBlock Text="{x:Static res:Strings.Nav_Settings}"
+                                       FontFamily="{StaticResource FontMain}"
+                                       FontSize="{StaticResource FontSizeBase}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
                         <Button.Style>
                             <Style TargetType="Button" BasedOn="{StaticResource NavButtonStyle}">
                                 <Style.Triggers>

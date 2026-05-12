@@ -3,31 +3,41 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- ===== PALETTE ===== -->
-    <Color x:Key="C_Sidebar">#FF0F172A</Color>
-    <Color x:Key="C_SidebarHover">#FF1E293B</Color>
-    <Color x:Key="C_Accent">#FF3B82F6</Color>
-    <Color x:Key="C_Surface">#FFF8FAFC</Color>
+    <!-- Sidebar: warm cream (Dropbox-style light sidebar) -->
+    <Color x:Key="C_Sidebar">#FFEDECEA</Color>
+    <Color x:Key="C_SidebarHover">#FFE0DFD9</Color>
+    <Color x:Key="C_SidebarActive">#FF1A1A1A</Color>
+    <!-- Accent kept for interactive feedback (focus rings, progress, badges) -->
+    <Color x:Key="C_Accent">#FF0061FF</Color>
+    <!-- Surfaces: warm off-white -->
+    <Color x:Key="C_Surface">#FFF6F5F2</Color>
     <Color x:Key="C_Card">#FFFFFFFF</Color>
-    <Color x:Key="C_Border">#FFE2E8F0</Color>
-    <Color x:Key="C_TextPrimary">#FF0F172A</Color>
-    <Color x:Key="C_TextSecondary">#FF475569</Color>
-    <Color x:Key="C_TextMuted">#FF94A3B8</Color>
-    <Color x:Key="C_Danger">#FFEF4444</Color>
-    <Color x:Key="C_Success">#FF22C55E</Color>
-    <Color x:Key="C_Warning">#FFF59E0B</Color>
+    <Color x:Key="C_Border">#FFE0DFD9</Color>
+    <!-- Typography: near-black scale -->
+    <Color x:Key="C_TextPrimary">#FF1A1A1A</Color>
+    <Color x:Key="C_TextSecondary">#FF5A5855</Color>
+    <Color x:Key="C_TextMuted">#FF9C9B96</Color>
+    <!-- Semantic colors -->
+    <Color x:Key="C_Danger">#FFD93025</Color>
+    <Color x:Key="C_Success">#FF188038</Color>
+    <Color x:Key="C_Warning">#FFE37400</Color>
+    <!-- Primary button: dark (Dropbox black "Créer" style) -->
+    <Color x:Key="C_PrimaryButton">#FF1A1A1A</Color>
 
-    <SolidColorBrush x:Key="SidebarBrush"       Color="{StaticResource C_Sidebar}"/>
-    <SolidColorBrush x:Key="SidebarHoverBrush"  Color="{StaticResource C_SidebarHover}"/>
-    <SolidColorBrush x:Key="AccentBrush"        Color="{StaticResource C_Accent}"/>
-    <SolidColorBrush x:Key="SurfaceBrush"       Color="{StaticResource C_Surface}"/>
-    <SolidColorBrush x:Key="CardBrush"          Color="{StaticResource C_Card}"/>
-    <SolidColorBrush x:Key="BorderBrush"        Color="{StaticResource C_Border}"/>
-    <SolidColorBrush x:Key="TextPrimaryBrush"   Color="{StaticResource C_TextPrimary}"/>
-    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource C_TextSecondary}"/>
-    <SolidColorBrush x:Key="TextMutedBrush"     Color="{StaticResource C_TextMuted}"/>
-    <SolidColorBrush x:Key="DangerBrush"        Color="{StaticResource C_Danger}"/>
-    <SolidColorBrush x:Key="SuccessBrush"       Color="{StaticResource C_Success}"/>
-    <SolidColorBrush x:Key="WarningBrush"       Color="{StaticResource C_Warning}"/>
+    <SolidColorBrush x:Key="SidebarBrush"         Color="{StaticResource C_Sidebar}"/>
+    <SolidColorBrush x:Key="SidebarHoverBrush"    Color="{StaticResource C_SidebarHover}"/>
+    <SolidColorBrush x:Key="SidebarActiveBrush"   Color="{StaticResource C_SidebarActive}"/>
+    <SolidColorBrush x:Key="AccentBrush"          Color="{StaticResource C_Accent}"/>
+    <SolidColorBrush x:Key="SurfaceBrush"         Color="{StaticResource C_Surface}"/>
+    <SolidColorBrush x:Key="CardBrush"            Color="{StaticResource C_Card}"/>
+    <SolidColorBrush x:Key="BorderBrush"          Color="{StaticResource C_Border}"/>
+    <SolidColorBrush x:Key="TextPrimaryBrush"     Color="{StaticResource C_TextPrimary}"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush"   Color="{StaticResource C_TextSecondary}"/>
+    <SolidColorBrush x:Key="TextMutedBrush"       Color="{StaticResource C_TextMuted}"/>
+    <SolidColorBrush x:Key="DangerBrush"          Color="{StaticResource C_Danger}"/>
+    <SolidColorBrush x:Key="SuccessBrush"         Color="{StaticResource C_Success}"/>
+    <SolidColorBrush x:Key="WarningBrush"         Color="{StaticResource C_Warning}"/>
+    <SolidColorBrush x:Key="PrimaryButtonBrush"   Color="{StaticResource C_PrimaryButton}"/>
 
     <!-- ===== CONVERTERS ===== -->
     <BooleanToVisibilityConverter x:Key="BoolToVis"/>
@@ -40,9 +50,10 @@
     <System:Double xmlns:System="clr-namespace:System;assembly=mscorlib" x:Key="FontSizeTitle">22</System:Double>
 
     <!-- ===== SIDEBAR NAV BUTTON ===== -->
+    <!-- Light sidebar: default text is dark gray, active = dark bg + white text -->
     <Style x:Key="NavButtonStyle" TargetType="Button">
         <Setter Property="Background"   Value="Transparent"/>
-        <Setter Property="Foreground"   Value="#FF94A3B8"/>
+        <Setter Property="Foreground"   Value="{StaticResource TextSecondaryBrush}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FontFamily"   Value="{StaticResource FontMain}"/>
         <Setter Property="FontSize"     Value="{StaticResource FontSizeBase}"/>
@@ -54,32 +65,36 @@
                 <ControlTemplate TargetType="Button">
                     <Border x:Name="Root"
                             Background="{TemplateBinding Background}"
-                            BorderThickness="0">
+                            BorderThickness="0"
+                            CornerRadius="6"
+                            Margin="8,1">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="3"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <!-- Accent bar (active indicator) -->
+                            <!-- Active indicator bar -->
                             <Rectangle x:Name="AccentBar"
                                        Grid.Column="0"
-                                       Fill="{StaticResource AccentBrush}"
+                                       Fill="White"
                                        Visibility="Collapsed"
                                        RadiusX="1" RadiusY="1"/>
-                            <ContentPresenter Grid.Column="1"
+                            <ContentPresenter x:Name="CP"
+                                              Grid.Column="1"
                                               HorizontalAlignment="Left"
                                               VerticalAlignment="Center"
-                                              Margin="16,0,16,0"/>
+                                              Margin="12,0,12,0"/>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Root" Property="Background"  Value="{StaticResource SidebarHoverBrush}"/>
-                            <Setter Property="Foreground" Value="White"/>
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
                         </Trigger>
                         <Trigger Property="Tag" Value="Active">
-                            <Setter TargetName="Root"      Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
+                            <Setter TargetName="Root"      Property="Background" Value="{StaticResource SidebarActiveBrush}"/>
                             <Setter Property="Foreground"  Value="White"/>
+                            <Setter Property="FontWeight"  Value="SemiBold"/>
                             <Setter TargetName="AccentBar" Property="Visibility" Value="Visible"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -88,9 +103,9 @@
         </Setter>
     </Style>
 
-    <!-- ===== PRIMARY BUTTON ===== -->
+    <!-- ===== PRIMARY BUTTON (dark, Dropbox-style) ===== -->
     <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-        <Setter Property="Background"      Value="{StaticResource AccentBrush}"/>
+        <Setter Property="Background"      Value="{StaticResource PrimaryButtonBrush}"/>
         <Setter Property="Foreground"      Value="White"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FontFamily"      Value="{StaticResource FontMain}"/>
@@ -110,10 +125,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Root" Property="Background" Value="#FF2563EB"/>
+                            <Setter TargetName="Root" Property="Background" Value="#FF333333"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Root" Property="Background" Value="#FF93C5FD"/>
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource TextMutedBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -223,8 +238,8 @@
     <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
         <Setter Property="Foreground"  Value="{StaticResource TextPrimaryBrush}"/>
         <Setter Property="FontFamily"  Value="{StaticResource FontMain}"/>
-        <Setter Property="FontSize"    Value="{StaticResource FontSizeLarge}"/>
-        <Setter Property="FontWeight"  Value="SemiBold"/>
+        <Setter Property="FontSize"    Value="18"/>
+        <Setter Property="FontWeight"  Value="Bold"/>
     </Style>
 
     <!-- ===== MUTED TEXT ===== -->
@@ -253,10 +268,11 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Root" Property="Background" Value="{StaticResource SurfaceBrush}"/>
+                            <Setter TargetName="Root" Property="Background" Value="{StaticResource SidebarHoverBrush}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Root" Property="Background" Value="#FFE0EDFF"/>
+                            <!-- Warm neutral selected state, matching the light theme -->
+                            <Setter TargetName="Root" Property="Background" Value="#FFE2E1DC"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -302,13 +318,20 @@
         <Setter Property="Height" Value="1"/>
     </Style>
 
-    <!-- ===== CARD BORDER ===== -->
+    <!-- ===== CARD BORDER (with subtle elevation shadow) ===== -->
     <Style x:Key="CardStyle" TargetType="Border">
-        <Setter Property="Background"    Value="{StaticResource CardBrush}"/>
-        <Setter Property="BorderBrush"   Value="{StaticResource BorderBrush}"/>
+        <Setter Property="Background"      Value="{StaticResource CardBrush}"/>
+        <Setter Property="BorderBrush"     Value="{StaticResource BorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius"  Value="8"/>
-        <Setter Property="Padding"       Value="20"/>
+        <Setter Property="CornerRadius"    Value="8"/>
+        <Setter Property="Padding"         Value="20"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect BlurRadius="10" ShadowDepth="1"
+                                  Opacity="0.07" Color="#000000"
+                                  Direction="270"/>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- ===== SCROLLBAR (thin) ===== -->

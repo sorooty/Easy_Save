@@ -21,7 +21,7 @@
 
         <!-- ===== LEFT PANEL : jobs list ===== -->
         <Border Grid.Column="0"
-                Background="{StaticResource CardBrush}"
+                Background="{StaticResource SurfaceBrush}"
                 BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="0,0,1,0">
             <DockPanel>
