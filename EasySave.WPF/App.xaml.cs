@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using System.Windows;
 using EasySave.Core.Model.Service;
 using EasySave.Core.Model.Strategies;
@@ -45,10 +46,19 @@ namespace EasySave.WPF
             jobListVm.LoadJobs();
 
             var settingsVm  = new SettingsViewModel(settingsService, languageService);
+            settingsVm.RequestRestart = RestartApp;
             var mainVm      = new MainViewModel(jobListVm, settingsVm);
 
             var window = new MainWindow { DataContext = mainVm };
             window.Show();
+        }
+
+        private static void RestartApp()
+        {
+            var exe = Process.GetCurrentProcess().MainModule?.FileName;
+            if (!string.IsNullOrEmpty(exe))
+                Process.Start(new ProcessStartInfo { FileName = exe, UseShellExecute = true });
+            Current.Shutdown();
         }
     }
 }

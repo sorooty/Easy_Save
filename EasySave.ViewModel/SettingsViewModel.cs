@@ -19,6 +19,13 @@ public class SettingsViewModel : ViewModelBase
     private string _businessSoftwareName = string.Empty;
     private string _cryptoSoftPath = string.Empty;
     private string _savedMessage = string.Empty;
+    private string _initialLanguage = "en";
+
+    /// <summary>
+    /// Appelé par App.xaml.cs pour déclencher le redémarrage de l'application
+    /// lorsque la langue change (les labels {x:Static} ne sont pas dynamiques).
+    /// </summary>
+    public Action? RequestRestart { get; set; }
 
     #region Propriétés
 
@@ -101,6 +108,7 @@ public class SettingsViewModel : ViewModelBase
         SaveCommand = new RelayCommand(_ => Save());
 
         Load();
+        _initialLanguage = UseFrench ? "fr" : "en";
     }
 
     private void Load()
@@ -122,10 +130,13 @@ public class SettingsViewModel : ViewModelBase
 
     private void Save()
     {
+        var newLanguage = UseFrench ? "fr" : "en";
+        var languageChanged = newLanguage != _initialLanguage;
+
         var s = new GeneralSettings
         {
             LogFormat = UseXml ? EasyLog.LogFormat.XML : EasyLog.LogFormat.JSON,
-            Language = UseFrench ? "fr" : "en",
+            Language = newLanguage,
             BusinessSoftwareName = BusinessSoftwareName,
             CryptoSoftPath = CryptoSoftPath,
             EncryptedExtensions = EncryptedExtensions
@@ -137,6 +148,19 @@ public class SettingsViewModel : ViewModelBase
 
         _settingsService.SaveSettings(s);
         _languageService.SetLanguage(s.Language);
+        _initialLanguage = newLanguage;
+
+        if (languageChanged)
+        {
+            // {x:Static} labels are evaluated once at XAML load — a restart is required
+            // to apply the new culture. We show a brief message then trigger the restart.
+            SavedMessage = _languageService.GetText("settings.restarting");
+            OnPropertyChanged(nameof(HasSavedMessage));
+            Task.Delay(900).ContinueWith(
+                _ => RequestRestart?.Invoke(),
+                System.Threading.Tasks.TaskScheduler.FromCurrentSynchronizationContext());
+            return;
+        }
 
         SavedMessage = _languageService.GetText("settings.saved");
         OnPropertyChanged(nameof(HasSavedMessage));

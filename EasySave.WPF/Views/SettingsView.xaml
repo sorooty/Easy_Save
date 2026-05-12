@@ -12,7 +12,7 @@
     <ScrollViewer Style="{StaticResource ThinScrollViewerStyle}"
                   Padding="40,32"
                   VerticalScrollBarVisibility="Auto">
-        <StackPanel MaxWidth="560" HorizontalAlignment="Left">
+        <StackPanel MaxWidth="680" HorizontalAlignment="Stretch">
 
             <!-- Title -->
             <TextBlock Text="{x:Static res:Strings.Settings_Title}"
@@ -24,7 +24,7 @@
                 <StackPanel>
                     <TextBlock Text="{x:Static res:Strings.Settings_LogFormat}"
                                Style="{StaticResource FormLabelStyle}"
-                               Margin="0,0,0,10"/>
+                               Margin="0,0,0,8"/>
                     <StackPanel Orientation="Horizontal">
                         <RadioButton Content="{x:Static res:Strings.Settings_Json}"
                                      IsChecked="{Binding UseJson}"
@@ -46,7 +46,7 @@
                 <StackPanel>
                     <TextBlock Text="{x:Static res:Strings.Settings_Language}"
                                Style="{StaticResource FormLabelStyle}"
-                               Margin="0,0,0,10"/>
+                               Margin="0,0,0,8"/>
                     <StackPanel Orientation="Horizontal">
                         <RadioButton Content="{x:Static res:Strings.Settings_English}"
                                      IsChecked="{Binding UseEnglish}"
@@ -67,10 +67,10 @@
             <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="{x:Static res:Strings.Settings_Extensions}"
-                               Style="{StaticResource FormLabelStyle}"/>
+                               Style="{StaticResource FormLabelStyle}"
+                               Margin="0,0,0,8"/>
                     <TextBox Text="{Binding EncryptedExtensions, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource InputStyle}"
-                             Margin="0,0,0,0"/>
+                             Style="{StaticResource InputStyle}"/>
                 </StackPanel>
             </Border>
 
@@ -78,7 +78,8 @@
             <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="{x:Static res:Strings.Settings_BusinessApp}"
-                               Style="{StaticResource FormLabelStyle}"/>
+                               Style="{StaticResource FormLabelStyle}"
+                               Margin="0,0,0,8"/>
                     <TextBox Text="{Binding BusinessSoftwareName, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource InputStyle}"/>
                 </StackPanel>
@@ -88,7 +89,8 @@
             <Border Style="{StaticResource CardStyle}" Margin="0,0,0,24">
                 <StackPanel>
                     <TextBlock Text="{x:Static res:Strings.Settings_CryptoSoft}"
-                               Style="{StaticResource FormLabelStyle}"/>
+                               Style="{StaticResource FormLabelStyle}"
+                               Margin="0,0,0,8"/>
                     <TextBox Text="{Binding CryptoSoftPath, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource InputStyle}"/>
                 </StackPanel>

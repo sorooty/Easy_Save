@@ -69,6 +69,7 @@ namespace EasySave.Core.Model.Service
                     ["form.error.name_exists"]       = "A job with this name already exists.",
                     ["job.blocked_by_business_app"]  = "Business software is running. Backup is blocked.",
                     ["settings.saved"]               = "Settings saved.",
+                    ["settings.restarting"]          = "Language changed — restarting...",
                 },
                 ["fr"] = new()
                 {
@@ -122,6 +123,7 @@ namespace EasySave.Core.Model.Service
                     ["form.error.name_exists"]       = "Un job avec ce nom existe déjà.",
                     ["job.blocked_by_business_app"]  = "Le logiciel métier est en cours. La sauvegarde est bloquée.",
                     ["settings.saved"]               = "Paramètres enregistrés.",
+                    ["settings.restarting"]          = "Langue modifiée — redémarrage...",
                 }
             };
         }
