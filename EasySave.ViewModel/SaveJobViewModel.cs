@@ -23,7 +23,17 @@ public class SaveJobViewModel : ViewModelBase
     private string _targetFolder = string.Empty;
     private string _status = string.Empty;
     private string _resultMessage = string.Empty;
-    public SaveType Type { get; set; }
+    private SaveType _type;
+    private bool _isRunning;
+    private bool _isDone;
+    private bool _isError;
+    private int _progressValue;
+
+    public SaveType Type
+    {
+        get => _type;
+        set => Set(ref _type, value);
+    }
 
     // Propriétés publiques (liées à l'interface)
 
@@ -69,8 +79,46 @@ public class SaveJobViewModel : ViewModelBase
     public string ResultMessage
     {
         get => _resultMessage;
-        set => Set(ref _resultMessage, value);
+        set
+        {
+            Set(ref _resultMessage, value);
+            OnPropertyChanged(nameof(HasResultMessage));
+        }
     }
+
+    /// <summary>Progression de la sauvegarde en cours (0-100).</summary>
+    public int ProgressValue
+    {
+        get => _progressValue;
+        set => Set(ref _progressValue, value);
+    }
+
+    /// <summary>True pendant l'exécution du job.</summary>
+    public bool IsRunning
+    {
+        get => _isRunning;
+        private set => Set(ref _isRunning, value);
+    }
+
+    /// <summary>True après une exécution réussie.</summary>
+    public bool IsDone
+    {
+        get => _isDone;
+        private set => Set(ref _isDone, value);
+    }
+
+    /// <summary>True après une erreur d'exécution.</summary>
+    public bool IsError
+    {
+        get => _isError;
+        private set => Set(ref _isError, value);
+    }
+
+    /// <summary>True quand il y a un message de résultat à afficher.</summary>
+    public bool HasResultMessage => !string.IsNullOrEmpty(_resultMessage);
+
+    /// <summary>Commande WPF pour lancer ce job depuis l'interface.</summary>
+    public RelayCommand ExecuteCommand { get; }
 
     /// <summary>
     /// Constructeur du ViewModel.
@@ -83,6 +131,7 @@ public class SaveJobViewModel : ViewModelBase
         _languageService = languageService;
         _job = new SaveJob();
         Status = _languageService.GetText("status.ready");
+        ExecuteCommand = new RelayCommand(async _ => await Execute());
     }
 
     /// <summary>
@@ -121,6 +170,10 @@ public class SaveJobViewModel : ViewModelBase
             return;
         }
 
+        IsRunning = true;
+        ProgressValue = 0;
+        IsDone = false;
+        IsError = false;
         Status = _languageService.GetText("status.running");
         ResultMessage = string.Empty;
 
@@ -130,15 +183,27 @@ public class SaveJobViewModel : ViewModelBase
                 Directory.CreateDirectory(TargetFolder);
 
             var job = CreateJob();
-            await _saveExecutor.ExecuteAsync(job, null, CancellationToken.None);
+            var progress = new Progress<SaveState>(state =>
+            {
+                ProgressValue = state.ProgressPercent;
+            });
+
+            await _saveExecutor.ExecuteAsync(job, progress, CancellationToken.None);
 
             Status = _languageService.GetText("status.done");
             ResultMessage = _languageService.GetText("job.success");
+            ProgressValue = 100;
+            IsDone = true;
         }
         catch (Exception ex)
         {
             Status = _languageService.GetText("status.error");
             ResultMessage = _languageService.GetText("job.error") + ex.Message;
+            IsError = true;
+        }
+        finally
+        {
+            IsRunning = false;
         }
     }
 }
