@@ -181,6 +181,35 @@
         </Style.Triggers>
     </Style>
 
+    <!-- ===== DANGER ICON BUTTON (trash, compact, icon-only) ===== -->
+    <Style x:Key="DangerIconButtonStyle" TargetType="Button">
+        <Setter Property="Background"      Value="Transparent"/>
+        <Setter Property="Foreground"      Value="{StaticResource DangerBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderBrush"     Value="{StaticResource DangerBrush}"/>
+        <Setter Property="Padding"         Value="8"/>
+        <Setter Property="Cursor"          Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Root"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="6"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Root" Property="Background" Value="#FFFEF2F2"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ===== ICON BUTTON (compact, no border) ===== -->
     <Style x:Key="IconButtonStyle" TargetType="Button">
         <Setter Property="Background"      Value="Transparent"/>
@@ -234,7 +263,15 @@
         <Setter Property="Margin"      Value="0,0,0,4"/>
     </Style>
 
-    <!-- ===== SECTION TITLE ===== -->
+    <!-- ===== PANEL SUBTITLE (panel-level headers, narrower contexts) ===== -->
+    <Style x:Key="PanelTitleStyle" TargetType="TextBlock">
+        <Setter Property="Foreground"  Value="{StaticResource TextPrimaryBrush}"/>
+        <Setter Property="FontFamily"  Value="{StaticResource FontMain}"/>
+        <Setter Property="FontSize"    Value="15"/>
+        <Setter Property="FontWeight"  Value="SemiBold"/>
+    </Style>
+
+    <!-- ===== SECTION TITLE (page-level, wide contexts) ===== -->
     <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
         <Setter Property="Foreground"  Value="{StaticResource TextPrimaryBrush}"/>
         <Setter Property="FontFamily"  Value="{StaticResource FontMain}"/>

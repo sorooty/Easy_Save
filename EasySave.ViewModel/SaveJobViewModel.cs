@@ -25,6 +25,8 @@ public class SaveJobViewModel : ViewModelBase
     private string _resultMessage = string.Empty;
     private SaveType _type;
     private bool _isRunning;
+    private bool _isDone;
+    private bool _isError;
     private int _progressValue;
 
     public SaveType Type
@@ -77,7 +79,11 @@ public class SaveJobViewModel : ViewModelBase
     public string ResultMessage
     {
         get => _resultMessage;
-        set => Set(ref _resultMessage, value);
+        set
+        {
+            Set(ref _resultMessage, value);
+            OnPropertyChanged(nameof(HasResultMessage));
+        }
     }
 
     /// <summary>Progression de la sauvegarde en cours (0-100).</summary>
@@ -93,6 +99,23 @@ public class SaveJobViewModel : ViewModelBase
         get => _isRunning;
         private set => Set(ref _isRunning, value);
     }
+
+    /// <summary>True après une exécution réussie.</summary>
+    public bool IsDone
+    {
+        get => _isDone;
+        private set => Set(ref _isDone, value);
+    }
+
+    /// <summary>True après une erreur d'exécution.</summary>
+    public bool IsError
+    {
+        get => _isError;
+        private set => Set(ref _isError, value);
+    }
+
+    /// <summary>True quand il y a un message de résultat à afficher.</summary>
+    public bool HasResultMessage => !string.IsNullOrEmpty(_resultMessage);
 
     /// <summary>Commande WPF pour lancer ce job depuis l'interface.</summary>
     public RelayCommand ExecuteCommand { get; }
@@ -149,6 +172,8 @@ public class SaveJobViewModel : ViewModelBase
 
         IsRunning = true;
         ProgressValue = 0;
+        IsDone = false;
+        IsError = false;
         Status = _languageService.GetText("status.running");
         ResultMessage = string.Empty;
 
@@ -168,11 +193,13 @@ public class SaveJobViewModel : ViewModelBase
             Status = _languageService.GetText("status.done");
             ResultMessage = _languageService.GetText("job.success");
             ProgressValue = 100;
+            IsDone = true;
         }
         catch (Exception ex)
         {
             Status = _languageService.GetText("status.error");
             ResultMessage = _languageService.GetText("job.error") + ex.Message;
+            IsError = true;
         }
         finally
         {

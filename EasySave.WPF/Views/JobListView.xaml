@@ -12,7 +12,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <!-- Jobs list panel -->
-            <ColumnDefinition Width="280" MinWidth="220"/>
+            <ColumnDefinition Width="320" MinWidth="240"/>
             <!-- Splitter -->
             <ColumnDefinition Width="1"/>
             <!-- Detail / Form panel -->
@@ -38,7 +38,8 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0"
                                    Text="{x:Static res:Strings.Jobs_Title}"
-                                   Style="{StaticResource SectionTitleStyle}"
+                                   Style="{StaticResource PanelTitleStyle}"
+                                   TextTrimming="CharacterEllipsis"
                                    VerticalAlignment="Center"/>
                         <Button Grid.Column="1"
                                 Content="{x:Static res:Strings.Jobs_AddButton}"
@@ -92,10 +93,26 @@
                                                FontWeight="Medium"
                                                TextTrimming="CharacterEllipsis"/>
                                     <TextBlock Text="{Binding Status}"
-                                               Foreground="{StaticResource TextMutedBrush}"
                                                FontFamily="{StaticResource FontMain}"
                                                FontSize="{StaticResource FontSizeSmall}"
-                                               Margin="0,2,0,0"/>
+                                               Margin="0,2,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource SuccessBrush}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsError}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <!-- Progress bar (visible when running) -->
                                     <ProgressBar Style="{StaticResource ThinProgressBarStyle}"
                                                  Value="{Binding ProgressValue}"
@@ -236,11 +253,10 @@
                           Padding="32,28"
                           VerticalScrollBarVisibility="Auto"
                           Visibility="{Binding HasSelectedJob, Converter={StaticResource BoolToVis}}">
-                <StackPanel MaxWidth="540" HorizontalAlignment="Left"
-                            DataContext="{Binding SelectedJob}">
+                <StackPanel DataContext="{Binding SelectedJob}">
 
-                    <!-- Job name header -->
-                    <Grid Margin="0,0,0,24">
+                    <!-- Job name header + trash icon -->
+                    <Grid Margin="0,0,0,20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -251,15 +267,19 @@
                                    TextTrimming="CharacterEllipsis"
                                    VerticalAlignment="Center"/>
                         <Button Grid.Column="1"
-                                Content="{x:Static res:Strings.Job_Delete}"
-                                Style="{StaticResource DangerButtonStyle}"
-                                Padding="14,7" FontSize="12"
+                                Style="{StaticResource DangerIconButtonStyle}"
+                                ToolTip="{x:Static res:Strings.Job_Delete}"
                                 CommandParameter="{Binding DataContext.SelectedJob, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                Command="{Binding DataContext.DeleteJobCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                Command="{Binding DataContext.DeleteJobCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                            <TextBlock Text="&#xE74D;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="15"
+                                       Foreground="{StaticResource DangerBrush}"/>
+                        </Button>
                     </Grid>
 
-                    <!-- Info card -->
-                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,20">
+                    <!-- Single card: info + progress + execute -->
+                    <Border Style="{StaticResource CardStyle}">
                         <StackPanel>
                             <!-- Source -->
                             <TextBlock Text="{x:Static res:Strings.Job_Source}"
@@ -281,8 +301,8 @@
                                        TextWrapping="Wrap"
                                        Margin="0,0,0,16"/>
 
-                            <!-- Type + Status row -->
-                            <Grid>
+                            <!-- Type + Status row (color-coded status) -->
+                            <Grid Margin="0,0,0,20">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
@@ -299,44 +319,64 @@
                                     <TextBlock Text="{x:Static res:Strings.Job_Status}"
                                                Style="{StaticResource FormLabelStyle}"/>
                                     <TextBlock Text="{Binding Status}"
-                                               Foreground="{StaticResource TextPrimaryBrush}"
                                                FontFamily="{StaticResource FontMain}"
-                                               FontSize="{StaticResource FontSizeBase}"/>
+                                               FontSize="{StaticResource FontSizeBase}">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsDone}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource SuccessBrush}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsError}" Value="True">
+                                                        <Setter Property="Foreground" Value="{StaticResource DangerBrush}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </Grid>
+
+                            <!-- Separator before actions -->
+                            <Rectangle Style="{StaticResource SeparatorStyle}" Margin="0,0,0,16"/>
+
+                            <!-- Progress bar (when running) -->
+                            <ProgressBar Style="{StaticResource ThinProgressBarStyle}"
+                                         Value="{Binding ProgressValue}"
+                                         Maximum="100"
+                                         Margin="0,0,0,10"
+                                         Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}"/>
+
+                            <!-- Result message -->
+                            <TextBlock Text="{Binding ResultMessage}"
+                                       FontFamily="{StaticResource FontMain}"
+                                       FontSize="{StaticResource FontSizeSmall}"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       Margin="0,0,0,12"
+                                       TextWrapping="Wrap"
+                                       Visibility="{Binding HasResultMessage, Converter={StaticResource BoolToVis}}"/>
+
+                            <!-- Execute button -->
+                            <Button Content="{x:Static res:Strings.Job_Execute}"
+                                    Command="{Binding ExecuteCommand}"
+                                    HorizontalAlignment="Left">
+                                <Button.Style>
+                                    <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
                         </StackPanel>
                     </Border>
-
-                    <!-- Progress bar -->
-                    <ProgressBar Style="{StaticResource ThinProgressBarStyle}"
-                                 Value="{Binding ProgressValue}"
-                                 Maximum="100"
-                                 Margin="0,0,0,8"
-                                 Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}"/>
-
-                    <!-- Result message -->
-                    <TextBlock Text="{Binding ResultMessage}"
-                               FontFamily="{StaticResource FontMain}"
-                               FontSize="{StaticResource FontSizeSmall}"
-                               Foreground="{StaticResource TextSecondaryBrush}"
-                               Margin="0,0,0,16"
-                               TextWrapping="Wrap"/>
-
-                    <!-- Run button -->
-                    <Button Content="{x:Static res:Strings.Job_Execute}"
-                            Command="{Binding ExecuteCommand}"
-                            HorizontalAlignment="Left">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
-                                <Setter Property="IsEnabled" Value="True"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding IsRunning}" Value="True">
-                                        <Setter Property="IsEnabled" Value="False"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
                 </StackPanel>
             </ScrollViewer>
 
