@@ -49,20 +49,21 @@ namespace EasySave.Core.Model.Service
                 _stateService.UpdateState(initialState);
                 progress?.Report(initialState);
 
+                bool succeeded = false;
                 try
                 {
                     strategy.ExecuteSaveJob(job);
+                    succeeded = true;
                 }
                 finally
                 {
-                    // État final toujours écrit, même en cas d'erreur partielle
                     var finalState = new SaveState
                     {
                         Name = job.Name,
-                        Status = "Completed",
+                        Status = succeeded ? "Completed" : "Error",
                         LastActionTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         RemainingFiles = 0,
-                        ProgressPercent = 100
+                        ProgressPercent = succeeded ? 100 : 0
                     };
                     _stateService.UpdateState(finalState);
                     progress?.Report(finalState);

@@ -3,10 +3,85 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:EasySave.WPF"
+        xmlns:vm="clr-namespace:EasySave.ViewModel;assembly=EasySave.ViewModel"
+        xmlns:res="clr-namespace:EasySave.WPF.Resources"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        d:DataContext="{d:DesignInstance Type={x:Type vm:MainViewModel}}"
+        Title="{x:Static res:Strings.AppTitle}"
+        Height="680" Width="1100"
+        MinHeight="540" MinWidth="800"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource SurfaceBrush}">
 
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== SIDEBAR ===== -->
+        <Border Grid.Column="0"
+                Background="{StaticResource SidebarBrush}">
+            <DockPanel>
+                <!-- Logo / App name -->
+                <Border DockPanel.Dock="Top"
+                        Padding="20,24,20,20"
+                        BorderBrush="#FF1E293B"
+                        BorderThickness="0,0,0,1">
+                    <StackPanel>
+                        <TextBlock Text="EasySave"
+                                   Foreground="White"
+                                   FontFamily="{StaticResource FontMain}"
+                                   FontSize="18"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="v2.0"
+                                   Foreground="{StaticResource TextMutedBrush}"
+                                   FontFamily="{StaticResource FontMain}"
+                                   FontSize="11"
+                                   Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Navigation -->
+                <StackPanel DockPanel.Dock="Top" Margin="0,12,0,0">
+                    <Button Command="{Binding ShowJobsCommand}"
+                            Height="44">
+                        <TextBlock Text="{x:Static res:Strings.Nav_Jobs}"
+                                   FontFamily="{StaticResource FontMain}"
+                                   FontSize="{StaticResource FontSizeBase}"/>
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsJobsPage}" Value="True">
+                                        <Setter Property="Tag" Value="Active"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Command="{Binding ShowSettingsCommand}"
+                            Height="44">
+                        <TextBlock Text="{x:Static res:Strings.Nav_Settings}"
+                                   FontFamily="{StaticResource FontMain}"
+                                   FontSize="{StaticResource FontSizeBase}"/>
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSettingsPage}" Value="True">
+                                        <Setter Property="Tag" Value="Active"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <ContentControl Grid.Column="1"
+                        Content="{Binding CurrentView}"
+                        Background="{StaticResource SurfaceBrush}"/>
     </Grid>
 </Window>

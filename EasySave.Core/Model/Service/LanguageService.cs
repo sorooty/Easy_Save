@@ -63,6 +63,12 @@ namespace EasySave.Core.Model.Service
                     ["settings.log_format.current"]  = "Current log format: ",
                     ["settings.log_format.prompt"]   = "Log format (1=JSON, 2=XML): ",
                     ["settings.log_format.changed"]  = "Log format saved. Will take effect on next launch.",
+                    ["form.error.name_required"]     = "Name is required.",
+                    ["form.error.source_required"]   = "Source folder is required.",
+                    ["form.error.target_required"]   = "Target folder is required.",
+                    ["form.error.name_exists"]       = "A job with this name already exists.",
+                    ["job.blocked_by_business_app"]  = "Business software is running. Backup is blocked.",
+                    ["settings.saved"]               = "Settings saved.",
                 },
                 ["fr"] = new()
                 {
@@ -110,6 +116,12 @@ namespace EasySave.Core.Model.Service
                     ["settings.log_format.current"]  = "Format de log actuel : ",
                     ["settings.log_format.prompt"]   = "Format de log (1=JSON, 2=XML) : ",
                     ["settings.log_format.changed"]  = "Format de log enregistré. Prendra effet au prochain lancement.",
+                    ["form.error.name_required"]     = "Le nom est obligatoire.",
+                    ["form.error.source_required"]   = "Le dossier source est obligatoire.",
+                    ["form.error.target_required"]   = "Le dossier cible est obligatoire.",
+                    ["form.error.name_exists"]       = "Un job avec ce nom existe déjà.",
+                    ["job.blocked_by_business_app"]  = "Le logiciel métier est en cours. La sauvegarde est bloquée.",
+                    ["settings.saved"]               = "Paramètres enregistrés.",
                 }
             };
         }

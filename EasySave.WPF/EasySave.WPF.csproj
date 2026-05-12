@@ -6,12 +6,23 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <DefaultLanguage>en</DefaultLanguage>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EasySave.ViewModel\EasySave.ViewModel.csproj" />
     <ProjectReference Include="..\EasySave.Core\EasySave.Core.csproj" />
     <ProjectReference Include="..\EasyLog\EasyLog.csproj" />
+  </ItemGroup>
+
+  <!-- Ensure no designer code is auto-generated for resx files -->
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Strings.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Strings.fr.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
