@@ -3,8 +3,9 @@ name: Deploy documentation
 on:
   push:
     branches:
-      - docs/github-pages
       - main
+      - develop
+      - docs/github-pages
     paths:
       - "docs/**"
       - "mkdocs.yml"
