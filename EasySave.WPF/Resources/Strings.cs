@@ -49,6 +49,7 @@ namespace EasySave.WPF.Resources
         public static string Settings_Xml          => Get(nameof(Settings_Xml));
         public static string Settings_English      => Get(nameof(Settings_English));
         public static string Settings_French       => Get(nameof(Settings_French));
+        public static string Settings_OpenLogs     => Get(nameof(Settings_OpenLogs));
         public static string Type_Full             => Get(nameof(Type_Full));
         public static string Type_Differential     => Get(nameof(Type_Differential));
     }
