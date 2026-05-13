@@ -35,12 +35,30 @@
   background: var(--glass-bg-light);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.15);
   box-shadow: var(--glass-shadow);
+}
+
+/* Light mode: icons and title are white by default (designed for dark header).
+   Override to indigo so they're visible on the white/glass background. */
+[data-md-color-scheme="default"] .md-header {
+  color: #3f51b5;
+}
+
+[data-md-color-scheme="default"] .md-header__button,
+[data-md-color-scheme="default"] .md-header__title,
+[data-md-color-scheme="default"] .md-header__topic {
+  color: #3f51b5;
+}
+
+[data-md-color-scheme="default"] .md-header__button:hover {
+  color: #303f9f;
+  opacity: 1;
 }
 
 [data-md-color-scheme="slate"] .md-header {
   background: var(--glass-bg-dark);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
 }
 
 /* ---------- Tabs glass ---------------------- */
@@ -48,7 +66,20 @@
   background: rgba(255, 255, 255, 0.45);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border-bottom: 1px solid var(--glass-border);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.12);
+}
+
+[data-md-color-scheme="default"] .md-tabs {
+  color: #3f51b5;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link {
+  color: rgba(63, 81, 181, 0.75);
+}
+
+[data-md-color-scheme="default"] .md-tabs__link--active,
+[data-md-color-scheme="default"] .md-tabs__link:hover {
+  color: #3f51b5;
 }
 
 [data-md-color-scheme="slate"] .md-tabs {
