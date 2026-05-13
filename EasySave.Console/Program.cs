@@ -22,8 +22,10 @@ class Program
         var logger = LoggerFactory.CreateLogger(logFormat, pathService.LogsDirectory);
 
         var stateService = new StateService(pathService);
-        var fullStrategy = new FullSaveStrategy(logger, stateService);
-        var differentialStrategy = new DifferentialSaveStrategy(logger, stateService);
+        var settingsService = new SettingsService(pathService);
+        var cryptoService = new CryptoService();
+        var fullStrategy = new FullSaveStrategy(logger, stateService, cryptoService, settingsService);
+        var differentialStrategy = new DifferentialSaveStrategy(logger, stateService, cryptoService, settingsService);
 
         var saveExecutor = new SaveExecutor(fullStrategy, differentialStrategy, logger, stateService);
 

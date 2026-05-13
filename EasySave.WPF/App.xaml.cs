@@ -36,8 +36,8 @@ namespace EasySave.WPF
             var logger = EasyLog.LoggerFactory.CreateLogger(
                 settings.LogFormat, paths.LogsDirectory);
 
-            var fullStrategy  = new FullSaveStrategy(logger, stateService);
-            var diffStrategy  = new DifferentialSaveStrategy(logger, stateService);
+            var fullStrategy  = new FullSaveStrategy(logger, stateService, new CryptoService(), settingsService);
+            var diffStrategy  = new DifferentialSaveStrategy(logger, stateService, new CryptoService(), settingsService);
             var saveExecutor  = new SaveExecutor(fullStrategy, diffStrategy, logger, stateService);
 
             var jobListVm = new SaveJobListViewModel(
