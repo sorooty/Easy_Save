@@ -51,7 +51,8 @@ namespace EasySave.WPF
             jobListVm.LoadJobs();
 
             var settingsVm  = new SettingsViewModel(settingsService, languageService);
-            settingsVm.RequestRestart = RestartApp;
+            settingsVm.RequestRestart  = RestartApp;
+            settingsVm.OpenLogsFolder  = () => System.Diagnostics.Process.Start("explorer.exe", paths.LogsDirectory);
             var mainVm      = new MainViewModel(jobListVm, settingsVm);
 
             var window = new MainWindow { DataContext = mainVm };
