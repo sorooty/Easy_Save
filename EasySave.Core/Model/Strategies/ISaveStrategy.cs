@@ -12,6 +12,6 @@ namespace EasySave.Core.Model.Strategies
         /// Executes the backup job. Checks <paramref name="cancellationToken"/> after each file
         /// so it can stop gracefully (finishing the current file) if cancelled.
         /// </summary>
-        void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default);
+        void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default, IProgress<SaveState>? progress = null);
     }
 }

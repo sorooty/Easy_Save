@@ -174,14 +174,10 @@ public class SaveExecutorTests
         public int ExecutionCount { get; private set; }
         public bool ShouldThrowException { get; set; }
 
-        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default)
+        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default, IProgress<SaveState>? progress = null)
         {
             ExecutionCount++;
-
-            if (ShouldThrowException)
-            {
-                throw new InvalidOperationException("Fake strategy error");
-            }
+            if (ShouldThrowException) throw new Exception("Simulated strategy exception");
         }
     }
 
