@@ -13,15 +13,21 @@ namespace EasySave.Core.Model.Strategies
     {
         private readonly ILogger _logger;
         private readonly IStateService _stateService;
+        private readonly CryptoService _cryptoService;
+        private readonly SettingsService _settingsService;
 
-        public DifferentialSaveStrategy(ILogger logger, IStateService stateService)
+        public DifferentialSaveStrategy(ILogger logger, IStateService stateService,
+            CryptoService cryptoService, SettingsService settingsService)
         {
             _logger = logger;
             _stateService = stateService;
+            _cryptoService = cryptoService;
+            _settingsService = settingsService;
         }
 
         public void ExecuteSaveJob(SaveJob job)
         {
+            var settings = _settingsService.LoadSettings();
             var allFiles = Directory.GetFiles(job.SourceFolder, "*", SearchOption.AllDirectories);
 
             // Pré-filtre : seuls les fichiers éligibles sont comptabilisés et copiés
@@ -54,6 +60,7 @@ namespace EasySave.Core.Model.Strategies
                 });
 
                 long transferMs = -1;
+                long encryptionTimeMs = 0;
                 string error = string.Empty;
 
                 try
@@ -62,6 +69,9 @@ namespace EasySave.Core.Model.Strategies
                     File.Copy(sourceFile, targetFile, overwrite: true);
                     sw.Stop();
                     transferMs = sw.ElapsedMilliseconds;
+
+                    if (_cryptoService.NeedsEncryption(targetFile, settings.EncryptedExtensions))
+                        encryptionTimeMs = _cryptoService.Encrypt(targetFile, settings.CryptoSoftPath);
                 }
                 catch (Exception ex)
                 {
@@ -70,7 +80,8 @@ namespace EasySave.Core.Model.Strategies
 
                 _logger.Log(new LogEntry(job.Name, sourceFile, targetFile, fileSize, transferMs,
                     state: error == string.Empty ? "OK" : "ERROR",
-                    errorMessage: error));
+                    errorMessage: error,
+                    encryptionTimeMs: encryptionTimeMs));
 
                 remaining--;
                 remainingBytes -= fileSize;
