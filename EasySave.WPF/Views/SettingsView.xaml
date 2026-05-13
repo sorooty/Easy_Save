@@ -102,6 +102,10 @@
                         Style="{StaticResource PrimaryButtonStyle}"
                         Command="{Binding SaveCommand}"
                         Margin="0,0,16,0"/>
+                <Button Content="{x:Static res:Strings.Settings_OpenLogs}"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Command="{Binding OpenLogsFolderCommand}"
+                        Margin="0,0,16,0"/>
                 <TextBlock Text="{Binding SavedMessage}"
                            Foreground="{StaticResource SuccessBrush}"
                            FontFamily="{StaticResource FontMain}"

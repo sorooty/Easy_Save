@@ -115,6 +115,9 @@
   <data name="Settings_French" xml:space="preserve">
     <value>Français</value>
   </data>
+  <data name="Settings_OpenLogs" xml:space="preserve">
+    <value>Ouvrir le dossier des logs</value>
+  </data>
   <data name="Type_Full" xml:space="preserve">
     <value>Complète</value>
   </data>

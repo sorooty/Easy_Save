@@ -188,12 +188,21 @@ public class SaveJobViewModel : ViewModelBase
                 ProgressValue = state.ProgressPercent;
             });
 
-            await _saveExecutor.ExecuteAsync(job, progress, CancellationToken.None);
+            bool ran = await _saveExecutor.ExecuteAsync(job, progress, CancellationToken.None);
 
-            Status = _languageService.GetText("status.done");
-            ResultMessage = _languageService.GetText("job.success");
-            ProgressValue = 100;
-            IsDone = true;
+            if (!ran)
+            {
+                Status = _languageService.GetText("status.error");
+                ResultMessage = _languageService.GetText("job.blocked_by_business_app");
+                IsError = true;
+            }
+            else
+            {
+                Status = _languageService.GetText("status.done");
+                ResultMessage = _languageService.GetText("job.success");
+                ProgressValue = 100;
+                IsDone = true;
+            }
         }
         catch (Exception ex)
         {

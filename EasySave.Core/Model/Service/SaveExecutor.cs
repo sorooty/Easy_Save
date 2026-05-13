@@ -35,12 +35,32 @@ namespace EasySave.Core.Model.Service
         /// Exécute un seul travail de sauvegarde de façon asynchrone.
         /// Sélectionne la stratégie (Full ou Differential) selon <see cref="SaveJob.Type"/>.
         /// </summary>
-        public async Task ExecuteAsync(
+        /// <returns>
+        /// <c>false</c> if the job was blocked at launch by the business software;
+        /// <c>true</c> if the job ran (completed or stopped mid-run).
+        /// </returns>
+        public async Task<bool> ExecuteAsync(
             SaveJob job,
             IProgress<SaveState>? progress,
             CancellationToken cancellationToken)
         {
             var strategy = job.Type == SaveType.Full ? _fullStrategy : _differentialStrategy;
+
+            // Pre-flight check: block launch if business software is already running
+            if (IsBlocked != null && IsBlocked())
+            {
+                var blockedState = new SaveState
+                {
+                    Name = job.Name,
+                    Status = "Stopped",
+                    LastActionTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    RemainingFiles = 0,
+                    ProgressPercent = 0
+                };
+                _stateService.UpdateState(blockedState);
+                progress?.Report(blockedState);
+                return false;
+            }
 
             // Linked token: cancelled by the caller OR by the business-software poller below
             using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -104,6 +124,7 @@ namespace EasySave.Core.Model.Service
                 linkedCts.Cancel();
                 try { await pollerTask.ConfigureAwait(false); } catch (OperationCanceledException) { }
             }
+            return true;
         }
 
         /// <summary>
@@ -118,7 +139,8 @@ namespace EasySave.Core.Model.Service
             foreach (var job in jobs)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await ExecuteAsync(job, progress, cancellationToken);
+                bool ran = await ExecuteAsync(job, progress, cancellationToken);
+                if (!ran) break; // business software blocked — stop the entire sequence
             }
         }
     }

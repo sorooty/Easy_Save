@@ -99,13 +99,18 @@ public class SettingsViewModel : ViewModelBase
     #endregion
 
     public RelayCommand SaveCommand { get; }
+    public RelayCommand OpenLogsFolderCommand { get; }
+
+    /// <summary>Injected by App.xaml.cs — opens the logs directory in Explorer.</summary>
+    public Action? OpenLogsFolder { get; set; }
 
     public SettingsViewModel(SettingsService settingsService, LanguageService languageService)
     {
         _settingsService = settingsService;
         _languageService = languageService;
 
-        SaveCommand = new RelayCommand(_ => Save());
+        SaveCommand           = new RelayCommand(_ => Save());
+        OpenLogsFolderCommand = new RelayCommand(_ => OpenLogsFolder?.Invoke());
 
         Load();
         _initialLanguage = UseFrench ? "fr" : "en";
