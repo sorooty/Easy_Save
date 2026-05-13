@@ -1,4 +1,4 @@
-site_name: EasySave — ProSoft
+site_name: EasySave - ProSoft
 site_url: https://sorooty.github.io/Easy_Save/
 repo_url: https://github.com/sorooty/Easy_Save
 repo_name: sorooty/Easy_Save
@@ -73,6 +73,7 @@ nav:
     - Core (logique métier): architecture/core.md
     - EasyLog.dll: architecture/easylog.md
     - WPF / MVVM: architecture/wpf.md
+    - Diagrammes de séquence: architecture/diagrams.md
   - Guide utilisateur:
     - Installation: guide/installation.md
     - Premiers pas: guide/quickstart.md
