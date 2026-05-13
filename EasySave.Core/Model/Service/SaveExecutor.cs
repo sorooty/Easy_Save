@@ -7,6 +7,8 @@ namespace EasySave.Core.Model.Service
     /// <summary>
     /// Orchestre l'exécution des travaux de sauvegarde.
     /// Délègue la logique de copie à la stratégie injectée (Full ou Differential).
+    /// An optional <see cref="IsBlocked"/> delegate is polled during execution:
+    /// if it returns true the current file is completed then the job is cancelled.
     /// </summary>
     public class SaveExecutor
     {
@@ -14,6 +16,12 @@ namespace EasySave.Core.Model.Service
         private readonly ISaveStrategy _differentialStrategy;
         private readonly ILogger _logger;
         private readonly IStateService _stateService;
+
+        /// <summary>
+        /// Optional predicate checked every 500 ms during execution.
+        /// Return true to stop after the current file (business software detection).
+        /// </summary>
+        public Func<bool>? IsBlocked { get; set; }
 
         public SaveExecutor(ISaveStrategy fullStrategy, ISaveStrategy differentialStrategy, ILogger logger, IStateService stateService)
         {
@@ -27,48 +35,87 @@ namespace EasySave.Core.Model.Service
         /// Exécute un seul travail de sauvegarde de façon asynchrone.
         /// Sélectionne la stratégie (Full ou Differential) selon <see cref="SaveJob.Type"/>.
         /// </summary>
-        public async Task ExecuteAsync(
+        /// <returns>
+        /// <c>false</c> if the job was blocked at launch by the business software;
+        /// <c>true</c> if the job ran (completed or stopped mid-run).
+        /// </returns>
+        public async Task<bool> ExecuteAsync(
             SaveJob job,
             IProgress<SaveState>? progress,
             CancellationToken cancellationToken)
         {
             var strategy = job.Type == SaveType.Full ? _fullStrategy : _differentialStrategy;
 
-            // Exécution sur thread pool pour ne pas bloquer le thread appelant (UI ou console)
-            await Task.Run(() =>
+            // Pre-flight check: block launch if business software is already running
+            if (IsBlocked != null && IsBlocked())
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                // État initial : travail actif
-                var initialState = new SaveState
+                var blockedState = new SaveState
                 {
                     Name = job.Name,
-                    Status = "Active",
-                    LastActionTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+                    Status = "Stopped",
+                    LastActionTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    RemainingFiles = 0,
+                    ProgressPercent = 0
                 };
-                _stateService.UpdateState(initialState);
-                progress?.Report(initialState);
+                _stateService.UpdateState(blockedState);
+                progress?.Report(blockedState);
+                return false;
+            }
 
+            // Linked token: cancelled by the caller OR by the business-software poller below
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+            // Background poller: triggers cancellation if business software is detected
+            Task? pollerTask = null;
+            if (IsBlocked != null)
+            {
+                pollerTask = Task.Run(async () =>
+                {
+                    while (!linkedCts.Token.IsCancellationRequested)
+                    {
+                        if (IsBlocked())
+                        {
+                            linkedCts.Cancel();
+                            return;
+                        }
+                        await Task.Delay(500, linkedCts.Token).ConfigureAwait(false);
+                    }
+                }, CancellationToken.None);
+            }
+
+            await Task.Run(() =>
+            {
+                linkedCts.Token.ThrowIfCancellationRequested();
+
+                bool succeeded = false;
                 try
                 {
-                    strategy.ExecuteSaveJob(job);
+                    strategy.ExecuteSaveJob(job, linkedCts.Token, progress);
+                    succeeded = !linkedCts.IsCancellationRequested;
                 }
                 finally
                 {
-                    // État final toujours écrit, même en cas d'erreur partielle
                     var finalState = new SaveState
                     {
                         Name = job.Name,
-                        Status = "Completed",
+                        Status = succeeded ? "Completed" : (linkedCts.IsCancellationRequested ? "Stopped" : "Error"),
                         LastActionTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         RemainingFiles = 0,
-                        ProgressPercent = 100
+                        ProgressPercent = succeeded ? 100 : 0
                     };
                     _stateService.UpdateState(finalState);
                     progress?.Report(finalState);
                 }
 
-            }, cancellationToken);
+            }, linkedCts.Token);
+
+            // Stop the poller
+            if (pollerTask != null)
+            {
+                linkedCts.Cancel();
+                try { await pollerTask.ConfigureAwait(false); } catch (OperationCanceledException) { }
+            }
+            return true;
         }
 
         /// <summary>
@@ -83,7 +130,8 @@ namespace EasySave.Core.Model.Service
             foreach (var job in jobs)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                await ExecuteAsync(job, progress, cancellationToken);
+                bool ran = await ExecuteAsync(job, progress, cancellationToken);
+                if (!ran) break; // business software blocked — stop the entire sequence
             }
         }
     }

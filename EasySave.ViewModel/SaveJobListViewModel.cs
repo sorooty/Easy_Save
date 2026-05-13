@@ -1,4 +1,4 @@
-﻿using EasyLog;
+using EasyLog;
 using EasySave.Core.Model.Entities;
 using EasySave.Core.Model.Service;
 using System.Collections.ObjectModel;
@@ -13,103 +13,235 @@ public class SaveJobListViewModel : ViewModelBase
 {
     // Champs privés
     private readonly SaveExecutor _saveExecutor;
-    private readonly ConfigService _configservice;
+    private readonly ConfigService _configService;
     private readonly LanguageService _languageService;
-    private const int MaxJobs = 5;
+    private readonly BusinessSoftwareService? _businessSoftwareService;
+    private readonly SettingsService? _settingsService;
 
-    /// <summary>
-    /// Collection observable des jobs (liée à l'interface).
-    /// </summary>
+    // États UI
+    private SaveJobViewModel? _selectedJob;
+    private bool _isAddingJob;
+    private bool _isRunningAll;
+    private string _newJobName = string.Empty;
+    private string _newJobSource = string.Empty;
+    private string _newJobTarget = string.Empty;
+    private SaveType _newJobType = SaveType.Full;
+    private string _formError = string.Empty;
+
+    #region Collections
+
+    /// <summary>Collection observable des jobs (liée à l'interface).</summary>
     public ObservableCollection<SaveJobViewModel> Jobs { get; }
 
-    /// <summary>
-    /// Constructeur du ViewModel de liste.
-    /// </summary>
-    /// <param name="saveExecutor">Service d'exécution</param>
-    /// <param name="languageService">Service de localisation</param>
-    public SaveJobListViewModel(ConfigService configservice, LanguageService languageService , SaveExecutor saveExecutor)
+    #endregion
+
+    #region Sélection et état
+
+    public SaveJobViewModel? SelectedJob
     {
-        _saveExecutor = saveExecutor;
-        _configservice = configservice;
-        _languageService = languageService;
-        Jobs = new ObservableCollection<SaveJobViewModel>();
+        get => _selectedJob;
+        set
+        {
+            Set(ref _selectedJob, value);
+            OnPropertyChanged(nameof(HasSelectedJob));
+            OnPropertyChanged(nameof(ShowEmptyState));
+            DeleteJobCommand.RaiseCanExecuteChanged();
+        }
     }
 
+    public bool HasSelectedJob => _selectedJob != null;
+    public bool ShowEmptyState => !_isAddingJob && _selectedJob == null;
+
+    public bool IsAddingJob
+    {
+        get => _isAddingJob;
+        private set
+        {
+            Set(ref _isAddingJob, value);
+            OnPropertyChanged(nameof(ShowEmptyState));
+        }
+    }
+
+    public bool IsRunningAll
+    {
+        get => _isRunningAll;
+        private set
+        {
+            Set(ref _isRunningAll, value);
+            OnPropertyChanged(nameof(IsNotRunningAll));
+            ExecuteAllCommand.RaiseCanExecuteChanged();
+        }
+    }
+
+    public bool IsNotRunningAll => !_isRunningAll;
+
+    #endregion
+
+    #region Formulaire d'ajout
+
+    public string NewJobName
+    {
+        get => _newJobName;
+        set => Set(ref _newJobName, value);
+    }
+
+    public string NewJobSource
+    {
+        get => _newJobSource;
+        set => Set(ref _newJobSource, value);
+    }
+
+    public string NewJobTarget
+    {
+        get => _newJobTarget;
+        set => Set(ref _newJobTarget, value);
+    }
+
+    public bool IsFullType
+    {
+        get => _newJobType == SaveType.Full;
+        set
+        {
+            if (value) _newJobType = SaveType.Full;
+            OnPropertyChanged(nameof(IsFullType));
+            OnPropertyChanged(nameof(IsDifferentialType));
+        }
+    }
+
+    public bool IsDifferentialType
+    {
+        get => _newJobType == SaveType.Differential;
+        set
+        {
+            if (value) _newJobType = SaveType.Differential;
+            OnPropertyChanged(nameof(IsFullType));
+            OnPropertyChanged(nameof(IsDifferentialType));
+        }
+    }
+
+    public string FormError
+    {
+        get => _formError;
+        private set
+        {
+            Set(ref _formError, value);
+            OnPropertyChanged(nameof(HasFormError));
+        }
+    }
+
+    public bool HasFormError => !string.IsNullOrEmpty(_formError);
+
+    #endregion
+
+    #region Commandes WPF
+
+    public RelayCommand ShowAddFormCommand { get; }
+    public RelayCommand CancelAddFormCommand { get; }
+    public RelayCommand AddJobCommand { get; }
+    public RelayCommand<SaveJobViewModel> DeleteJobCommand { get; }
+    public RelayCommand ExecuteAllCommand { get; }
+    public RelayCommand LoadJobsCommand { get; }
+
+    #endregion
+
     /// <summary>
-    /// Ajoute un nouveau job à la liste.
+    /// Constructeur principal — les paramètres optionnels permettent la compat. console (v1.x).
+    /// </summary>
+    public SaveJobListViewModel(
+        ConfigService configService,
+        LanguageService languageService,
+        SaveExecutor saveExecutor,
+        BusinessSoftwareService? businessSoftwareService = null,
+        SettingsService? settingsService = null)
+    {
+        _saveExecutor = saveExecutor;
+        _configService = configService;
+        _languageService = languageService;
+        _businessSoftwareService = businessSoftwareService;
+        _settingsService = settingsService;
+
+        Jobs = new ObservableCollection<SaveJobViewModel>();
+
+        ShowAddFormCommand = new RelayCommand(_ =>
+        {
+            IsAddingJob = true;
+            _selectedJob = null;
+            OnPropertyChanged(nameof(SelectedJob));
+            OnPropertyChanged(nameof(HasSelectedJob));
+            OnPropertyChanged(nameof(ShowEmptyState));
+            ClearForm();
+        });
+
+        CancelAddFormCommand = new RelayCommand(_ =>
+        {
+            IsAddingJob = false;
+            FormError = string.Empty;
+        });
+
+        AddJobCommand = new RelayCommand(_ => AddJobFromForm());
+
+        DeleteJobCommand = new RelayCommand<SaveJobViewModel>(
+            job => { if (job != null) RemoveJob(job); },
+            job => job != null);
+
+        ExecuteAllCommand = new RelayCommand(
+            async _ => await RunExecuteAll(),
+            _ => IsNotRunningAll);
+
+        LoadJobsCommand = new RelayCommand(_ => LoadJobs());
+    }
+
+    #region Méthodes publiques (console + WPF)
+
+    /// <summary>
+    /// Ajoute un nouveau job à la liste (utilisé par la console et le formulaire WPF).
     /// </summary>
     public bool AddJob(string name, string sourceFolder, string targetFolder, string typeInput)
     {
-        if (HasReachedMaxJobs())
+        var newJob = new SaveJobViewModel(_saveExecutor, _languageService)
         {
-            return false;
-        }
-
-        var newJob = new SaveJobViewModel(_saveExecutor, _languageService);
-
-        newJob.Name = name;
-        newJob.SourceFolder = sourceFolder;
-        newJob.TargetFolder = targetFolder;
-        newJob.Type = typeInput == "1" ? SaveType.Full : SaveType.Differential;
+            Name = name,
+            SourceFolder = sourceFolder,
+            TargetFolder = targetFolder,
+            Type = typeInput == "1" ? SaveType.Full : SaveType.Differential
+        };
 
         if (!newJob.IsValid())
-        {
             return false;
-        }
 
-        bool alreadyExists = Jobs.Any(job =>
-            job.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-        if (alreadyExists)
-        {
+        if (Jobs.Any(j => j.Name.Equals(name, StringComparison.OrdinalIgnoreCase)))
             return false;
-        }
 
         Jobs.Add(newJob);
-
+        newJob.EditConfirmed += SaveJobs;
         SaveJobs();
-
         return true;
     }
 
-    public bool HasReachedMaxJobs()
-    {
-        return Jobs.Count >= MaxJobs;
-    }
+    /// <summary>Conservé pour compatibilité console — toujours false en v2.0 (illimité).</summary>
+    public bool HasReachedMaxJobs() => false;
 
-    /// <summary>
-    /// Supprime un job de la liste.
-    /// </summary>
-    /// <param name="job">Le job à supprimer</param>
+    /// <summary>Supprime un job par nom.</summary>
     public bool RemoveJobByName(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return false;
 
-        SaveJobViewModel? jobToRemove = Jobs
-            .FirstOrDefault(job => job.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        var job = Jobs.FirstOrDefault(j => j.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        if (job == null) return false;
 
-        if (jobToRemove == null)
-            return false;
-
-        Jobs.Remove(jobToRemove);
-
+        Jobs.Remove(job);
         SaveJobs();
-
         return true;
     }
 
-    /// <summary>
-    /// Exécute tous les jobs valides de la liste.
-    /// </summary>
+    /// <summary>Exécute tous les jobs valides.</summary>
     public async Task ExecuteAll()
     {
         foreach (var job in Jobs.ToList())
         {
             if (job.IsValid())
-            {
                 await job.Execute();
-            }
         }
     }
 
@@ -118,137 +250,185 @@ public class SaveJobListViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(command))
             return false;
 
-        command = command.Trim();
-
-        List<SaveJobViewModel> jobsToExecute = GetJobsFromCommand(command);
-
+        var jobsToExecute = GetJobsFromCommand(command.Trim());
         if (jobsToExecute.Count == 0)
             return false;
 
         foreach (var job in jobsToExecute)
-        {
             await job.Execute();
-        }
 
         return true;
     }
 
-    private List<SaveJobViewModel> GetJobsFromCommand(string command)
-    {
-        var jobsToExecute = new List<SaveJobViewModel>();
-
-        if (command.Equals("all", StringComparison.OrdinalIgnoreCase))
-        {
-            return Jobs.ToList();
-        }
-
-        // Exemple : 1
-        if (int.TryParse(command, out int singleIndex))
-        {
-            AddJobByIndex(jobsToExecute, singleIndex);
-            return jobsToExecute;
-        }
-
-        // Exemple : 1-3
-        if (command.Contains('-'))
-        {
-            string[] parts = command.Split('-');
-
-            if (parts.Length != 2)
-                return jobsToExecute;
-
-            if (!int.TryParse(parts[0], out int start))
-                return jobsToExecute;
-
-            if (!int.TryParse(parts[1], out int end))
-                return jobsToExecute;
-
-            if (start > end)
-                return jobsToExecute;
-
-            for (int i = start; i <= end; i++)
-            {
-                AddJobByIndex(jobsToExecute, i);
-            }
-
-            return jobsToExecute;
-        }
-
-        // Exemple : 1;3
-        if (command.Contains(';'))
-        {
-            string[] parts = command.Split(';');
-
-            foreach (string part in parts)
-            {
-                if (!int.TryParse(part, out int index))
-                    return new List<SaveJobViewModel>();
-
-                AddJobByIndex(jobsToExecute, index);
-            }
-
-            return jobsToExecute;
-        }
-
-        return jobsToExecute;
-    }
-
-    private void AddJobByIndex(List<SaveJobViewModel> jobsToExecute, int index)
-    {
-        int realIndex = index - 1;
-
-        if (realIndex < 0 || realIndex >= Jobs.Count)
-            return;
-
-        SaveJobViewModel job = Jobs[realIndex];
-
-        if (!jobsToExecute.Contains(job))
-        {
-            jobsToExecute.Add(job);
-        }
-    }
-
     public void LoadJobs()
     {
-        var savedJobs = _configservice.LoadJobs();
-
+        var savedJobs = _configService.LoadJobs();
         Jobs.Clear();
-
         foreach (var savedJob in savedJobs)
         {
-            var jobVm = new SaveJobViewModel(_saveExecutor, _languageService)
+            Jobs.Add(new SaveJobViewModel(_saveExecutor, _languageService)
             {
                 Name = savedJob.Name,
                 SourceFolder = savedJob.SourceFolder,
                 TargetFolder = savedJob.TargetFolder,
                 Type = savedJob.Type
-            };
-
-            Jobs.Add(jobVm);
+            });
+            Jobs[Jobs.Count - 1].EditConfirmed += SaveJobs;
         }
     }
 
-    public void ChangeLanguage(string languageCode)
-    {
-        _languageService.SetLanguage(languageCode);
-    }
+    public void ChangeLanguage(string languageCode) => _languageService.SetLanguage(languageCode);
 
-    public LogFormat GetLogFormat() => _configservice.GetLogFormat();
+    public LogFormat GetLogFormat() => _configService.GetLogFormat();
+    public void SetLogFormat(LogFormat format) => _configService.SetLogFormat(format);
 
-    public void SetLogFormat(LogFormat format) => _configservice.SetLogFormat(format);
-
-    public string GetText(string key)
-    {
-        return _languageService.GetText(key);
-    }
+    public string GetText(string key) => _languageService.GetText(key);
 
     public void SaveJobs()
     {
-        var jobsToSave = Jobs
-            .Select(jobVm => jobVm.CreateJob())
-            .ToList();
-
-        _configservice.SaveJobs(jobsToSave);
+        _configService.SaveJobs(Jobs.Select(j => j.CreateJob()).ToList());
     }
-}
 
+    #endregion
+
+    #region Méthodes privées WPF
+
+    private void AddJobFromForm()
+    {
+        FormError = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(NewJobName))
+        {
+            FormError = _languageService.GetText("form.error.name_required");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(NewJobSource))
+        {
+            FormError = _languageService.GetText("form.error.source_required");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(NewJobTarget))
+        {
+            FormError = _languageService.GetText("form.error.target_required");
+            return;
+        }
+
+        if (Jobs.Any(j => j.Name.Equals(NewJobName, StringComparison.OrdinalIgnoreCase)))
+        {
+            FormError = _languageService.GetText("form.error.name_exists");
+            return;
+        }
+
+        // Vérifie le logiciel métier si configuré
+        if (_businessSoftwareService != null && _settingsService != null)
+        {
+            var settings = _settingsService.LoadSettings();
+            if (_businessSoftwareService.IsBusinessSoftwareRunning(settings.BusinessSoftwareName))
+            {
+                FormError = _languageService.GetText("job.blocked_by_business_app");
+                return;
+            }
+        }
+
+        var newJob = new SaveJobViewModel(_saveExecutor, _languageService)
+        {
+            Name = NewJobName,
+            SourceFolder = NewJobSource,
+            TargetFolder = NewJobTarget,
+            Type = _newJobType
+        };
+
+        Jobs.Add(newJob);
+        newJob.EditConfirmed += SaveJobs;
+        SaveJobs();
+        IsAddingJob = false;
+        SelectedJob = newJob;
+        ClearForm();
+    }
+
+    private void RemoveJob(SaveJobViewModel job)
+    {
+        bool wasSelected = SelectedJob == job;
+        Jobs.Remove(job);
+        SaveJobs();
+        if (wasSelected) SelectedJob = null;
+    }
+
+    private async Task RunExecuteAll()
+    {
+        IsRunningAll = true;
+        try
+        {
+            // Vérifie le logiciel métier
+            if (_businessSoftwareService != null && _settingsService != null)
+            {
+                var settings = _settingsService.LoadSettings();
+                if (_businessSoftwareService.IsBusinessSoftwareRunning(settings.BusinessSoftwareName))
+                    return;
+            }
+
+            await ExecuteAll();
+        }
+        finally
+        {
+            IsRunningAll = false;
+        }
+    }
+
+    private void ClearForm()
+    {
+        NewJobName = string.Empty;
+        NewJobSource = string.Empty;
+        NewJobTarget = string.Empty;
+        _newJobType = SaveType.Full;
+        OnPropertyChanged(nameof(IsFullType));
+        OnPropertyChanged(nameof(IsDifferentialType));
+        FormError = string.Empty;
+    }
+
+    private List<SaveJobViewModel> GetJobsFromCommand(string command)
+    {
+        var result = new List<SaveJobViewModel>();
+
+        if (command.Equals("all", StringComparison.OrdinalIgnoreCase))
+            return Jobs.ToList();
+
+        if (int.TryParse(command, out int single))
+        {
+            AddJobByIndex(result, single);
+            return result;
+        }
+
+        if (command.Contains('-'))
+        {
+            var parts = command.Split('-');
+            if (parts.Length == 2 && int.TryParse(parts[0], out int s) && int.TryParse(parts[1], out int e) && s <= e)
+                for (int i = s; i <= e; i++) AddJobByIndex(result, i);
+            return result;
+        }
+
+        if (command.Contains(';'))
+        {
+            var parts = command.Split(';');
+            foreach (var part in parts)
+            {
+                if (!int.TryParse(part, out int idx)) return new List<SaveJobViewModel>();
+                AddJobByIndex(result, idx);
+            }
+            return result;
+        }
+
+        return result;
+    }
+
+    private void AddJobByIndex(List<SaveJobViewModel> list, int index)
+    {
+        int real = index - 1;
+        if (real >= 0 && real < Jobs.Count && !list.Contains(Jobs[real]))
+            list.Add(Jobs[real]);
+    }
+
+    #endregion
+}

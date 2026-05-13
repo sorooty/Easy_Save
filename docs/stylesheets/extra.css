@@ -1,0 +1,166 @@
+/* =============================================
+   EasySave Docs — Glass (sobre & pro)
+   Extra CSS over Material for MkDocs
+   ============================================= */
+
+/* ---------- Design tokens ------------------- */
+:root {
+  --glass-bg-light: rgba(255, 255, 255, 0.55);
+  --glass-bg-dark:  rgba(15, 23, 42, 0.55);
+  --glass-border:   rgba(255, 255, 255, 0.14);
+  --glass-shadow:   0 4px 24px rgba(0, 0, 0, 0.10);
+  --glass-blur:     blur(10px);
+  --radius:         12px;
+}
+
+/* ---------- Light scheme background --------- */
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: #f0f4ff;
+}
+
+/* ---------- Dark scheme background ---------- */
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #0d1525;
+}
+
+/* ---------- Subtle gradient on main --------- */
+.md-main {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.09), transparent 35%),
+    radial-gradient(circle at 85% 80%, rgba(59, 130, 246, 0.08), transparent 35%);
+}
+
+/* ---------- Header glass -------------------- */
+.md-header {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Light mode: icons and title are white by default (designed for dark header).
+   Override to indigo so they're visible on the white/glass background. */
+[data-md-color-scheme="default"] .md-header {
+  color: #3f51b5;
+}
+
+[data-md-color-scheme="default"] .md-header__button,
+[data-md-color-scheme="default"] .md-header__title,
+[data-md-color-scheme="default"] .md-header__topic {
+  color: #3f51b5;
+}
+
+[data-md-color-scheme="default"] .md-header__button:hover {
+  color: #303f9f;
+  opacity: 1;
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background: var(--glass-bg-dark);
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- Tabs glass ---------------------- */
+.md-tabs {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.12);
+}
+
+[data-md-color-scheme="default"] .md-tabs {
+  color: #3f51b5;
+}
+
+[data-md-color-scheme="default"] .md-tabs__link {
+  color: rgba(63, 81, 181, 0.75);
+}
+
+[data-md-color-scheme="default"] .md-tabs__link--active,
+[data-md-color-scheme="default"] .md-tabs__link:hover {
+  color: #3f51b5;
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background: rgba(15, 23, 42, 0.50);
+}
+
+/* ---------- Sidebar glass ------------------- */
+.md-sidebar {
+  background: transparent;
+}
+
+.md-sidebar__inner {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-right: 1px solid var(--glass-border);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+[data-md-color-scheme="slate"] .md-sidebar__inner {
+  background: var(--glass-bg-dark);
+  border-right-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- Content card -------------------- */
+.md-content__inner {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+[data-md-color-scheme="slate"] .md-content__inner {
+  background: var(--glass-bg-dark);
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ---------- Search bar ---------------------- */
+.md-search__form {
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+}
+
+[data-md-color-scheme="slate"] .md-search__form {
+  background: rgba(30, 41, 59, 0.60);
+}
+
+/* ---------- Admonition cards ---------------- */
+.admonition {
+  border-radius: 8px;
+  border-left-width: 3px;
+}
+
+/* ---------- Code blocks --------------------- */
+.highlight pre {
+  border-radius: 8px;
+}
+
+/* ---------- Table styling ------------------- */
+.md-typeset table:not([class]) {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--glass-shadow);
+}
+
+/* ---------- Footer -------------------------- */
+.md-footer {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--glass-border);
+}
+
+[data-md-color-scheme="slate"] .md-footer {
+  background: var(--glass-bg-dark);
+  border-top-color: rgba(255, 255, 255, 0.06);
+}

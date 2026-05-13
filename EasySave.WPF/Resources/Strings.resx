@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="AppTitle" xml:space="preserve">
+    <value>EasySave</value>
+  </data>
+  <data name="Nav_Jobs" xml:space="preserve">
+    <value>Backup Jobs</value>
+  </data>
+  <data name="Nav_Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Jobs_Title" xml:space="preserve">
+    <value>Backup Jobs</value>
+  </data>
+  <data name="Jobs_AddButton" xml:space="preserve">
+    <value>+ Add Job</value>
+  </data>
+  <data name="Jobs_ExecuteAll" xml:space="preserve">
+    <value>Run All</value>
+  </data>
+  <data name="Jobs_EmptyHint" xml:space="preserve">
+    <value>Select a job or add a new one.</value>
+  </data>
+  <data name="Jobs_NoJobs" xml:space="preserve">
+    <value>No backup jobs yet. Click "Add Job" to get started.</value>
+  </data>
+  <data name="Form_Title" xml:space="preserve">
+    <value>New Backup Job</value>
+  </data>
+  <data name="Form_Name" xml:space="preserve">
+    <value>Job name</value>
+  </data>
+  <data name="Form_Source" xml:space="preserve">
+    <value>Source folder</value>
+  </data>
+  <data name="Form_Target" xml:space="preserve">
+    <value>Target folder</value>
+  </data>
+  <data name="Form_Type" xml:space="preserve">
+    <value>Backup type</value>
+  </data>
+  <data name="Form_Full" xml:space="preserve">
+    <value>Full</value>
+  </data>
+  <data name="Form_Differential" xml:space="preserve">
+    <value>Differential</value>
+  </data>
+  <data name="Form_Add" xml:space="preserve">
+    <value>Add Job</value>
+  </data>
+  <data name="Form_Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Job_Execute" xml:space="preserve">
+    <value>Run</value>
+  </data>
+  <data name="Job_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Job_Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="Job_Target" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="Job_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Job_Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Settings_Title" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Settings_LogFormat" xml:space="preserve">
+    <value>Log format</value>
+  </data>
+  <data name="Settings_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Settings_Extensions" xml:space="preserve">
+    <value>Encrypted extensions (comma-separated)</value>
+  </data>
+  <data name="Settings_BusinessApp" xml:space="preserve">
+    <value>Business software (process name)</value>
+  </data>
+  <data name="Settings_CryptoSoft" xml:space="preserve">
+    <value>CryptoSoft path</value>
+  </data>
+  <data name="Settings_Save" xml:space="preserve">
+    <value>Save settings</value>
+  </data>
+  <data name="Settings_Json" xml:space="preserve">
+    <value>JSON</value>
+  </data>
+  <data name="Settings_Xml" xml:space="preserve">
+    <value>XML</value>
+  </data>
+  <data name="Settings_English" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Settings_French" xml:space="preserve">
+    <value>French</value>
+  </data>
+  <data name="Settings_OpenLogs" xml:space="preserve">
+    <value>Open logs folder</value>
+  </data>
+  <data name="Job_Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Job_Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Job_CancelEdit" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Type_Full" xml:space="preserve">
+    <value>Full</value>
+  </data>
+  <data name="Type_Differential" xml:space="preserve">
+    <value>Differential</value>
+  </data>
+</root>

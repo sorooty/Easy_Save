@@ -23,7 +23,17 @@ public class SaveJobViewModel : ViewModelBase
     private string _targetFolder = string.Empty;
     private string _status = string.Empty;
     private string _resultMessage = string.Empty;
-    public SaveType Type { get; set; }
+    private SaveType _type;
+    private bool _isRunning;
+    private bool _isDone;
+    private bool _isError;
+    private int _progressValue;
+
+    public SaveType Type
+    {
+        get => _type;
+        set => Set(ref _type, value);
+    }
 
     // Propriétés publiques (liées à l'interface)
 
@@ -69,8 +79,117 @@ public class SaveJobViewModel : ViewModelBase
     public string ResultMessage
     {
         get => _resultMessage;
-        set => Set(ref _resultMessage, value);
+        set
+        {
+            Set(ref _resultMessage, value);
+            OnPropertyChanged(nameof(HasResultMessage));
+        }
     }
+
+    /// <summary>Progression de la sauvegarde en cours (0-100).</summary>
+    public int ProgressValue
+    {
+        get => _progressValue;
+        set => Set(ref _progressValue, value);
+    }
+
+    /// <summary>True pendant l'exécution du job.</summary>
+    public bool IsRunning
+    {
+        get => _isRunning;
+        private set => Set(ref _isRunning, value);
+    }
+
+    /// <summary>True après une exécution réussie.</summary>
+    public bool IsDone
+    {
+        get => _isDone;
+        private set => Set(ref _isDone, value);
+    }
+
+    /// <summary>True après une erreur d'exécution.</summary>
+    public bool IsError
+    {
+        get => _isError;
+        private set => Set(ref _isError, value);
+    }
+
+    /// <summary>True quand il y a un message de résultat à afficher.</summary>
+    public bool HasResultMessage => !string.IsNullOrEmpty(_resultMessage);
+
+    private bool _isEditing;
+    private string _editName = string.Empty;
+    private string _editSourceFolder = string.Empty;
+    private string _editTargetFolder = string.Empty;
+    private SaveType _editType;
+
+    /// <summary>True when the job is in inline-edit mode.</summary>
+    public bool IsEditing
+    {
+        get => _isEditing;
+        private set
+        {
+            Set(ref _isEditing, value);
+            OnPropertyChanged(nameof(IsNotEditing));
+        }
+    }
+
+    public bool IsNotEditing => !_isEditing;
+
+    public string EditName
+    {
+        get => _editName;
+        set => Set(ref _editName, value);
+    }
+
+    public string EditSourceFolder
+    {
+        get => _editSourceFolder;
+        set => Set(ref _editSourceFolder, value);
+    }
+
+    public string EditTargetFolder
+    {
+        get => _editTargetFolder;
+        set => Set(ref _editTargetFolder, value);
+    }
+
+    public bool EditIsFullType
+    {
+        get => _editType == SaveType.Full;
+        set
+        {
+            if (value) _editType = SaveType.Full;
+            OnPropertyChanged(nameof(EditIsFullType));
+            OnPropertyChanged(nameof(EditIsDifferentialType));
+        }
+    }
+
+    public bool EditIsDifferentialType
+    {
+        get => _editType == SaveType.Differential;
+        set
+        {
+            if (value) _editType = SaveType.Differential;
+            OnPropertyChanged(nameof(EditIsFullType));
+            OnPropertyChanged(nameof(EditIsDifferentialType));
+        }
+    }
+
+    /// <summary>Commande WPF pour lancer ce job depuis l'interface.</summary>
+    public RelayCommand ExecuteCommand { get; }
+
+    /// <summary>Enters edit mode, pre-filling fields with current values.</summary>
+    public RelayCommand StartEditCommand { get; }
+    /// <summary>Validates and applies the edits.</summary>
+    public RelayCommand ConfirmEditCommand { get; }
+    /// <summary>Cancels without saving.</summary>
+    public RelayCommand CancelEditCommand { get; }
+
+    /// <summary>
+    /// Raised when the user confirms an edit. The list VM subscribes to persist changes.
+    /// </summary>
+    public event Action? EditConfirmed;
 
     /// <summary>
     /// Constructeur du ViewModel.
@@ -83,6 +202,35 @@ public class SaveJobViewModel : ViewModelBase
         _languageService = languageService;
         _job = new SaveJob();
         Status = _languageService.GetText("status.ready");
+        ExecuteCommand = new RelayCommand(async _ => await Execute());
+
+        StartEditCommand = new RelayCommand(_ =>
+        {
+            EditName = Name;
+            EditSourceFolder = SourceFolder;
+            EditTargetFolder = TargetFolder;
+            _editType = Type;
+            OnPropertyChanged(nameof(EditIsFullType));
+            OnPropertyChanged(nameof(EditIsDifferentialType));
+            IsEditing = true;
+        });
+
+        ConfirmEditCommand = new RelayCommand(_ =>
+        {
+            if (string.IsNullOrWhiteSpace(EditName) ||
+                string.IsNullOrWhiteSpace(EditSourceFolder) ||
+                string.IsNullOrWhiteSpace(EditTargetFolder))
+                return;
+
+            Name = EditName;
+            SourceFolder = EditSourceFolder;
+            TargetFolder = EditTargetFolder;
+            Type = _editType;
+            IsEditing = false;
+            EditConfirmed?.Invoke();
+        });
+
+        CancelEditCommand = new RelayCommand(_ => IsEditing = false);
     }
 
     /// <summary>
@@ -121,6 +269,10 @@ public class SaveJobViewModel : ViewModelBase
             return;
         }
 
+        IsRunning = true;
+        ProgressValue = 0;
+        IsDone = false;
+        IsError = false;
         Status = _languageService.GetText("status.running");
         ResultMessage = string.Empty;
 
@@ -130,15 +282,36 @@ public class SaveJobViewModel : ViewModelBase
                 Directory.CreateDirectory(TargetFolder);
 
             var job = CreateJob();
-            await _saveExecutor.ExecuteAsync(job, null, CancellationToken.None);
+            var progress = new Progress<SaveState>(state =>
+            {
+                ProgressValue = state.ProgressPercent;
+            });
 
-            Status = _languageService.GetText("status.done");
-            ResultMessage = _languageService.GetText("job.success");
+            bool ran = await _saveExecutor.ExecuteAsync(job, progress, CancellationToken.None);
+
+            if (!ran)
+            {
+                Status = _languageService.GetText("status.error");
+                ResultMessage = _languageService.GetText("job.blocked_by_business_app");
+                IsError = true;
+            }
+            else
+            {
+                Status = _languageService.GetText("status.done");
+                ResultMessage = _languageService.GetText("job.success");
+                ProgressValue = 100;
+                IsDone = true;
+            }
         }
         catch (Exception ex)
         {
             Status = _languageService.GetText("status.error");
             ResultMessage = _languageService.GetText("job.error") + ex.Message;
+            IsError = true;
+        }
+        finally
+        {
+            IsRunning = false;
         }
     }
 }

@@ -13,15 +13,22 @@ namespace EasySave.Core.Model.Strategies
     {
         private readonly ILogger _logger;
         private readonly IStateService _stateService;
+        private readonly CryptoService _cryptoService;
+        private readonly SettingsService _settingsService;
 
-        public FullSaveStrategy(ILogger logger, IStateService stateService)
+        public FullSaveStrategy(ILogger logger, IStateService stateService,
+            CryptoService cryptoService, SettingsService settingsService)
         {
             _logger = logger;
             _stateService = stateService;
+            _cryptoService = cryptoService;
+            _settingsService = settingsService;
         }
 
-        public void ExecuteSaveJob(SaveJob job)
+        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default, IProgress<SaveState>? progress = null)
         {
+            var settings = _settingsService.LoadSettings();
+
             // Collecte tous les fichiers source (récursif) avant de démarrer
             var allFiles = Directory.GetFiles(job.SourceFolder, "*", SearchOption.AllDirectories);
             int totalFiles = allFiles.Length;
@@ -39,7 +46,7 @@ namespace EasySave.Core.Model.Strategies
                 Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
 
                 // Mise à jour de l'état avant la copie pour un suivi en temps réel
-                _stateService.UpdateState(new SaveState
+                var state = new SaveState
                 {
                     Name = job.Name,
                     Status = "Active",
@@ -51,9 +58,12 @@ namespace EasySave.Core.Model.Strategies
                     ProgressPercent = totalFiles == 0 ? 100 : (int)((totalFiles - remaining) * 100.0 / totalFiles),
                     CurrentSourceFile = sourceFile,
                     CurrentTargetFile = targetFile
-                });
+                };
+                _stateService.UpdateState(state);
+                progress?.Report(state);
 
                 long transferMs = -1;
+                long encryptionTimeMs = 0;
                 string error = string.Empty;
 
                 try
@@ -62,6 +72,9 @@ namespace EasySave.Core.Model.Strategies
                     File.Copy(sourceFile, targetFile, overwrite: true);
                     sw.Stop();
                     transferMs = sw.ElapsedMilliseconds;
+
+                    if (_cryptoService.NeedsEncryption(targetFile, settings.EncryptedExtensions))
+                        encryptionTimeMs = _cryptoService.Encrypt(targetFile, settings.CryptoSoftPath);
                 }
                 catch (Exception ex)
                 {
@@ -71,10 +84,19 @@ namespace EasySave.Core.Model.Strategies
 
                 _logger.Log(new LogEntry(job.Name, sourceFile, targetFile, fileSize, transferMs,
                     state: error == string.Empty ? "OK" : "ERROR",
-                    errorMessage: error));
+                    errorMessage: error,
+                    encryptionTimeMs: encryptionTimeMs));
 
                 remaining--;
                 remainingBytes -= fileSize;
+
+                // Finish the current file first, then honour a cancellation request (business software / user stop)
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    _logger.Log(new LogEntry(job.Name, string.Empty, string.Empty, 0, -1,
+                        state: "STOPPED", errorMessage: "Job interrupted: business software detected"));
+                    return;
+                }
             }
         }
     }
