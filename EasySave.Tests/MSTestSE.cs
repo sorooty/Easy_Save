@@ -174,7 +174,7 @@ public class SaveExecutorTests
         public int ExecutionCount { get; private set; }
         public bool ShouldThrowException { get; set; }
 
-        public void ExecuteSaveJob(SaveJob job)
+        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default)
         {
             ExecutionCount++;
 

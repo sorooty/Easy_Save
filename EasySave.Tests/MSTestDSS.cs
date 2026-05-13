@@ -32,7 +32,7 @@ public class DifferentialSaveStrategyTests
 
         _logger = new FakeLogger();
         _stateService = new FakeStateService();
-        _strategy = new DifferentialSaveStrategy(_logger, _stateService);
+        _strategy = new DifferentialSaveStrategy(_logger, _stateService, new CryptoService(), new SettingsService(new AppPaths()));
     }
 
     [TestCleanup]

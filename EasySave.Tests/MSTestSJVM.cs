@@ -180,7 +180,7 @@ public class SaveJobViewModelTests
 
     private class FakeSaveStrategy : ISaveStrategy
     {
-        public void ExecuteSaveJob(SaveJob job)
+        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default)
         {
         }
     }

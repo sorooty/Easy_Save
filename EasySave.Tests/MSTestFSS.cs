@@ -32,7 +32,7 @@ public class FullSaveStrategyTests
 
         _logger = new FakeLogger();
         _stateService = new FakeStateService();
-        _strategy = new FullSaveStrategy(_logger, _stateService);
+        _strategy = new FullSaveStrategy(_logger, _stateService, new CryptoService(), new SettingsService(new AppPaths()));
     }
 
     [TestCleanup]

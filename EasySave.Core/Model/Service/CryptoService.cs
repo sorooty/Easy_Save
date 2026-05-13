@@ -34,7 +34,7 @@ namespace EasySave.Core.Model.Service
                 var psi = new ProcessStartInfo
                 {
                     FileName = cryptoSoftPath,
-                    Arguments = $"\"{targetFile}\"",
+                    Arguments = $"\"{targetFile}\" \"{targetFile}\"",
                     UseShellExecute = false,
                     CreateNoWindow = true
                 };
