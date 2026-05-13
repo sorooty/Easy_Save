@@ -87,19 +87,10 @@ namespace EasySave.Core.Model.Service
             {
                 linkedCts.Token.ThrowIfCancellationRequested();
 
-                var initialState = new SaveState
-                {
-                    Name = job.Name,
-                    Status = "Active",
-                    LastActionTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-                };
-                _stateService.UpdateState(initialState);
-                progress?.Report(initialState);
-
                 bool succeeded = false;
                 try
                 {
-                    strategy.ExecuteSaveJob(job, linkedCts.Token);
+                    strategy.ExecuteSaveJob(job, linkedCts.Token, progress);
                     succeeded = !linkedCts.IsCancellationRequested;
                 }
                 finally

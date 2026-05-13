@@ -25,7 +25,7 @@ namespace EasySave.Core.Model.Strategies
             _settingsService = settingsService;
         }
 
-        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default)
+        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default, IProgress<SaveState>? progress = null)
         {
             var settings = _settingsService.LoadSettings();
 
@@ -46,7 +46,7 @@ namespace EasySave.Core.Model.Strategies
                 Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
 
                 // Mise à jour de l'état avant la copie pour un suivi en temps réel
-                _stateService.UpdateState(new SaveState
+                var state = new SaveState
                 {
                     Name = job.Name,
                     Status = "Active",
@@ -58,7 +58,9 @@ namespace EasySave.Core.Model.Strategies
                     ProgressPercent = totalFiles == 0 ? 100 : (int)((totalFiles - remaining) * 100.0 / totalFiles),
                     CurrentSourceFile = sourceFile,
                     CurrentTargetFile = targetFile
-                });
+                };
+                _stateService.UpdateState(state);
+                progress?.Report(state);
 
                 long transferMs = -1;
                 long encryptionTimeMs = 0;

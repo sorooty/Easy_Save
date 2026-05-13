@@ -200,7 +200,7 @@ public class SaveJobListViewModelTests
     {
         public int ExecutionCount { get; private set; }
 
-        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default)
+        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default, IProgress<SaveState>? progress = null)
         {
             ExecutionCount++;
         }
