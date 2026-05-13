@@ -117,8 +117,79 @@ public class SaveJobViewModel : ViewModelBase
     /// <summary>True quand il y a un message de résultat à afficher.</summary>
     public bool HasResultMessage => !string.IsNullOrEmpty(_resultMessage);
 
+    private bool _isEditing;
+    private string _editName = string.Empty;
+    private string _editSourceFolder = string.Empty;
+    private string _editTargetFolder = string.Empty;
+    private SaveType _editType;
+
+    /// <summary>True when the job is in inline-edit mode.</summary>
+    public bool IsEditing
+    {
+        get => _isEditing;
+        private set
+        {
+            Set(ref _isEditing, value);
+            OnPropertyChanged(nameof(IsNotEditing));
+        }
+    }
+
+    public bool IsNotEditing => !_isEditing;
+
+    public string EditName
+    {
+        get => _editName;
+        set => Set(ref _editName, value);
+    }
+
+    public string EditSourceFolder
+    {
+        get => _editSourceFolder;
+        set => Set(ref _editSourceFolder, value);
+    }
+
+    public string EditTargetFolder
+    {
+        get => _editTargetFolder;
+        set => Set(ref _editTargetFolder, value);
+    }
+
+    public bool EditIsFullType
+    {
+        get => _editType == SaveType.Full;
+        set
+        {
+            if (value) _editType = SaveType.Full;
+            OnPropertyChanged(nameof(EditIsFullType));
+            OnPropertyChanged(nameof(EditIsDifferentialType));
+        }
+    }
+
+    public bool EditIsDifferentialType
+    {
+        get => _editType == SaveType.Differential;
+        set
+        {
+            if (value) _editType = SaveType.Differential;
+            OnPropertyChanged(nameof(EditIsFullType));
+            OnPropertyChanged(nameof(EditIsDifferentialType));
+        }
+    }
+
     /// <summary>Commande WPF pour lancer ce job depuis l'interface.</summary>
     public RelayCommand ExecuteCommand { get; }
+
+    /// <summary>Enters edit mode, pre-filling fields with current values.</summary>
+    public RelayCommand StartEditCommand { get; }
+    /// <summary>Validates and applies the edits.</summary>
+    public RelayCommand ConfirmEditCommand { get; }
+    /// <summary>Cancels without saving.</summary>
+    public RelayCommand CancelEditCommand { get; }
+
+    /// <summary>
+    /// Raised when the user confirms an edit. The list VM subscribes to persist changes.
+    /// </summary>
+    public event Action? EditConfirmed;
 
     /// <summary>
     /// Constructeur du ViewModel.
@@ -132,6 +203,34 @@ public class SaveJobViewModel : ViewModelBase
         _job = new SaveJob();
         Status = _languageService.GetText("status.ready");
         ExecuteCommand = new RelayCommand(async _ => await Execute());
+
+        StartEditCommand = new RelayCommand(_ =>
+        {
+            EditName = Name;
+            EditSourceFolder = SourceFolder;
+            EditTargetFolder = TargetFolder;
+            _editType = Type;
+            OnPropertyChanged(nameof(EditIsFullType));
+            OnPropertyChanged(nameof(EditIsDifferentialType));
+            IsEditing = true;
+        });
+
+        ConfirmEditCommand = new RelayCommand(_ =>
+        {
+            if (string.IsNullOrWhiteSpace(EditName) ||
+                string.IsNullOrWhiteSpace(EditSourceFolder) ||
+                string.IsNullOrWhiteSpace(EditTargetFolder))
+                return;
+
+            Name = EditName;
+            SourceFolder = EditSourceFolder;
+            TargetFolder = EditTargetFolder;
+            Type = _editType;
+            IsEditing = false;
+            EditConfirmed?.Invoke();
+        });
+
+        CancelEditCommand = new RelayCommand(_ => IsEditing = false);
     }
 
     /// <summary>

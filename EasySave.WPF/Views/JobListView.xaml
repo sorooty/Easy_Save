@@ -255,10 +255,11 @@
                           Visibility="{Binding HasSelectedJob, Converter={StaticResource BoolToVis}}">
                 <StackPanel DataContext="{Binding SelectedJob}">
 
-                    <!-- Job name header + trash icon -->
+                    <!-- Job name header + edit + trash icons -->
                     <Grid Margin="0,0,0,20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0"
@@ -266,11 +267,25 @@
                                    Style="{StaticResource SectionTitleStyle}"
                                    TextTrimming="CharacterEllipsis"
                                    VerticalAlignment="Center"/>
+                        <!-- Edit button (hidden while editing) -->
                         <Button Grid.Column="1"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                ToolTip="{x:Static res:Strings.Job_Edit}"
+                                Command="{Binding StartEditCommand}"
+                                Margin="0,0,8,0"
+                                Padding="8,4"
+                                FontSize="12"
+                                Visibility="{Binding IsNotEditing, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="&#xE70F;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="13"/>
+                        </Button>
+                        <Button Grid.Column="2"
                                 Style="{StaticResource DangerIconButtonStyle}"
                                 ToolTip="{x:Static res:Strings.Job_Delete}"
                                 CommandParameter="{Binding DataContext.SelectedJob, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                Command="{Binding DataContext.DeleteJobCommand, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                                Command="{Binding DataContext.DeleteJobCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                Visibility="{Binding IsNotEditing, Converter={StaticResource BoolToVis}}">
                             <TextBlock Text="&#xE74D;"
                                        FontFamily="Segoe MDL2 Assets"
                                        FontSize="15"
@@ -278,8 +293,9 @@
                         </Button>
                     </Grid>
 
-                    <!-- Single card: info + progress + execute -->
-                    <Border Style="{StaticResource CardStyle}">
+                    <!-- Single card: info + progress + execute (read mode) -->
+                    <Border Style="{StaticResource CardStyle}"
+                            Visibility="{Binding IsNotEditing, Converter={StaticResource BoolToVis}}">
                         <StackPanel>
                             <!-- Source -->
                             <TextBlock Text="{x:Static res:Strings.Job_Source}"
@@ -375,6 +391,61 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Edit card (edit mode) -->
+                    <Border Style="{StaticResource CardStyle}"
+                            Visibility="{Binding IsEditing, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <!-- Name -->
+                            <TextBlock Text="{x:Static res:Strings.Form_Name}"
+                                       Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Text="{Binding EditName, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource InputStyle}"
+                                     Margin="0,0,0,16"/>
+
+                            <!-- Source -->
+                            <TextBlock Text="{x:Static res:Strings.Form_Source}"
+                                       Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Text="{Binding EditSourceFolder, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource InputStyle}"
+                                     Margin="0,0,0,16"/>
+
+                            <!-- Target -->
+                            <TextBlock Text="{x:Static res:Strings.Form_Target}"
+                                       Style="{StaticResource FormLabelStyle}"/>
+                            <TextBox Text="{Binding EditTargetFolder, UpdateSourceTrigger=PropertyChanged}"
+                                     Style="{StaticResource InputStyle}"
+                                     Margin="0,0,0,16"/>
+
+                            <!-- Type -->
+                            <TextBlock Text="{x:Static res:Strings.Form_Type}"
+                                       Style="{StaticResource FormLabelStyle}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                                <RadioButton Content="{x:Static res:Strings.Form_Full}"
+                                             IsChecked="{Binding EditIsFullType}"
+                                             FontFamily="{StaticResource FontMain}"
+                                             FontSize="{StaticResource FontSizeBase}"
+                                             Foreground="{StaticResource TextPrimaryBrush}"
+                                             Margin="0,0,24,0"/>
+                                <RadioButton Content="{x:Static res:Strings.Form_Differential}"
+                                             IsChecked="{Binding EditIsDifferentialType}"
+                                             FontFamily="{StaticResource FontMain}"
+                                             FontSize="{StaticResource FontSizeBase}"
+                                             Foreground="{StaticResource TextPrimaryBrush}"/>
+                            </StackPanel>
+
+                            <!-- Action buttons -->
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="{x:Static res:Strings.Job_Save}"
+                                        Style="{StaticResource PrimaryButtonStyle}"
+                                        Command="{Binding ConfirmEditCommand}"
+                                        Margin="0,0,12,0"/>
+                                <Button Content="{x:Static res:Strings.Job_CancelEdit}"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        Command="{Binding CancelEditCommand}"/>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </StackPanel>

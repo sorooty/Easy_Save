@@ -50,6 +50,9 @@ namespace EasySave.WPF.Resources
         public static string Settings_English      => Get(nameof(Settings_English));
         public static string Settings_French       => Get(nameof(Settings_French));
         public static string Settings_OpenLogs     => Get(nameof(Settings_OpenLogs));
+        public static string Job_Edit              => Get(nameof(Job_Edit));
+        public static string Job_Save              => Get(nameof(Job_Save));
+        public static string Job_CancelEdit        => Get(nameof(Job_CancelEdit));
         public static string Type_Full             => Get(nameof(Type_Full));
         public static string Type_Differential     => Get(nameof(Type_Differential));
     }
