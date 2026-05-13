@@ -1,0 +1,86 @@
+site_name: EasySave — ProSoft
+site_url: https://sorooty.github.io/Easy_Save/
+repo_url: https://github.com/sorooty/Easy_Save
+repo_name: sorooty/Easy_Save
+edit_uri: ""
+
+theme:
+  name: material
+  language: fr
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Passer en mode sombre
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Passer en mode clair
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - def_list
+  - toc:
+      permalink: true
+
+plugins:
+  - search:
+      lang: fr
+
+nav:
+  - Accueil: index.md
+  - Versions:
+    - versions/index.md
+    - "v1.0 — Console": versions/v1.0.md
+    - "v1.1 — XML Logger": versions/v1.1.md
+    - "v2.0 — WPF / MVVM": versions/v2.0.md
+    - "v3.0 — Spec": versions/v3.0.md
+  - Architecture:
+    - Vue d'ensemble: architecture/overview.md
+    - Core (logique métier): architecture/core.md
+    - EasyLog.dll: architecture/easylog.md
+    - WPF / MVVM: architecture/wpf.md
+  - Guide utilisateur:
+    - Installation: guide/installation.md
+    - Premiers pas: guide/quickstart.md
+    - Paramètres généraux: guide/settings.md
+    - Accéder aux logs: guide/logs.md
+  - Technique:
+    - CryptoSoft: technical/cryptosoft.md
+    - Logiciel métier: technical/business-app.md
+    - Fichiers d'état: technical/state-files.md
+    - Configuration: technical/configuration.md
+  - Changelog: changelog.md

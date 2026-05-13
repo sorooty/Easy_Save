@@ -52,4 +52,4 @@ desktop.ini
 TestResults/
 coverage/
 *.coverage
-*.coveragexml
+*.coveragexmlsite/
