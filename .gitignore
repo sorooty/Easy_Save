@@ -19,6 +19,7 @@ out/
 *.userosscache
 *.sln.docstates
 *.userprefs
+**/Properties/launchSettings.json
 
 # NuGet
 *.nupkg
