@@ -7,6 +7,8 @@ namespace EasySave.Core.Model.Service
     /// <summary>
     /// Orchestre l'exécution des travaux de sauvegarde.
     /// Délègue la logique de copie à la stratégie injectée (Full ou Differential).
+    /// An optional <see cref="IsBlocked"/> delegate is polled during execution:
+    /// if it returns true the current file is completed then the job is cancelled.
     /// </summary>
     public class SaveExecutor
     {
@@ -14,6 +16,12 @@ namespace EasySave.Core.Model.Service
         private readonly ISaveStrategy _differentialStrategy;
         private readonly ILogger _logger;
         private readonly IStateService _stateService;
+
+        /// <summary>
+        /// Optional predicate checked every 500 ms during execution.
+        /// Return true to stop after the current file (business software detection).
+        /// </summary>
+        public Func<bool>? IsBlocked { get; set; }
 
         public SaveExecutor(ISaveStrategy fullStrategy, ISaveStrategy differentialStrategy, ILogger logger, IStateService stateService)
         {
@@ -34,12 +42,31 @@ namespace EasySave.Core.Model.Service
         {
             var strategy = job.Type == SaveType.Full ? _fullStrategy : _differentialStrategy;
 
-            // Exécution sur thread pool pour ne pas bloquer le thread appelant (UI ou console)
+            // Linked token: cancelled by the caller OR by the business-software poller below
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+            // Background poller: triggers cancellation if business software is detected
+            Task? pollerTask = null;
+            if (IsBlocked != null)
+            {
+                pollerTask = Task.Run(async () =>
+                {
+                    while (!linkedCts.Token.IsCancellationRequested)
+                    {
+                        if (IsBlocked())
+                        {
+                            linkedCts.Cancel();
+                            return;
+                        }
+                        await Task.Delay(500, linkedCts.Token).ConfigureAwait(false);
+                    }
+                }, CancellationToken.None);
+            }
+
             await Task.Run(() =>
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                linkedCts.Token.ThrowIfCancellationRequested();
 
-                // État initial : travail actif
                 var initialState = new SaveState
                 {
                     Name = job.Name,
@@ -52,15 +79,15 @@ namespace EasySave.Core.Model.Service
                 bool succeeded = false;
                 try
                 {
-                    strategy.ExecuteSaveJob(job);
-                    succeeded = true;
+                    strategy.ExecuteSaveJob(job, linkedCts.Token);
+                    succeeded = !linkedCts.IsCancellationRequested;
                 }
                 finally
                 {
                     var finalState = new SaveState
                     {
                         Name = job.Name,
-                        Status = succeeded ? "Completed" : "Error",
+                        Status = succeeded ? "Completed" : (linkedCts.IsCancellationRequested ? "Stopped" : "Error"),
                         LastActionTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         RemainingFiles = 0,
                         ProgressPercent = succeeded ? 100 : 0
@@ -69,7 +96,14 @@ namespace EasySave.Core.Model.Service
                     progress?.Report(finalState);
                 }
 
-            }, cancellationToken);
+            }, linkedCts.Token);
+
+            // Stop the poller
+            if (pollerTask != null)
+            {
+                linkedCts.Cancel();
+                try { await pollerTask.ConfigureAwait(false); } catch (OperationCanceledException) { }
+            }
         }
 
         /// <summary>
