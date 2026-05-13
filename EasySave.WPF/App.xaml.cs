@@ -39,6 +39,11 @@ namespace EasySave.WPF
             var fullStrategy  = new FullSaveStrategy(logger, stateService, new CryptoService(), settingsService);
             var diffStrategy  = new DifferentialSaveStrategy(logger, stateService, new CryptoService(), settingsService);
             var saveExecutor  = new SaveExecutor(fullStrategy, diffStrategy, logger, stateService);
+            saveExecutor.IsBlocked = () =>
+            {
+                var s = settingsService.LoadSettings();
+                return businessService.IsBusinessSoftwareRunning(s.BusinessSoftwareName);
+            };
 
             var jobListVm = new SaveJobListViewModel(
                 configService, languageService, saveExecutor,

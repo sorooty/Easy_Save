@@ -25,7 +25,7 @@ namespace EasySave.Core.Model.Strategies
             _settingsService = settingsService;
         }
 
-        public void ExecuteSaveJob(SaveJob job)
+        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default)
         {
             var settings = _settingsService.LoadSettings();
             var allFiles = Directory.GetFiles(job.SourceFolder, "*", SearchOption.AllDirectories);
@@ -85,6 +85,14 @@ namespace EasySave.Core.Model.Strategies
 
                 remaining--;
                 remainingBytes -= fileSize;
+
+                // Finish the current file first, then honour a cancellation request (business software / user stop)
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    _logger.Log(new LogEntry(job.Name, string.Empty, string.Empty, 0, -1,
+                        state: "STOPPED", errorMessage: "Job interrupted: business software detected"));
+                    return;
+                }
             }
         }
 
