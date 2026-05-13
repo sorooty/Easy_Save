@@ -213,6 +213,7 @@ public class SaveJobListViewModel : ViewModelBase
             return false;
 
         Jobs.Add(newJob);
+        newJob.EditConfirmed += SaveJobs;
         SaveJobs();
         return true;
     }
@@ -272,6 +273,7 @@ public class SaveJobListViewModel : ViewModelBase
                 TargetFolder = savedJob.TargetFolder,
                 Type = savedJob.Type
             });
+            Jobs[Jobs.Count - 1].EditConfirmed += SaveJobs;
         }
     }
 
@@ -339,6 +341,7 @@ public class SaveJobListViewModel : ViewModelBase
         };
 
         Jobs.Add(newJob);
+        newJob.EditConfirmed += SaveJobs;
         SaveJobs();
         IsAddingJob = false;
         SelectedJob = newJob;
