@@ -322,6 +322,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="{x:Static res:Strings.Job_Type}"
@@ -332,6 +333,14 @@
                                                FontSize="{StaticResource FontSizeBase}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
+                                        <TextBlock Text="Taille"
+                                                Style="{StaticResource FormLabelStyle}"/>
+                                        <TextBlock Text="{Binding SourceSizeDisplay}"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               FontFamily="{StaticResource FontMain}"
+                                               FontSize="{StaticResource FontSizeBase}"/>
+                                    </StackPanel>
+                                <StackPanel Grid.Column="2">
                                     <TextBlock Text="{x:Static res:Strings.Job_Status}"
                                                Style="{StaticResource FormLabelStyle}"/>
                                     <TextBlock Text="{Binding Status}"

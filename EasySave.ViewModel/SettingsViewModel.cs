@@ -20,7 +20,19 @@ public class SettingsViewModel : ViewModelBase
     private string _cryptoSoftPath = string.Empty;
     private string _savedMessage = string.Empty;
     private string _initialLanguage = "en";
+    private string _priorityExtensions = string.Empty;
 
+    private long _largeFileLimitKo;
+
+    public long LargeFileLimitKo
+    {
+        get => _largeFileLimitKo;
+        set
+        {
+            _largeFileLimitKo = value;
+            OnPropertyChanged();
+        }
+    }
     /// <summary>
     /// Appelé par App.xaml.cs pour déclencher le redémarrage de l'application
     /// lorsque la langue change (les labels {x:Static} ne sont pas dynamiques).
@@ -76,6 +88,12 @@ public class SettingsViewModel : ViewModelBase
         set => Set(ref _encryptedExtensions, value);
     }
 
+    public string PriorityExtensions
+    {
+        get => _priorityExtensions;
+        set => Set(ref _priorityExtensions, value);
+    }
+
     public string BusinessSoftwareName
     {
         get => _businessSoftwareName;
@@ -129,11 +147,13 @@ public class SettingsViewModel : ViewModelBase
         OnPropertyChanged(nameof(UseFrench));
 
         EncryptedExtensions = string.Join(", ", s.EncryptedExtensions ?? new List<string>());
+        PriorityExtensions = string.Join(", ", s.PriorityExtensions ?? new List<string>());
         BusinessSoftwareName = s.BusinessSoftwareName;
         CryptoSoftPath = s.CryptoSoftPath;
+        LargeFileLimitKo = s.LargeFileLimitKo;
     }
 
-    private void Save()
+    private async void Save()
     {
         var newLanguage = UseFrench ? "fr" : "en";
         var languageChanged = newLanguage != _initialLanguage;
@@ -144,11 +164,19 @@ public class SettingsViewModel : ViewModelBase
             Language = newLanguage,
             BusinessSoftwareName = BusinessSoftwareName,
             CryptoSoftPath = CryptoSoftPath,
+            LargeFileLimitKo = LargeFileLimitKo,
+
             EncryptedExtensions = EncryptedExtensions
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(e => e.Trim())
-                .Where(e => !string.IsNullOrEmpty(e))
-                .ToList()
+        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+        .Select(e => e.Trim())
+        .Where(e => !string.IsNullOrEmpty(e))
+        .ToList(),
+
+            PriorityExtensions = PriorityExtensions
+        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+        .Select(e => e.Trim())
+        .Where(e => !string.IsNullOrEmpty(e))
+        .ToList()
         };
 
         _settingsService.SaveSettings(s);
@@ -157,22 +185,22 @@ public class SettingsViewModel : ViewModelBase
 
         if (languageChanged)
         {
-            // {x:Static} labels are evaluated once at XAML load — a restart is required
-            // to apply the new culture. We show a brief message then trigger the restart.
             SavedMessage = _languageService.GetText("settings.restarting");
             OnPropertyChanged(nameof(HasSavedMessage));
-            Task.Delay(900).ContinueWith(
-                _ => RequestRestart?.Invoke(),
-                System.Threading.Tasks.TaskScheduler.FromCurrentSynchronizationContext());
+
+            await Task.Delay(900);
+            RequestRestart?.Invoke();
             return;
         }
 
         SavedMessage = _languageService.GetText("settings.saved");
         OnPropertyChanged(nameof(HasSavedMessage));
-        Task.Delay(2000).ContinueWith(_ =>
-        {
-            SavedMessage = string.Empty;
-            OnPropertyChanged(nameof(HasSavedMessage));
-        }, System.Threading.Tasks.TaskScheduler.FromCurrentSynchronizationContext());
+
+        await Task.Delay(2000);
+
+        SavedMessage = string.Empty;
+        OnPropertyChanged(nameof(HasSavedMessage));
     }
+
+
 }

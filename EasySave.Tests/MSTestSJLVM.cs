@@ -32,11 +32,22 @@ public class SaveJobListViewModelTests
         _configService = new ConfigService(_paths);
         _languageService = new LanguageService();
 
+        var settings = new GeneralSettings
+        {
+            PriorityExtensions = new List<string> { ".txt" },
+            LargeFileLimitKo = 10000
+        };
+
+        var priorityFileService = new PriorityFileService(settings);
+        var largeFileTransferService = new LargeFileTransferService(settings);
+
         _saveExecutor = new SaveExecutor(
             new FakeSaveStrategy(),
             new FakeSaveStrategy(),
             new FakeLogger(),
-            new FakeStateService()
+            new FakeStateService(),
+            priorityFileService,
+            largeFileTransferService
         );
 
         _viewModel = new SaveJobListViewModel(
@@ -58,14 +69,11 @@ public class SaveJobListViewModelTests
     [TestMethod]
     public void AddJob_ShouldAddJob_WhenJobIsValid()
     {
-        // Arrange
         string source = CreateDirectory("Source");
         string target = CreateDirectory("Target");
 
-        // Act
         bool result = _viewModel.AddJob("Job1", source, target, "1");
 
-        // Assert
         Assert.IsTrue(result);
         Assert.AreEqual(1, _viewModel.Jobs.Count);
         Assert.AreEqual("Job1", _viewModel.Jobs[0].Name);
@@ -75,16 +83,13 @@ public class SaveJobListViewModelTests
     [TestMethod]
     public void AddJob_ShouldReturnFalse_WhenJobNameAlreadyExists()
     {
-        // Arrange
         string source = CreateDirectory("Source");
         string target = CreateDirectory("Target");
 
         _viewModel.AddJob("Job1", source, target, "1");
 
-        // Act
         bool result = _viewModel.AddJob("Job1", source, target, "2");
 
-        // Assert
         Assert.IsFalse(result);
         Assert.AreEqual(1, _viewModel.Jobs.Count);
     }
@@ -92,16 +97,13 @@ public class SaveJobListViewModelTests
     [TestMethod]
     public void RemoveJobByName_ShouldRemoveJob_WhenJobExists()
     {
-        // Arrange
         string source = CreateDirectory("Source");
         string target = CreateDirectory("Target");
 
         _viewModel.AddJob("Job1", source, target, "1");
 
-        // Act
         bool result = _viewModel.RemoveJobByName("Job1");
 
-        // Assert
         Assert.IsTrue(result);
         Assert.AreEqual(0, _viewModel.Jobs.Count);
     }
@@ -109,26 +111,21 @@ public class SaveJobListViewModelTests
     [TestMethod]
     public void RemoveJobByName_ShouldReturnFalse_WhenJobDoesNotExist()
     {
-        // Act
         bool result = _viewModel.RemoveJobByName("UnknownJob");
 
-        // Assert
         Assert.IsFalse(result);
     }
 
     [TestMethod]
     public void SaveJobs_ShouldPersistJobs()
     {
-        // Arrange
         string source = CreateDirectory("Source");
         string target = CreateDirectory("Target");
 
         _viewModel.AddJob("Job1", source, target, "1");
 
-        // Act
         List<SaveJob> savedJobs = _configService.LoadJobs();
 
-        // Assert
         Assert.AreEqual(1, savedJobs.Count);
         Assert.AreEqual("Job1", savedJobs[0].Name);
     }
@@ -136,7 +133,6 @@ public class SaveJobListViewModelTests
     [TestMethod]
     public void LoadJobs_ShouldLoadSavedJobs()
     {
-        // Arrange
         string source = CreateDirectory("Source");
         string target = CreateDirectory("Target");
 
@@ -151,10 +147,8 @@ public class SaveJobListViewModelTests
             }
         });
 
-        // Act
         _viewModel.LoadJobs();
 
-        // Assert
         Assert.AreEqual(1, _viewModel.Jobs.Count);
         Assert.AreEqual("Job1", _viewModel.Jobs[0].Name);
         Assert.AreEqual(SaveType.Differential, _viewModel.Jobs[0].Type);
@@ -163,10 +157,8 @@ public class SaveJobListViewModelTests
     [TestMethod]
     public void SetLogFormat_ShouldChangeLogFormat()
     {
-        // Act
         _viewModel.SetLogFormat(LogFormat.XML);
 
-        // Assert
         Assert.AreEqual(LogFormat.XML, _viewModel.GetLogFormat());
     }
 
@@ -200,7 +192,12 @@ public class SaveJobListViewModelTests
     {
         public int ExecutionCount { get; private set; }
 
-        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default, IProgress<SaveState>? progress = null)
+        public void ExecuteSaveJob(
+            SaveJob job,
+            CancellationToken cancellationToken = default,
+            IProgress<SaveState>? progress = null,
+            PriorityFileService? priorityFileService = null,
+            LargeFileTransferService? largeFileTransferService = null)
         {
             ExecutionCount++;
         }

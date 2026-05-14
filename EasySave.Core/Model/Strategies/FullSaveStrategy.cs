@@ -25,27 +25,43 @@ namespace EasySave.Core.Model.Strategies
             _settingsService = settingsService;
         }
 
-        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default, IProgress<SaveState>? progress = null)
+        public void ExecuteSaveJob(
+            SaveJob job,
+            CancellationToken cancellationToken = default,
+            IProgress<SaveState>? progress = null,
+            PriorityFileService? priorityFileService = null,
+            LargeFileTransferService? largeFileTransferService = null)
         {
             var settings = _settingsService.LoadSettings();
 
-            // Collecte tous les fichiers source (récursif) avant de démarrer
-            var allFiles = Directory.GetFiles(job.SourceFolder, "*", SearchOption.AllDirectories);
-            int totalFiles = allFiles.Length;
+            var allFiles = Directory.GetFiles(job.SourceFolder, "*", SearchOption.AllDirectories)
+                .ToList();
+
+            if (priorityFileService != null)
+            {
+                foreach (var file in allFiles)
+                {
+                    priorityFileService.AddPendingFile(file);
+                }
+
+                allFiles = allFiles
+                    .OrderByDescending(file => priorityFileService.IsPriorityFile(file))
+                    .ToList();
+            }
+
+            int totalFiles = allFiles.Count;
             long totalBytes = allFiles.Sum(f => new FileInfo(f).Length);
             int remaining = totalFiles;
             long remainingBytes = totalBytes;
 
             foreach (var sourceFile in allFiles)
             {
-                // Reconstitution du chemin de destination en préservant la structure de sous-dossiers
                 string relativePath = Path.GetRelativePath(job.SourceFolder, sourceFile);
                 string targetFile = Path.Combine(job.TargetFolder, relativePath);
                 long fileSize = new FileInfo(sourceFile).Length;
 
                 Directory.CreateDirectory(Path.GetDirectoryName(targetFile)!);
 
-                // Mise à jour de l'état avant la copie pour un suivi en temps réel
                 var state = new SaveState
                 {
                     Name = job.Name,
@@ -59,6 +75,7 @@ namespace EasySave.Core.Model.Strategies
                     CurrentSourceFile = sourceFile,
                     CurrentTargetFile = targetFile
                 };
+
                 _stateService.UpdateState(state);
                 progress?.Report(state);
 
@@ -69,33 +86,37 @@ namespace EasySave.Core.Model.Strategies
                 try
                 {
                     var sw = Stopwatch.StartNew();
-                    File.Copy(sourceFile, targetFile, overwrite: true);
+
+                    if (largeFileTransferService != null)
+                    {
+                        largeFileTransferService
+                            .ExecuteTransferAsync(
+                                sourceFile,
+                                () =>
+                                {
+                                    File.Copy(sourceFile, targetFile, overwrite: true);
+                                    return Task.CompletedTask;
+                                },
+                                cancellationToken)
+                            .GetAwaiter()
+                            .GetResult();
+                    }
+                    else
+                    {
+                        File.Copy(sourceFile, targetFile, overwrite: true);
+                    }
+
                     sw.Stop();
                     transferMs = sw.ElapsedMilliseconds;
 
                     if (_cryptoService.NeedsEncryption(targetFile, settings.EncryptedExtensions))
+                    {
                         encryptionTimeMs = _cryptoService.Encrypt(targetFile, settings.CryptoSoftPath);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    // Durée négative signale une erreur dans le log (convention projet)
                     error = ex.Message;
-                }
-
-                _logger.Log(new LogEntry(job.Name, sourceFile, targetFile, fileSize, transferMs,
-                    state: error == string.Empty ? "OK" : "ERROR",
-                    errorMessage: error,
-                    encryptionTimeMs: encryptionTimeMs));
-
-                remaining--;
-                remainingBytes -= fileSize;
-
-                // Finish the current file first, then honour a cancellation request (business software / user stop)
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    _logger.Log(new LogEntry(job.Name, string.Empty, string.Empty, 0, -1,
-                        state: "STOPPED", errorMessage: "Job interrupted: business software detected"));
-                    return;
                 }
             }
         }

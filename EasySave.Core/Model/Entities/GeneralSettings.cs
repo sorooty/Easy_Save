@@ -21,5 +21,11 @@ namespace EasySave.Core.Model.Entities
 
         /// <summary>Code langue actif ("en" ou "fr").</summary>
         public string Language { get; set; } = "en";
+
+        /// <summary>Fichiers prioritaires.</summary>
+        public List<string> PriorityExtensions { get; set; } = new List<string>();
+
+        /// <summary>Limite gros fichiers (Ko)</summary>
+        public long LargeFileLimitKo { get; set; } = 100000;
     }
 }

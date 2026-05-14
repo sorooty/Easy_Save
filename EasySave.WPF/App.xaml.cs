@@ -23,6 +23,7 @@ namespace EasySave.WPF
             var stateService      = new StateService(paths);
             var businessService   = new BusinessSoftwareService();
 
+
             // Load settings to configure culture and log format
             var settings = settingsService.LoadSettings();
 
@@ -38,7 +39,17 @@ namespace EasySave.WPF
 
             var fullStrategy  = new FullSaveStrategy(logger, stateService, new CryptoService(), settingsService);
             var diffStrategy  = new DifferentialSaveStrategy(logger, stateService, new CryptoService(), settingsService);
-            var saveExecutor  = new SaveExecutor(fullStrategy, diffStrategy, logger, stateService);
+
+            var priorityFileService = new PriorityFileService(settings);
+            var largeFileTransferService = new LargeFileTransferService(settings);
+
+            var saveExecutor = new SaveExecutor(
+                fullStrategy,
+                diffStrategy,
+                logger,
+                stateService,
+                priorityFileService,
+                largeFileTransferService);
             saveExecutor.IsBlocked = () =>
             {
                 var s = settingsService.LoadSettings();

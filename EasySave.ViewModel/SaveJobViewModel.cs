@@ -314,4 +314,21 @@ public class SaveJobViewModel : ViewModelBase
             IsRunning = false;
         }
     }
+
+    public string SourceSizeDisplay
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(SourceFolder) || !Directory.Exists(SourceFolder))
+                return "0 Ko";
+
+            long totalBytes = Directory
+                .GetFiles(SourceFolder, "*", SearchOption.AllDirectories)
+                .Sum(file => new FileInfo(file).Length);
+
+            double totalKo = totalBytes / 1024.0;
+
+            return $"{totalKo:N2} Ko";
+        }
+    }
 }

@@ -27,7 +27,17 @@ class Program
         var fullStrategy = new FullSaveStrategy(logger, stateService, cryptoService, settingsService);
         var differentialStrategy = new DifferentialSaveStrategy(logger, stateService, cryptoService, settingsService);
 
-        var saveExecutor = new SaveExecutor(fullStrategy, differentialStrategy, logger, stateService);
+        var settings = settingsService.LoadSettings();
+
+        var priorityFileService = new PriorityFileService(settings);
+        var largeFileTransferService = new LargeFileTransferService(settings);
+            var saveExecutor = new SaveExecutor(
+        fullStrategy,
+        differentialStrategy,
+        logger,
+        stateService,
+        priorityFileService,
+        largeFileTransferService);
 
         // ViewModel
         var viewModel = new SaveJobListViewModel(
