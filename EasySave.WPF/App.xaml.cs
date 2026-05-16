@@ -34,8 +34,10 @@ namespace EasySave.WPF
 
             languageService.SetLanguage(settings.Language ?? "en");
 
-            var logger = EasyLog.LoggerFactory.CreateLogger(
-                settings.LogFormat, paths.LogsDirectory);
+            var logger = new EasyLog.LogDispatcher(
+                EasyLog.LoggerFactory.CreateLogger(settings.LogFormat, paths.LogsDirectory),
+                new EasyLog.CentralizedLogger(settings.CentralLoggingEndpoint),
+                settings.LogStorageMode);
 
             var fullStrategy  = new FullSaveStrategy(logger, stateService, new CryptoService(), settingsService);
             var diffStrategy  = new DifferentialSaveStrategy(logger, stateService, new CryptoService(), settingsService);

@@ -58,5 +58,7 @@ namespace EasySave.WPF.Resources
         public static string Settings_PriorityExtensions => Get(nameof(Settings_PriorityExtensions));
         public static string Settings_LargeFileLimit      => Get(nameof(Settings_LargeFileLimit));
         public static string Job_Size                     => Get(nameof(Job_Size));
+        public static string Settings_LogMode             => Get(nameof(Settings_LogMode));
+        public static string Settings_CentralEndpoint     => Get(nameof(Settings_CentralEndpoint));
     }
 }
