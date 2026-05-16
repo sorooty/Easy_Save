@@ -68,6 +68,8 @@ namespace EasySave.Core.Model.Service
                     ["form.error.target_required"]   = "Target folder is required.",
                     ["form.error.name_exists"]       = "A job with this name already exists.",
                     ["job.blocked_by_business_app"]  = "Business software is running. Backup is blocked.",
+                    ["status.stopped"]              = "Stopped",
+                    ["job.stopped"]                 = "Backup stopped.",
                     ["settings.saved"]               = "Settings saved.",
                     ["settings.restarting"]          = "Language changed — restarting...",
                 },
@@ -122,6 +124,8 @@ namespace EasySave.Core.Model.Service
                     ["form.error.target_required"]   = "Le dossier cible est obligatoire.",
                     ["form.error.name_exists"]       = "Un job avec ce nom existe déjà.",
                     ["job.blocked_by_business_app"]  = "Le logiciel métier est en cours. La sauvegarde est bloquée.",
+                    ["status.stopped"]              = "Arrêté",
+                    ["job.stopped"]                 = "Sauvegarde arrêtée.",
                     ["settings.saved"]               = "Paramètres enregistrés.",
                     ["settings.restarting"]          = "Langue modifiée — redémarrage...",
                 }

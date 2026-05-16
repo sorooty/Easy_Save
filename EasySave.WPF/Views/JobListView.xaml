@@ -400,6 +400,43 @@
                                     </Style>
                                 </Button.Style>
                             </Button>
+
+                            <!-- Pause / Resume / Stop buttons (visible while running) -->
+                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0"
+                                        Visibility="{Binding IsRunning, Converter={StaticResource BoolToVis}}">
+                                <!-- Pause: visible when not paused -->
+                                <Button Content="{x:Static res:Strings.Job_Pause}"
+                                        Command="{Binding PauseCommand}"
+                                        Margin="0,0,8,0">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsPaused}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <!-- Resume: visible when paused -->
+                                <Button Content="{x:Static res:Strings.Job_Resume}"
+                                        Command="{Binding ResumeCommand}"
+                                        Margin="0,0,8,0">
+                                    <Button.Style>
+                                        <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsPaused}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <!-- Stop: always visible while running -->
+                                <Button Content="{x:Static res:Strings.Job_Stop}"
+                                        Command="{Binding StopCommand}"
+                                        Style="{StaticResource DangerButtonStyle}"/>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
 

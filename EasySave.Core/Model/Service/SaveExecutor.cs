@@ -52,7 +52,8 @@ namespace EasySave.Core.Model.Service
         public async Task<bool> ExecuteAsync(
             SaveJob job,
             IProgress<SaveState>? progress,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            ManualResetEventSlim? pauseGate = null)
         {
             var strategy = job.Type == SaveType.Full ? _fullStrategy : _differentialStrategy;
 
@@ -100,7 +101,7 @@ namespace EasySave.Core.Model.Service
                 bool succeeded = false;
                 try
                 {
-                    strategy.ExecuteSaveJob(job, linkedCts.Token, progress, _priorityFileService, _largeFileTransferService);
+                    strategy.ExecuteSaveJob(job, linkedCts.Token, progress, _priorityFileService, _largeFileTransferService, pauseGate);
                     succeeded = !linkedCts.IsCancellationRequested;
                 }
                 finally

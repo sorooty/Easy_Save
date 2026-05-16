@@ -30,7 +30,8 @@ namespace EasySave.Core.Model.Strategies
             CancellationToken cancellationToken = default,
             IProgress<SaveState>? progress = null,
             PriorityFileService? priorityFileService = null,
-            LargeFileTransferService? largeFileTransferService = null)
+            LargeFileTransferService? largeFileTransferService = null,
+            ManualResetEventSlim? pauseGate = null)
         {
             var settings = _settingsService.LoadSettings();
 
@@ -56,6 +57,26 @@ namespace EasySave.Core.Model.Strategies
 
             foreach (var sourceFile in allFiles)
             {
+                // Pause gate: block here (after completing the previous file) until resumed
+                if (pauseGate != null && !pauseGate.IsSet)
+                {
+                    var pausedState = new SaveState
+                    {
+                        Name = job.Name,
+                        Status = "Paused",
+                        LastActionTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                        TotalFiles = totalFiles,
+                        TotalSizeBytes = totalBytes,
+                        RemainingFiles = remaining,
+                        RemainingFilesBytes = remainingBytes,
+                        ProgressPercent = totalFiles == 0 ? 100 : (int)((totalFiles - remaining) * 100.0 / totalFiles)
+                    };
+                    _stateService.UpdateState(pausedState);
+                    progress?.Report(pausedState);
+                    pauseGate.Wait(cancellationToken);
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+
                 string relativePath = Path.GetRelativePath(job.SourceFolder, sourceFile);
                 string targetFile = Path.Combine(job.TargetFolder, relativePath);
                 long fileSize = new FileInfo(sourceFile).Length;

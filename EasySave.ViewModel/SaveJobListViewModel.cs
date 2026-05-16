@@ -238,11 +238,8 @@ public class SaveJobListViewModel : ViewModelBase
     /// <summary>Exécute tous les jobs valides.</summary>
     public async Task ExecuteAll()
     {
-        foreach (var job in Jobs.ToList())
-        {
-            if (job.IsValid())
-                await job.Execute();
-        }
+        var validJobs = Jobs.ToList().Where(j => j.IsValid()).ToList();
+        await Task.WhenAll(validJobs.Select(j => j.Execute()));
     }
 
     public async Task<bool> ExecuteJobs(string command)

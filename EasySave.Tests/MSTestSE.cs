@@ -189,7 +189,8 @@ public class SaveExecutorTests
     CancellationToken cancellationToken = default,
     IProgress<SaveState>? progress = null,
     PriorityFileService? priorityFileService = null,
-    LargeFileTransferService? largeFileTransferService = null)
+    LargeFileTransferService? largeFileTransferService = null,
+    ManualResetEventSlim? pauseGate = null)
         {
             ExecutionCount++;
 
