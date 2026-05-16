@@ -6,4 +6,6 @@ COPY bin/Release/net8.0/ .
 
 EXPOSE 5275
 
-ENTRYPOINT ["dotnet", "EasySave.LogServer.dll"]	
+ENV ASPNETCORE_URLS=http://+:5275
+
+ENTRYPOINT ["dotnet", "EasySave.LogServer.dll"]

@@ -36,4 +36,5 @@ app.MapPost("/logs", async (LogEntry logEntry) =>
     return Results.Ok();
 });
 
+app.Urls.Add("http://+:5275");
 app.Run();
