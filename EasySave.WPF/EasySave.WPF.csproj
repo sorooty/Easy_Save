@@ -7,12 +7,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <DefaultLanguage>en</DefaultLanguage>
+    <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EasySave.ViewModel\EasySave.ViewModel.csproj" />
     <ProjectReference Include="..\EasySave.Core\EasySave.Core.csproj" />
     <ProjectReference Include="..\EasyLog\EasyLog.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="app.ico" />
   </ItemGroup>
 
   <!-- Ensure no designer code is auto-generated for resx files -->
