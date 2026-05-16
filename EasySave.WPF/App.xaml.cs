@@ -52,15 +52,22 @@ namespace EasySave.WPF
                 stateService,
                 priorityFileService,
                 largeFileTransferService);
-            saveExecutor.IsBlocked = () =>
+
+            // App-lifetime CancellationTokenSource — cancelled on shutdown
+            var appCts = new CancellationTokenSource();
+            Exit += (_, _) => appCts.Cancel();
+
+            var watcher = new BusinessAppWatcher();
+            watcher.IsRunning = () =>
             {
                 var s = settingsService.LoadSettings();
                 return businessService.IsBusinessSoftwareRunning(s.BusinessSoftwareName);
             };
+            _ = watcher.StartAsync(appCts.Token);
 
             var jobListVm = new SaveJobListViewModel(
                 configService, languageService, saveExecutor,
-                businessService, settingsService);
+                businessService, settingsService, watcher);
             jobListVm.LoadJobs();
 
             var settingsVm  = new SettingsViewModel(settingsService, languageService);

@@ -7,8 +7,9 @@ namespace EasySave.Core.Model.Service
     /// <summary>
     /// Orchestre l'exécution des travaux de sauvegarde.
     /// Délègue la logique de copie à la stratégie injectée (Full ou Differential).
-    /// An optional <see cref="IsBlocked"/> delegate is polled during execution:
-    /// if it returns true the current file is completed then the job is cancelled.
+    /// Pause and stop are driven by the <paramref name="pauseGate"/> and
+    /// <paramref name="cancellationToken"/> provided by the caller.
+    /// Business-software detection is handled externally by <see cref="BusinessAppWatcher"/>.
     /// </summary>
     public class SaveExecutor
     {
@@ -18,12 +19,6 @@ namespace EasySave.Core.Model.Service
         private readonly IStateService _stateService;
         private readonly PriorityFileService _priorityFileService;
         private readonly LargeFileTransferService _largeFileTransferService;
-
-        /// <summary>
-        /// Optional predicate checked every 500 ms during execution.
-        /// Return true to stop after the current file (business software detection).
-        /// </summary>
-        public Func<bool>? IsBlocked { get; set; }
 
         public SaveExecutor(
         ISaveStrategy fullStrategy,
@@ -57,59 +52,22 @@ namespace EasySave.Core.Model.Service
         {
             var strategy = job.Type == SaveType.Full ? _fullStrategy : _differentialStrategy;
 
-            // Pre-flight check: block launch if business software is already running
-            if (IsBlocked != null && IsBlocked())
-            {
-                var blockedState = new SaveState
-                {
-                    Name = job.Name,
-                    Status = "Stopped",
-                    LastActionTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-                    RemainingFiles = 0,
-                    ProgressPercent = 0
-                };
-                _stateService.UpdateState(blockedState);
-                progress?.Report(blockedState);
-                return false;
-            }
-
-            // Linked token: cancelled by the caller OR by the business-software poller below
-            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-            // Background poller: triggers cancellation if business software is detected
-            Task? pollerTask = null;
-            if (IsBlocked != null)
-            {
-                pollerTask = Task.Run(async () =>
-                {
-                    while (!linkedCts.Token.IsCancellationRequested)
-                    {
-                        if (IsBlocked())
-                        {
-                            linkedCts.Cancel();
-                            return;
-                        }
-                        await Task.Delay(500, linkedCts.Token).ConfigureAwait(false);
-                    }
-                }, CancellationToken.None);
-            }
-
             await Task.Run(() =>
             {
-                linkedCts.Token.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfCancellationRequested();
 
                 bool succeeded = false;
                 try
                 {
-                    strategy.ExecuteSaveJob(job, linkedCts.Token, progress, _priorityFileService, _largeFileTransferService, pauseGate);
-                    succeeded = !linkedCts.IsCancellationRequested;
+                    strategy.ExecuteSaveJob(job, cancellationToken, progress, _priorityFileService, _largeFileTransferService, pauseGate);
+                    succeeded = !cancellationToken.IsCancellationRequested;
                 }
                 finally
                 {
                     var finalState = new SaveState
                     {
                         Name = job.Name,
-                        Status = succeeded ? "Completed" : (linkedCts.IsCancellationRequested ? "Stopped" : "Error"),
+                        Status = succeeded ? "Completed" : (cancellationToken.IsCancellationRequested ? "Stopped" : "Error"),
                         LastActionTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                         RemainingFiles = 0,
                         ProgressPercent = succeeded ? 100 : 0
@@ -118,14 +76,8 @@ namespace EasySave.Core.Model.Service
                     progress?.Report(finalState);
                 }
 
-            }, linkedCts.Token);
+            }, cancellationToken);
 
-            // Stop the poller
-            if (pollerTask != null)
-            {
-                linkedCts.Cancel();
-                try { await pollerTask.ConfigureAwait(false); } catch (OperationCanceledException) { }
-            }
             return true;
         }
 
