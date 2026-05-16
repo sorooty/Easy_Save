@@ -77,6 +77,10 @@ namespace EasySave.Core.Model.Strategies
                 _stateService.UpdateState(state);
                 progress?.Report(state);
 
+                // Block non-priority files while any priority file is pending (across all jobs)
+                if (priorityFileService != null && !priorityFileService.IsPriorityFile(sourceFile))
+                    priorityFileService.WaitForNonPriority(cancellationToken);
+
                 long transferMs = -1;
                 long encryptionTimeMs = 0;
                 string error = string.Empty;

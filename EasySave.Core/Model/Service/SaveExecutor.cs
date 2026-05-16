@@ -100,7 +100,7 @@ namespace EasySave.Core.Model.Service
                 bool succeeded = false;
                 try
                 {
-                    strategy.ExecuteSaveJob(job, linkedCts.Token, progress, _priorityFileService);
+                    strategy.ExecuteSaveJob(job, linkedCts.Token, progress, _priorityFileService, _largeFileTransferService);
                     succeeded = !linkedCts.IsCancellationRequested;
                 }
                 finally

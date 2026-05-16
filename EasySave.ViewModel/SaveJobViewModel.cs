@@ -28,6 +28,7 @@ public class SaveJobViewModel : ViewModelBase
     private bool _isDone;
     private bool _isError;
     private int _progressValue;
+    private string _sourceSizeDisplay = "—";
 
     public SaveType Type
     {
@@ -52,7 +53,11 @@ public class SaveJobViewModel : ViewModelBase
     public string SourceFolder
     {
         get => _sourceFolder;
-        set => Set(ref _sourceFolder, value);
+        set
+        {
+            if (Set(ref _sourceFolder, value))
+                _ = UpdateSourceSizeDisplayAsync();
+        }
     }
 
     /// <summary>
@@ -315,20 +320,23 @@ public class SaveJobViewModel : ViewModelBase
         }
     }
 
-    public string SourceSizeDisplay
+    public string SourceSizeDisplay => _sourceSizeDisplay;
+
+    private async Task UpdateSourceSizeDisplayAsync()
     {
-        get
+        if (string.IsNullOrWhiteSpace(SourceFolder) || !Directory.Exists(SourceFolder))
         {
-            if (string.IsNullOrWhiteSpace(SourceFolder) || !Directory.Exists(SourceFolder))
-                return "0 Ko";
-
-            long totalBytes = Directory
-                .GetFiles(SourceFolder, "*", SearchOption.AllDirectories)
-                .Sum(file => new FileInfo(file).Length);
-
-            double totalKo = totalBytes / 1024.0;
-
-            return $"{totalKo:N2} Ko";
+            _sourceSizeDisplay = "0 Ko";
+            OnPropertyChanged(nameof(SourceSizeDisplay));
+            return;
         }
+
+        var folder = SourceFolder;
+        long totalBytes = await Task.Run(() =>
+            Directory.GetFiles(folder, "*", SearchOption.AllDirectories)
+                .Sum(file => new FileInfo(file).Length));
+
+        _sourceSizeDisplay = $"{totalBytes / 1024.0:N2} Ko";
+        OnPropertyChanged(nameof(SourceSizeDisplay));
     }
 }

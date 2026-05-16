@@ -333,7 +333,7 @@
                                                FontSize="{StaticResource FontSizeBase}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1">
-                                        <TextBlock Text="Taille"
+                                        <TextBlock Text="{x:Static res:Strings.Job_Size}"
                                                 Style="{StaticResource FormLabelStyle}"/>
                                         <TextBlock Text="{Binding SourceSizeDisplay}"
                                                Foreground="{StaticResource TextPrimaryBrush}"
