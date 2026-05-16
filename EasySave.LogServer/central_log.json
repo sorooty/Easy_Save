@@ -1,0 +1,13 @@
+[
+  {
+    "TimeStamp": "2026-05-15T19:55:53.8206945+02:00",
+    "JobName": "test_1",
+    "SourceFile": "D:\\OneDrive\\CESI\\FISE A3\\6_Genie_Logiciel\\PROJET\\Test\\Hello.txt",
+    "TargetFile": "D:\\OneDrive\\CESI\\FISE A3\\6_Genie_Logiciel\\PROJET\\TestFinal\\Hello.txt",
+    "FileSizeBytes": 12,
+    "TransferDurationMs": 0,
+    "State": "OK",
+    "ErrorMessage": "",
+    "EncryptionTimeMs": 0
+  }
+]

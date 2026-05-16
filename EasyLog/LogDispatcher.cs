@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace EasyLog;
 
-public class LogDispatcher
+public class LogDispatcher: ILogger
 {
     private readonly ILogger _localLogger;
     private readonly CentralizedLogger _centralizedLogger;
@@ -16,7 +16,11 @@ public class LogDispatcher
         _storageMode = storageMode;
     }
 
-    public async Task WriteLog(LogEntry logEntry)
+    /// <summary>
+    /// se charge de dispatcher les logs vers les destinations appropriées en fonction du mode de stockage configuré.
+    /// </summary>
+    /// <param name="logEntry">Entrée de journal à dispatcher.</param>
+    public void Log(LogEntry logEntry)
     {
         switch (_storageMode)
         {
@@ -25,12 +29,12 @@ public class LogDispatcher
                 break;
 
             case LogStorageMode.CentralOnly:
-                await _centralizedLogger.WriteLog(logEntry);
+                _centralizedLogger.WriteLog(logEntry).Wait();
                 break;
 
             case LogStorageMode.LocalAndCentral:
-                _localLogger.Log(logEntry);
-                await _centralizedLogger.WriteLog(logEntry);
+                _localLogger.Log(logEntry); 
+                _centralizedLogger.WriteLog(logEntry).Wait();
                 break;
         }
     }
