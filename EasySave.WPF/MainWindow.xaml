@@ -11,7 +11,6 @@
         Height="680" Width="1100"
         MinHeight="540" MinWidth="800"
         WindowStartupLocation="CenterScreen"
-        Icon="app.ico"
         Background="{StaticResource SurfaceBrush}">
 
     <Grid>

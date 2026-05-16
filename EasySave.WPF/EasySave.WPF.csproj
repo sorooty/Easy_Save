@@ -16,6 +16,10 @@
     <ProjectReference Include="..\EasyLog\EasyLog.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="app.ico" />
+  </ItemGroup>
+
   <!-- Ensure no designer code is auto-generated for resx files -->
   <ItemGroup>
     <EmbeddedResource Update="Resources\Strings.resx">
