@@ -1,16 +1,17 @@
-﻿using EasySave.Core.Model.Entities;
+using EasySave.Core.Model.Entities;
+using System.Collections.Concurrent;
 
 namespace EasySave.Core.Model.Service
 {
     public class PriorityFileService
     {
         private readonly GeneralSettings _settings;
-        private readonly List<string> _pendingFiles;
+        private readonly ConcurrentDictionary<string, byte> _pendingFiles;
 
         public PriorityFileService(GeneralSettings settings)
         {
             _settings = settings;
-            _pendingFiles = new List<string>();
+            _pendingFiles = new ConcurrentDictionary<string, byte>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -18,11 +19,9 @@ namespace EasySave.Core.Model.Service
         /// </summary>
         public bool IsPriorityFile(string filePath)
         {
-            string extension = Path.GetExtension(filePath).ToLower();
-
+            string extension = Path.GetExtension(filePath);
             return _settings.PriorityExtensions
-                .Select(ext => ext.ToLower())
-                .Contains(extension);
+                .Any(ext => string.Equals(ext, extension, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>
@@ -30,26 +29,23 @@ namespace EasySave.Core.Model.Service
         /// </summary>
         public bool HasPendingPriorityFiles()
         {
-            return _pendingFiles.Any(file => IsPriorityFile(file));
+            return _pendingFiles.Keys.Any(IsPriorityFile);
         }
 
         /// <summary>
-        /// Ajoute un fichier à la liste d'attente.
+        /// Ajoute un fichier à la liste d'attente (thread-safe).
         /// </summary>
         public void AddPendingFile(string filePath)
         {
-            if (!_pendingFiles.Contains(filePath))
-            {
-                _pendingFiles.Add(filePath);
-            }
+            _pendingFiles.TryAdd(filePath, 0);
         }
 
         /// <summary>
-        /// Retire un fichier traité de la liste d'attente.
+        /// Retire un fichier traité de la liste d'attente (thread-safe).
         /// </summary>
         public void RemovePendingFile(string filePath)
         {
-            _pendingFiles.Remove(filePath);
+            _pendingFiles.TryRemove(filePath, out _);
         }
     }
 }

@@ -118,6 +118,23 @@ namespace EasySave.Core.Model.Strategies
                 {
                     error = ex.Message;
                 }
+
+                _logger.Log(new LogEntry(job.Name, sourceFile, targetFile, fileSize, transferMs,
+                    state: error == string.Empty ? "OK" : "ERROR",
+                    errorMessage: error,
+                    encryptionTimeMs: encryptionTimeMs));
+
+                priorityFileService?.RemovePendingFile(sourceFile);
+
+                remaining--;
+                remainingBytes -= fileSize;
+
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    _logger.Log(new LogEntry(job.Name, string.Empty, string.Empty, 0, -1,
+                        state: "STOPPED", errorMessage: "Job interrupted: business software detected"));
+                    return;
+                }
             }
         }
     }
