@@ -4,6 +4,7 @@ public class LogEntry
 {
     // Les attributs qui contient les contenus de log
     public DateTime TimeStamp { get; set; }
+    public string MachineName { get; set; }
     public string JobName { get; set; }
     public string SourceFile { get; set; }
     public string TargetFile { get; set; }
@@ -16,6 +17,7 @@ public class LogEntry
     /// <summary>Parameterless constructor required for JSON/XML deserialization.</summary>
     public LogEntry()
     {
+        MachineName = string.Empty;
         JobName = string.Empty;
         SourceFile = string.Empty;
         TargetFile = string.Empty;
@@ -36,6 +38,7 @@ public class LogEntry
     ) 
     {
         TimeStamp = DateTime.Now;
+        MachineName = Environment.MachineName;
         JobName = jobName;
         SourceFile = sourceFile;
         TargetFile = targetFile;
