@@ -18,6 +18,7 @@ namespace EasySave.WPF.Resources
         public static string AppTitle          => Get(nameof(AppTitle));
         public static string Nav_Jobs          => Get(nameof(Nav_Jobs));
         public static string Nav_Settings      => Get(nameof(Nav_Settings));
+        public static string Nav_Quit          => Get(nameof(Nav_Quit));
         public static string Jobs_Title        => Get(nameof(Jobs_Title));
         public static string Jobs_AddButton    => Get(nameof(Jobs_AddButton));
         public static string Jobs_ExecuteAll   => Get(nameof(Jobs_ExecuteAll));
