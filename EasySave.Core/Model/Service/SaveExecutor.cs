@@ -16,6 +16,8 @@ namespace EasySave.Core.Model.Service
         private readonly ISaveStrategy _differentialStrategy;
         private readonly ILogger _logger;
         private readonly IStateService _stateService;
+        private readonly PriorityFileService _priorityFileService;
+        private readonly LargeFileTransferService _largeFileTransferService;
 
         /// <summary>
         /// Optional predicate checked every 500 ms during execution.
@@ -23,13 +25,21 @@ namespace EasySave.Core.Model.Service
         /// </summary>
         public Func<bool>? IsBlocked { get; set; }
 
-        public SaveExecutor(ISaveStrategy fullStrategy, ISaveStrategy differentialStrategy, ILogger logger, IStateService stateService)
-        {
-            _fullStrategy = fullStrategy;
-            _differentialStrategy = differentialStrategy;
-            _logger = logger;
-            _stateService = stateService;
-        }
+        public SaveExecutor(
+        ISaveStrategy fullStrategy,
+        ISaveStrategy differentialStrategy,
+        ILogger logger,
+        IStateService stateService,
+        PriorityFileService priorityFileService,
+        LargeFileTransferService largeFileTransferService)
+            {
+                _fullStrategy = fullStrategy;
+                _differentialStrategy = differentialStrategy;
+                _logger = logger;
+                _stateService = stateService;
+                _priorityFileService = priorityFileService;
+                _largeFileTransferService = largeFileTransferService;
+            }
 
         /// <summary>
         /// Exécute un seul travail de sauvegarde de façon asynchrone.
@@ -90,7 +100,7 @@ namespace EasySave.Core.Model.Service
                 bool succeeded = false;
                 try
                 {
-                    strategy.ExecuteSaveJob(job, linkedCts.Token, progress);
+                    strategy.ExecuteSaveJob(job, linkedCts.Token, progress, _priorityFileService, _largeFileTransferService);
                     succeeded = !linkedCts.IsCancellationRequested;
                 }
                 finally

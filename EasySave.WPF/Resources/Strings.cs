@@ -55,5 +55,8 @@ namespace EasySave.WPF.Resources
         public static string Job_CancelEdit        => Get(nameof(Job_CancelEdit));
         public static string Type_Full             => Get(nameof(Type_Full));
         public static string Type_Differential     => Get(nameof(Type_Differential));
+        public static string Settings_PriorityExtensions => Get(nameof(Settings_PriorityExtensions));
+        public static string Settings_LargeFileLimit      => Get(nameof(Settings_LargeFileLimit));
+        public static string Job_Size                     => Get(nameof(Job_Size));
     }
 }

@@ -5,10 +5,6 @@ using EasySave.Core.Model.Service;
 
 namespace EasySave.Core.Model.Strategies
 {
-    /// <summary>
-    /// Sauvegarde différentielle : copie uniquement les fichiers absents de la cible
-    /// ou dont la date de modification source est plus récente que la cible.
-    /// </summary>
     public class DifferentialSaveStrategy : ISaveStrategy
     {
         private readonly ILogger _logger;
@@ -25,14 +21,33 @@ namespace EasySave.Core.Model.Strategies
             _settingsService = settingsService;
         }
 
-        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default, IProgress<SaveState>? progress = null)
+        public void ExecuteSaveJob(
+            SaveJob job,
+            CancellationToken cancellationToken = default,
+            IProgress<SaveState>? progress = null,
+            PriorityFileService? priorityFileService = null,
+            LargeFileTransferService? largeFileTransferService = null)
         {
             var settings = _settingsService.LoadSettings();
             var allFiles = Directory.GetFiles(job.SourceFolder, "*", SearchOption.AllDirectories);
 
-            // Pré-filtre : seuls les fichiers éligibles sont comptabilisés et copiés
-            var filesToCopy = allFiles.Where(src => NeedsCopy(src, job)).ToArray();
-            int totalFiles = filesToCopy.Length;
+            var filesToCopy = allFiles
+                .Where(src => NeedsCopy(src, job))
+                .ToList();
+
+            if (priorityFileService != null)
+            {
+                foreach (var file in filesToCopy)
+                {
+                    priorityFileService.AddPendingFile(file);
+                }
+
+                filesToCopy = filesToCopy
+                    .OrderByDescending(file => priorityFileService.IsPriorityFile(file))
+                    .ToList();
+            }
+
+            int totalFiles = filesToCopy.Count;
             long totalBytes = filesToCopy.Sum(f => new FileInfo(f).Length);
             int remaining = totalFiles;
             long remainingBytes = totalBytes;
@@ -58,8 +73,13 @@ namespace EasySave.Core.Model.Strategies
                     CurrentSourceFile = sourceFile,
                     CurrentTargetFile = targetFile
                 };
+
                 _stateService.UpdateState(state);
                 progress?.Report(state);
+
+                // Block non-priority files while any priority file is pending (across all jobs)
+                if (priorityFileService != null && !priorityFileService.IsPriorityFile(sourceFile))
+                    priorityFileService.WaitForNonPriority(cancellationToken);
 
                 long transferMs = -1;
                 long encryptionTimeMs = 0;
@@ -68,12 +88,32 @@ namespace EasySave.Core.Model.Strategies
                 try
                 {
                     var sw = Stopwatch.StartNew();
-                    File.Copy(sourceFile, targetFile, overwrite: true);
+
+                    if (largeFileTransferService != null)
+                    {
+                        largeFileTransferService
+                            .ExecuteTransferAsync(
+                                sourceFile,
+                                () =>
+                                {
+                                    File.Copy(sourceFile, targetFile, overwrite: true);
+                                    return Task.CompletedTask;
+                                },
+                                cancellationToken)
+                            .GetAwaiter()
+                            .GetResult();
+                    }
+                    else
+                    {
+                        File.Copy(sourceFile, targetFile, overwrite: true);
+                    }
+
                     sw.Stop();
                     transferMs = sw.ElapsedMilliseconds;
-
                     if (_cryptoService.NeedsEncryption(targetFile, settings.EncryptedExtensions))
+                    {
                         encryptionTimeMs = _cryptoService.Encrypt(targetFile, settings.CryptoSoftPath);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -85,10 +125,11 @@ namespace EasySave.Core.Model.Strategies
                     errorMessage: error,
                     encryptionTimeMs: encryptionTimeMs));
 
+                priorityFileService?.RemovePendingFile(sourceFile);
+
                 remaining--;
                 remainingBytes -= fileSize;
 
-                // Finish the current file first, then honour a cancellation request (business software / user stop)
                 if (cancellationToken.IsCancellationRequested)
                 {
                     _logger.Log(new LogEntry(job.Name, string.Empty, string.Empty, 0, -1,
@@ -98,10 +139,6 @@ namespace EasySave.Core.Model.Strategies
             }
         }
 
-        /// <summary>
-        /// Retourne true si le fichier source doit être copié :
-        /// absent à la cible OU plus récent que la version existante.
-        /// </summary>
         private static bool NeedsCopy(string sourceFile, SaveJob job)
         {
             string relativePath = Path.GetRelativePath(job.SourceFolder, sourceFile);

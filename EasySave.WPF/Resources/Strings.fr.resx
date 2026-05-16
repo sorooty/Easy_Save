@@ -133,4 +133,13 @@
   <data name="Type_Differential" xml:space="preserve">
     <value>Différentielle</value>
   </data>
+  <data name="Settings_PriorityExtensions" xml:space="preserve">
+    <value>Extensions prioritaires (séparées par virgule)</value>
+  </data>
+  <data name="Settings_LargeFileLimit" xml:space="preserve">
+    <value>Limite gros fichiers (Ko)</value>
+  </data>
+  <data name="Job_Size" xml:space="preserve">
+    <value>Taille</value>
+  </data>
 </root>

@@ -32,11 +32,22 @@ public class SaveJobViewModelTests
 
         _languageService = new LanguageService();
 
+        var settings = new GeneralSettings
+        {
+            PriorityExtensions = new List<string> { ".txt" },
+            LargeFileLimitKo = 10000
+        };
+
+        var priorityFileService = new PriorityFileService(settings);
+        var largeFileTransferService = new LargeFileTransferService(settings);
+
         _saveExecutor = new SaveExecutor(
             new FakeSaveStrategy(),
             new FakeSaveStrategy(),
             new FakeLogger(),
-            new FakeStateService()
+            new FakeStateService(),
+            priorityFileService,
+            largeFileTransferService
         );
     }
 
@@ -52,65 +63,53 @@ public class SaveJobViewModelTests
     [TestMethod]
     public void IsValid_ShouldReturnFalse_WhenNameIsEmpty()
     {
-        // Arrange
         SaveJobViewModel vm = CreateViewModel();
         vm.Name = "";
         vm.SourceFolder = _sourceDirectory;
         vm.TargetFolder = _targetDirectory;
 
-        // Act
         bool result = vm.IsValid();
 
-        // Assert
         Assert.IsFalse(result);
     }
 
     [TestMethod]
     public void IsValid_ShouldReturnFalse_WhenSourceFolderDoesNotExist()
     {
-        // Arrange
         SaveJobViewModel vm = CreateViewModel();
         vm.Name = "Job1";
         vm.SourceFolder = Path.Combine(_testDirectory, "UnknownSource");
         vm.TargetFolder = _targetDirectory;
 
-        // Act
         bool result = vm.IsValid();
 
-        // Assert
         Assert.IsFalse(result);
     }
 
     [TestMethod]
     public void IsValid_ShouldReturnTrue_WhenRequiredFieldsAreValid()
     {
-        // Arrange
         SaveJobViewModel vm = CreateViewModel();
         vm.Name = "Job1";
         vm.SourceFolder = _sourceDirectory;
         vm.TargetFolder = _targetDirectory;
 
-        // Act
         bool result = vm.IsValid();
 
-        // Assert
         Assert.IsTrue(result);
     }
 
     [TestMethod]
     public void CreateJob_ShouldCreateSaveJobFromViewModelProperties()
     {
-        // Arrange
         SaveJobViewModel vm = CreateViewModel();
         vm.Name = "Job1";
         vm.SourceFolder = _sourceDirectory;
         vm.TargetFolder = _targetDirectory;
         vm.Type = SaveType.Differential;
 
-        // Act
         SaveJob job = vm.CreateJob();
 
-        // Assert
         Assert.AreEqual("Job1", job.Name);
         Assert.AreEqual(_sourceDirectory, job.SourceFolder);
         Assert.AreEqual(_targetDirectory, job.TargetFolder);
@@ -120,42 +119,33 @@ public class SaveJobViewModelTests
     [TestMethod]
     public async Task Execute_ShouldSetInvalidMessage_WhenJobIsInvalid()
     {
-        // Arrange
         SaveJobViewModel vm = CreateViewModel();
         vm.Name = "";
         vm.SourceFolder = _sourceDirectory;
         vm.TargetFolder = _targetDirectory;
 
-        // Act
         await vm.Execute();
 
-        // Assert
         Assert.AreEqual(_languageService.GetText("job.invalid"), vm.ResultMessage);
     }
 
     [TestMethod]
     public async Task Execute_ShouldCreateTargetDirectory_WhenItDoesNotExist()
     {
-        // Arrange
         SaveJobViewModel vm = CreateValidViewModel();
 
-        // Act
         await vm.Execute();
 
-        // Assert
         Assert.IsTrue(Directory.Exists(_targetDirectory));
     }
 
     [TestMethod]
     public async Task Execute_ShouldSetStatusDoneAndProgress100_WhenExecutionSucceeds()
     {
-        // Arrange
         SaveJobViewModel vm = CreateValidViewModel();
 
-        // Act
         await vm.Execute();
 
-        // Assert
         Assert.AreEqual(_languageService.GetText("status.done"), vm.Status);
         Assert.AreEqual(_languageService.GetText("job.success"), vm.ResultMessage);
         Assert.AreEqual(100, vm.ProgressValue);
@@ -180,7 +170,12 @@ public class SaveJobViewModelTests
 
     private class FakeSaveStrategy : ISaveStrategy
     {
-        public void ExecuteSaveJob(SaveJob job, CancellationToken cancellationToken = default, IProgress<SaveState>? progress = null)
+        public void ExecuteSaveJob(
+            SaveJob job,
+            CancellationToken cancellationToken = default,
+            IProgress<SaveState>? progress = null,
+            PriorityFileService? priorityFileService = null,
+            LargeFileTransferService? largeFileTransferService = null)
         {
         }
     }
