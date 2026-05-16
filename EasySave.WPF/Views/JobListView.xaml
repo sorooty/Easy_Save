@@ -198,16 +198,44 @@
                     <!-- Source -->
                     <TextBlock Text="{x:Static res:Strings.Form_Source}"
                                Style="{StaticResource FormLabelStyle}"/>
-                    <TextBox Text="{Binding NewJobSource, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource InputStyle}"
-                             Margin="0,0,0,16"/>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="TxtAddSource"
+                                 Grid.Column="0"
+                                 Text="{Binding NewJobSource, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource InputStyle}"
+                                 Margin="0,0,6,0"/>
+                        <Button Grid.Column="1"
+                                Content="..."
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Padding="10,0"
+                                VerticalAlignment="Stretch"
+                                Click="BrowseAddSource_Click"/>
+                    </Grid>
 
                     <!-- Target -->
                     <TextBlock Text="{x:Static res:Strings.Form_Target}"
                                Style="{StaticResource FormLabelStyle}"/>
-                    <TextBox Text="{Binding NewJobTarget, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource InputStyle}"
-                             Margin="0,0,0,16"/>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="TxtAddTarget"
+                                 Grid.Column="0"
+                                 Text="{Binding NewJobTarget, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource InputStyle}"
+                                 Margin="0,0,6,0"/>
+                        <Button Grid.Column="1"
+                                Content="..."
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Padding="10,0"
+                                VerticalAlignment="Stretch"
+                                Click="BrowseAddTarget_Click"/>
+                    </Grid>
 
                     <!-- Type -->
                     <TextBlock Text="{x:Static res:Strings.Form_Type}"
@@ -454,16 +482,44 @@
                             <!-- Source -->
                             <TextBlock Text="{x:Static res:Strings.Form_Source}"
                                        Style="{StaticResource FormLabelStyle}"/>
-                            <TextBox Text="{Binding EditSourceFolder, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource InputStyle}"
-                                     Margin="0,0,0,16"/>
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="TxtEditSource"
+                                         Grid.Column="0"
+                                         Text="{Binding EditSourceFolder, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource InputStyle}"
+                                         Margin="0,0,6,0"/>
+                                <Button Grid.Column="1"
+                                        Content="..."
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        Padding="10,0"
+                                        VerticalAlignment="Stretch"
+                                        Click="BrowseEditSource_Click"/>
+                            </Grid>
 
                             <!-- Target -->
                             <TextBlock Text="{x:Static res:Strings.Form_Target}"
                                        Style="{StaticResource FormLabelStyle}"/>
-                            <TextBox Text="{Binding EditTargetFolder, UpdateSourceTrigger=PropertyChanged}"
-                                     Style="{StaticResource InputStyle}"
-                                     Margin="0,0,0,16"/>
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="TxtEditTarget"
+                                         Grid.Column="0"
+                                         Text="{Binding EditTargetFolder, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource InputStyle}"
+                                         Margin="0,0,6,0"/>
+                                <Button Grid.Column="1"
+                                        Content="..."
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        Padding="10,0"
+                                        VerticalAlignment="Stretch"
+                                        Click="BrowseEditTarget_Click"/>
+                            </Grid>
 
                             <!-- Type -->
                             <TextBlock Text="{x:Static res:Strings.Form_Type}"
