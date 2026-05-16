@@ -6,6 +6,7 @@ public class XmlLogger : ILogger
 {
     private readonly string _logDirectory;
     private readonly string _logFilePath;
+    private readonly object _lock = new();
 
     /// <summary>
     /// Création le cheimin pour enregistrer les logs dans un fichier XML.
@@ -51,10 +52,11 @@ public class XmlLogger : ILogger
 
     public void Log(LogEntry entry)
     {
+        lock (_lock)
+        {
         List<LogEntry> logs;
         XmlSerializer serializer = new XmlSerializer(typeof(List<LogEntry>));
 
-        // Si le fichier existe --> lire le log ancien
         if (File.Exists(_logFilePath))
         {
             try
@@ -66,7 +68,6 @@ public class XmlLogger : ILogger
             }
             catch (InvalidOperationException)
             {
-                // Contenu XML invalide : on repart d'une liste vide
                 logs = new List<LogEntry>();
             }
         }
@@ -75,12 +76,12 @@ public class XmlLogger : ILogger
             logs = new List<LogEntry>();
         }
 
-        // Ajouter la nouvelle entrée de log à la liste
         logs.Add(entry);
 
         using (FileStream fs = new FileStream(_logFilePath, FileMode.Create))
         {
             serializer.Serialize(fs, logs);
+        }
         }
     }
 }
