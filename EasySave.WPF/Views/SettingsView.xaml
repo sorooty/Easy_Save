@@ -129,7 +129,6 @@
                               FontFamily="{StaticResource FontMain}"
                               FontSize="{StaticResource FontSizeBase}"
                               Foreground="{StaticResource TextPrimaryBrush}"
-                              Background="{StaticResource SurfaceAltBrush}"
                               Padding="10,6"/>
                 </StackPanel>
             </Border>
