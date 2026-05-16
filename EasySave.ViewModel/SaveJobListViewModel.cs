@@ -17,6 +17,7 @@ public class SaveJobListViewModel : ViewModelBase
     private readonly LanguageService _languageService;
     private readonly BusinessSoftwareService? _businessSoftwareService;
     private readonly SettingsService? _settingsService;
+    private readonly BusinessAppWatcher? _businessAppWatcher;
 
     // États UI
     private SaveJobViewModel? _selectedJob;
@@ -152,13 +153,15 @@ public class SaveJobListViewModel : ViewModelBase
         LanguageService languageService,
         SaveExecutor saveExecutor,
         BusinessSoftwareService? businessSoftwareService = null,
-        SettingsService? settingsService = null)
+        SettingsService? settingsService = null,
+        BusinessAppWatcher? businessAppWatcher = null)
     {
         _saveExecutor = saveExecutor;
         _configService = configService;
         _languageService = languageService;
         _businessSoftwareService = businessSoftwareService;
         _settingsService = settingsService;
+        _businessAppWatcher = businessAppWatcher;
 
         Jobs = new ObservableCollection<SaveJobViewModel>();
 
@@ -198,7 +201,7 @@ public class SaveJobListViewModel : ViewModelBase
     /// </summary>
     public bool AddJob(string name, string sourceFolder, string targetFolder, string typeInput)
     {
-        var newJob = new SaveJobViewModel(_saveExecutor, _languageService)
+        var newJob = new SaveJobViewModel(_saveExecutor, _languageService, _businessAppWatcher)
         {
             Name = name,
             SourceFolder = sourceFolder,
@@ -263,7 +266,7 @@ public class SaveJobListViewModel : ViewModelBase
         Jobs.Clear();
         foreach (var savedJob in savedJobs)
         {
-            Jobs.Add(new SaveJobViewModel(_saveExecutor, _languageService)
+            Jobs.Add(new SaveJobViewModel(_saveExecutor, _languageService, _businessAppWatcher)
             {
                 Name = savedJob.Name,
                 SourceFolder = savedJob.SourceFolder,
@@ -329,7 +332,7 @@ public class SaveJobListViewModel : ViewModelBase
             }
         }
 
-        var newJob = new SaveJobViewModel(_saveExecutor, _languageService)
+        var newJob = new SaveJobViewModel(_saveExecutor, _languageService, _businessAppWatcher)
         {
             Name = NewJobName,
             SourceFolder = NewJobSource,

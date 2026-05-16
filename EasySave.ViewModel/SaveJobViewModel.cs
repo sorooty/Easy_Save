@@ -16,6 +16,7 @@ public class SaveJobViewModel : ViewModelBase
     private SaveJob _job;
     private readonly SaveExecutor _saveExecutor;
     private readonly LanguageService _languageService;
+    private readonly BusinessAppWatcher? _watcher;
 
     // Backing fields
     private string _name = string.Empty;
@@ -27,13 +28,19 @@ public class SaveJobViewModel : ViewModelBase
     private bool _isRunning;
     private bool _isDone;
     private bool _isError;
-    private bool _isPaused;
     private int _progressValue;
     private string _sourceSizeDisplay = "—";
 
+    // Pause state: two independent sources of pause
+    private bool _manuallyPaused;
+    private bool _watcherPaused;
+
     // Per-job pause/stop controls (recreated on each Execute call)
     private CancellationTokenSource? _cts;
-    private ManualResetEventSlim _pauseGate = new ManualResetEventSlim(true);
+    private readonly ManualResetEventSlim _pauseGate = new ManualResetEventSlim(true);
+
+    // SynchronizationContext captured on construction (UI thread)
+    private readonly SynchronizationContext? _uiContext;
 
     public SaveType Type
     {
@@ -130,17 +137,28 @@ public class SaveJobViewModel : ViewModelBase
         private set => Set(ref _isError, value);
     }
 
-    /// <summary>True quand le job est en pause (exécution suspendue entre deux fichiers).</summary>
-    public bool IsPaused
+    /// <summary>True quand le job est en pause (manuelle ou par le watcher logiciel métier).</summary>
+    public bool IsPaused => _manuallyPaused || _watcherPaused;
+
+    /// <summary>True quand la pause est d'origine manuelle (bouton Pause).</summary>
+    public bool IsManuallyPaused => _manuallyPaused;
+
+    /// <summary>
+    /// Updates the pause gate and notifies commands after any change to pause state.
+    /// Must be called on the UI thread.
+    /// </summary>
+    private void UpdatePausedState()
     {
-        get => _isPaused;
-        private set
-        {
-            Set(ref _isPaused, value);
-            PauseCommand.RaiseCanExecuteChanged();
-            ResumeCommand.RaiseCanExecuteChanged();
-            StopCommand.RaiseCanExecuteChanged();
-        }
+        if (_manuallyPaused || _watcherPaused)
+            _pauseGate.Reset();
+        else
+            _pauseGate.Set();
+
+        OnPropertyChanged(nameof(IsPaused));
+        OnPropertyChanged(nameof(IsManuallyPaused));
+        PauseCommand.RaiseCanExecuteChanged();
+        ResumeCommand.RaiseCanExecuteChanged();
+        StopCommand.RaiseCanExecuteChanged();
     }
 
     /// <summary>True quand il y a un message de résultat à afficher.</summary>
@@ -231,31 +249,34 @@ public class SaveJobViewModel : ViewModelBase
     /// </summary>
     /// <param name="saveExecutor">Service d'exécution des sauvegardes</param>
     /// <param name="languageService">Service de localisation</param>
-    public SaveJobViewModel(SaveExecutor saveExecutor, LanguageService languageService)
+    /// <param name="watcher">Optionnel — watcher logiciel métier partagé entre tous les jobs</param>
+    public SaveJobViewModel(SaveExecutor saveExecutor, LanguageService languageService, BusinessAppWatcher? watcher = null)
     {
         _saveExecutor = saveExecutor;
         _languageService = languageService;
+        _watcher = watcher;
+        _uiContext = SynchronizationContext.Current;
         _job = new SaveJob();
         Status = _languageService.GetText("status.ready");
         ExecuteCommand = new RelayCommand(async _ => await Execute(), _ => !IsRunning);
 
         PauseCommand = new RelayCommand(_ =>
         {
-            _pauseGate.Reset();
-            IsPaused = true;
-        }, _ => IsRunning && !IsPaused);
+            _manuallyPaused = true;
+            UpdatePausedState();
+        }, _ => IsRunning && !_manuallyPaused);
 
         ResumeCommand = new RelayCommand(_ =>
         {
-            IsPaused = false;
-            _pauseGate.Set();
-        }, _ => IsPaused);
+            _manuallyPaused = false;
+            UpdatePausedState();
+        }, _ => _manuallyPaused);
 
         StopCommand = new RelayCommand(_ =>
         {
             _cts?.Cancel();
             _pauseGate.Set(); // unblock the gate so the thread can see the cancellation
-        }, _ => IsRunning || IsPaused);
+        }, _ => IsRunning);
 
         StartEditCommand = new RelayCommand(_ =>
         {
@@ -324,9 +345,31 @@ public class SaveJobViewModel : ViewModelBase
 
         _cts = new CancellationTokenSource();
         _pauseGate.Set(); // ensure gate is open at the start of a fresh execution
+        _manuallyPaused = false;
+        _watcherPaused = false;
+
+        // Register with the business-app watcher so it can auto-pause this job
+        Action<bool>? watcherCallback = null;
+        if (_watcher != null)
+        {
+            watcherCallback = running =>
+            {
+                void Update()
+                {
+                    _watcherPaused = running;
+                    UpdatePausedState();
+                }
+
+                if (_uiContext != null)
+                    _uiContext.Post(_ => Update(), null);
+                else
+                    Update();
+            };
+            _watcher.Register(watcherCallback);
+        }
 
         IsRunning = true;
-        IsPaused = false;
+        OnPropertyChanged(nameof(IsPaused));
         ProgressValue = 0;
         IsDone = false;
         IsError = false;
@@ -344,15 +387,9 @@ public class SaveJobViewModel : ViewModelBase
                 ProgressValue = state.ProgressPercent;
             });
 
-            bool ran = await _saveExecutor.ExecuteAsync(job, progress, _cts.Token, _pauseGate);
+            await _saveExecutor.ExecuteAsync(job, progress, _cts.Token, _pauseGate);
 
-            if (!ran)
-            {
-                Status = _languageService.GetText("status.error");
-                ResultMessage = _languageService.GetText("job.blocked_by_business_app");
-                IsError = true;
-            }
-            else if (_cts.IsCancellationRequested)
+            if (_cts.IsCancellationRequested)
             {
                 Status = _languageService.GetText("status.stopped");
                 ResultMessage = _languageService.GetText("job.stopped");
@@ -378,8 +415,14 @@ public class SaveJobViewModel : ViewModelBase
         }
         finally
         {
-            IsPaused = false;
+            if (watcherCallback != null)
+                _watcher!.Unregister(watcherCallback);
+
+            _manuallyPaused = false;
+            _watcherPaused = false;
+            _pauseGate.Set();
             IsRunning = false;
+            OnPropertyChanged(nameof(IsPaused));
             _cts.Dispose();
             _cts = null;
         }
