@@ -129,20 +129,19 @@ namespace EasySave.Core.Model.Service
         }
 
         /// <summary>
-        /// Exécute tous les travaux séquentiellement.
-        /// S'arrête immédiatement si le token d'annulation est déclenché.
+        /// Exécute tous les travaux en parallèle.
+        /// Chaque job tourne sur son propre Task. Les verrous dans StateService, JsonLogger
+        /// et XmlLogger garantissent l'absence de corruption des fichiers partagés.
         /// </summary>
         public async Task ExecuteAllAsync(
             List<SaveJob> jobs,
             IProgress<SaveState>? progress,
             CancellationToken cancellationToken)
         {
-            foreach (var job in jobs)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                bool ran = await ExecuteAsync(job, progress, cancellationToken);
-                if (!ran) break; // business software blocked — stop the entire sequence
-            }
+            var tasks = jobs.Select(job =>
+                ExecuteAsync(job, progress, cancellationToken));
+
+            await Task.WhenAll(tasks);
         }
     }
 }

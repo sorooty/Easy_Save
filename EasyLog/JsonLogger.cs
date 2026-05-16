@@ -6,6 +6,7 @@ public class JsonLogger : ILogger
 {
     private readonly string _logDirectory;
     private readonly string _logFilePath;
+    private readonly object _lock = new();
 
     /// <summary>
     /// Initialise une nouvelle instance de la classe JsonLogger qui écrit les journaux au format JSON dans le
@@ -46,9 +47,10 @@ public class JsonLogger : ILogger
     /// </exception>
     public void Log(LogEntry entry)
     {
+        lock (_lock)
+        {
         List<LogEntry> logs;
 
-        // Si le fichier existe --> lire le log ancien
         if (File.Exists(_logFilePath))
         {
                 string json = File.ReadAllText(_logFilePath);
@@ -63,7 +65,6 @@ public class JsonLogger : ILogger
             logs = new List<LogEntry>();
         }
 
-        // Ajouter le nouveau log
         logs.Add(entry);
 
         string newJson = JsonSerializer.Serialize(logs, new JsonSerializerOptions
@@ -72,5 +73,6 @@ public class JsonLogger : ILogger
         });
 
         File.WriteAllText(_logFilePath, newJson);
-    }   
+        }
+    }
 }
