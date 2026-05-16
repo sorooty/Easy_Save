@@ -24,17 +24,17 @@ public class LogDispatcher: ILogger
     {
         switch (_storageMode)
         {
-            case LogStorageMode.localOnly:
+            case LogStorageMode.LocalOnly:
                 _localLogger.Log(logEntry);
                 break;
 
             case LogStorageMode.CentralOnly:
-                _centralizedLogger.WriteLog(logEntry).Wait();
+                _centralizedLogger.WriteLog(logEntry).GetAwaiter().GetResult();
                 break;
 
             case LogStorageMode.LocalAndCentral:
-                _localLogger.Log(logEntry); 
-                _centralizedLogger.WriteLog(logEntry).Wait();
+                _localLogger.Log(logEntry);
+                _centralizedLogger.WriteLog(logEntry).GetAwaiter().GetResult();
                 break;
         }
     }

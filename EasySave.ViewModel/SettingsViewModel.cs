@@ -1,5 +1,6 @@
 using EasySave.Core.Model.Entities;
 using EasySave.Core.Model.Service;
+using System.Collections.Generic;
 
 namespace EasySave.ViewModel;
 
@@ -21,17 +22,29 @@ public class SettingsViewModel : ViewModelBase
     private string _savedMessage = string.Empty;
     private string _initialLanguage = "en";
     private string _priorityExtensions = string.Empty;
-
     private long _largeFileLimitKo;
+    private EasyLog.LogStorageMode _logStorageMode = EasyLog.LogStorageMode.LocalOnly;
+    private string _centralLoggingEndpoint = string.Empty;
 
     public long LargeFileLimitKo
     {
         get => _largeFileLimitKo;
-        set
-        {
-            _largeFileLimitKo = value;
-            OnPropertyChanged();
-        }
+        set { _largeFileLimitKo = value; OnPropertyChanged(); }
+    }
+
+    public IEnumerable<EasyLog.LogStorageMode> LogStorageModeValues =>
+        Enum.GetValues<EasyLog.LogStorageMode>();
+
+    public EasyLog.LogStorageMode LogStorageMode
+    {
+        get => _logStorageMode;
+        set => Set(ref _logStorageMode, value);
+    }
+
+    public string CentralLoggingEndpoint
+    {
+        get => _centralLoggingEndpoint;
+        set => Set(ref _centralLoggingEndpoint, value);
     }
     /// <summary>
     /// Appelé par App.xaml.cs pour déclencher le redémarrage de l'application
@@ -151,6 +164,8 @@ public class SettingsViewModel : ViewModelBase
         BusinessSoftwareName = s.BusinessSoftwareName;
         CryptoSoftPath = s.CryptoSoftPath;
         LargeFileLimitKo = s.LargeFileLimitKo;
+        LogStorageMode = s.LogStorageMode;
+        CentralLoggingEndpoint = s.CentralLoggingEndpoint;
     }
 
     private async void Save()
@@ -176,7 +191,10 @@ public class SettingsViewModel : ViewModelBase
         .Split(',', StringSplitOptions.RemoveEmptyEntries)
         .Select(e => e.Trim())
         .Where(e => !string.IsNullOrEmpty(e))
-        .ToList()
+        .ToList(),
+
+            LogStorageMode = LogStorageMode,
+            CentralLoggingEndpoint = CentralLoggingEndpoint
         };
 
         _settingsService.SaveSettings(s);

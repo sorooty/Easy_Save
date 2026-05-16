@@ -139,7 +139,10 @@
   <data name="Settings_LargeFileLimit" xml:space="preserve">
     <value>Limite gros fichiers (Ko)</value>
   </data>
-  <data name="Job_Size" xml:space="preserve">
-    <value>Taille</value>
+  <data name="Settings_LogMode" xml:space="preserve">
+    <value>Mode de stockage des logs</value>
+  </data>
+  <data name="Settings_CentralEndpoint" xml:space="preserve">
+    <value>URL du serveur de logs centralisés</value>
   </data>
 </root>

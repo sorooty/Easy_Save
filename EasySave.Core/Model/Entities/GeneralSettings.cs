@@ -27,5 +27,11 @@ namespace EasySave.Core.Model.Entities
 
         /// <summary>Limite gros fichiers (Ko)</summary>
         public long LargeFileLimitKo { get; set; } = 100000;
+
+        /// <summary>Mode de stockage des logs (local, central, ou les deux).</summary>
+        public EasyLog.LogStorageMode LogStorageMode { get; set; } = EasyLog.LogStorageMode.LocalOnly;
+
+        /// <summary>URL du serveur de logs centralisés (ex : "http://localhost:5275/logs").</summary>
+        public string CentralLoggingEndpoint { get; set; } = string.Empty;
     }
 }

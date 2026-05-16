@@ -118,6 +118,29 @@
                 </StackPanel>
             </Border>
 
+            <!-- === Log storage mode === -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{x:Static res:Strings.Settings_LogMode}"
+                               Style="{StaticResource FormLabelStyle}"
+                               Margin="0,0,0,8"/>
+                    <ComboBox ItemsSource="{Binding LogStorageModeValues}"
+                              SelectedItem="{Binding LogStorageMode}"
+                              Style="{StaticResource InputStyle}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- === Central log endpoint === -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,24">
+                <StackPanel>
+                    <TextBlock Text="{x:Static res:Strings.Settings_CentralEndpoint}"
+                               Style="{StaticResource FormLabelStyle}"
+                               Margin="0,0,0,8"/>
+                    <TextBox Text="{Binding CentralLoggingEndpoint, UpdateSourceTrigger=PropertyChanged}"
+                             Style="{StaticResource InputStyle}"/>
+                </StackPanel>
+            </Border>
+
             <!-- Save button + feedback -->
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <Button Content="{x:Static res:Strings.Settings_Save}"

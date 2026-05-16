@@ -2,7 +2,7 @@ namespace EasyLog;
 
 public enum LogStorageMode
 {
-    localOnly,
+    LocalOnly,
     CentralOnly,
     LocalAndCentral
 }

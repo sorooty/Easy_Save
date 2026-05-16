@@ -56,3 +56,6 @@ TestResults/
 coverage/
 *.coverage
 *.coveragexmlsite/
+
+# Log server runtime data
+**/central_log.json
