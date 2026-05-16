@@ -53,6 +53,9 @@ namespace EasySave.WPF.Resources
         public static string Job_Edit              => Get(nameof(Job_Edit));
         public static string Job_Save              => Get(nameof(Job_Save));
         public static string Job_CancelEdit        => Get(nameof(Job_CancelEdit));
+        public static string Job_Pause             => Get(nameof(Job_Pause));
+        public static string Job_Resume            => Get(nameof(Job_Resume));
+        public static string Job_Stop              => Get(nameof(Job_Stop));
         public static string Type_Full             => Get(nameof(Type_Full));
         public static string Type_Differential     => Get(nameof(Type_Differential));
         public static string Settings_PriorityExtensions => Get(nameof(Settings_PriorityExtensions));

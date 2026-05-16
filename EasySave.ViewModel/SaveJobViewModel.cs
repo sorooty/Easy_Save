@@ -27,8 +27,13 @@ public class SaveJobViewModel : ViewModelBase
     private bool _isRunning;
     private bool _isDone;
     private bool _isError;
+    private bool _isPaused;
     private int _progressValue;
     private string _sourceSizeDisplay = "—";
+
+    // Per-job pause/stop controls (recreated on each Execute call)
+    private CancellationTokenSource? _cts;
+    private ManualResetEventSlim _pauseGate = new ManualResetEventSlim(true);
 
     public SaveType Type
     {
@@ -102,7 +107,13 @@ public class SaveJobViewModel : ViewModelBase
     public bool IsRunning
     {
         get => _isRunning;
-        private set => Set(ref _isRunning, value);
+        private set
+        {
+            Set(ref _isRunning, value);
+            ExecuteCommand.RaiseCanExecuteChanged();
+            PauseCommand.RaiseCanExecuteChanged();
+            StopCommand.RaiseCanExecuteChanged();
+        }
     }
 
     /// <summary>True après une exécution réussie.</summary>
@@ -117,6 +128,19 @@ public class SaveJobViewModel : ViewModelBase
     {
         get => _isError;
         private set => Set(ref _isError, value);
+    }
+
+    /// <summary>True quand le job est en pause (exécution suspendue entre deux fichiers).</summary>
+    public bool IsPaused
+    {
+        get => _isPaused;
+        private set
+        {
+            Set(ref _isPaused, value);
+            PauseCommand.RaiseCanExecuteChanged();
+            ResumeCommand.RaiseCanExecuteChanged();
+            StopCommand.RaiseCanExecuteChanged();
+        }
     }
 
     /// <summary>True quand il y a un message de résultat à afficher.</summary>
@@ -183,6 +207,12 @@ public class SaveJobViewModel : ViewModelBase
 
     /// <summary>Commande WPF pour lancer ce job depuis l'interface.</summary>
     public RelayCommand ExecuteCommand { get; }
+    /// <summary>Suspends execution after the current file finishes.</summary>
+    public RelayCommand PauseCommand { get; }
+    /// <summary>Resumes execution after a pause.</summary>
+    public RelayCommand ResumeCommand { get; }
+    /// <summary>Cancels execution; the current file finishes before the job stops.</summary>
+    public RelayCommand StopCommand { get; }
 
     /// <summary>Enters edit mode, pre-filling fields with current values.</summary>
     public RelayCommand StartEditCommand { get; }
@@ -207,7 +237,25 @@ public class SaveJobViewModel : ViewModelBase
         _languageService = languageService;
         _job = new SaveJob();
         Status = _languageService.GetText("status.ready");
-        ExecuteCommand = new RelayCommand(async _ => await Execute());
+        ExecuteCommand = new RelayCommand(async _ => await Execute(), _ => !IsRunning);
+
+        PauseCommand = new RelayCommand(_ =>
+        {
+            _pauseGate.Reset();
+            IsPaused = true;
+        }, _ => IsRunning && !IsPaused);
+
+        ResumeCommand = new RelayCommand(_ =>
+        {
+            IsPaused = false;
+            _pauseGate.Set();
+        }, _ => IsPaused);
+
+        StopCommand = new RelayCommand(_ =>
+        {
+            _cts?.Cancel();
+            _pauseGate.Set(); // unblock the gate so the thread can see the cancellation
+        }, _ => IsRunning || IsPaused);
 
         StartEditCommand = new RelayCommand(_ =>
         {
@@ -274,7 +322,11 @@ public class SaveJobViewModel : ViewModelBase
             return;
         }
 
+        _cts = new CancellationTokenSource();
+        _pauseGate.Set(); // ensure gate is open at the start of a fresh execution
+
         IsRunning = true;
+        IsPaused = false;
         ProgressValue = 0;
         IsDone = false;
         IsError = false;
@@ -292,13 +344,18 @@ public class SaveJobViewModel : ViewModelBase
                 ProgressValue = state.ProgressPercent;
             });
 
-            bool ran = await _saveExecutor.ExecuteAsync(job, progress, CancellationToken.None);
+            bool ran = await _saveExecutor.ExecuteAsync(job, progress, _cts.Token, _pauseGate);
 
             if (!ran)
             {
                 Status = _languageService.GetText("status.error");
                 ResultMessage = _languageService.GetText("job.blocked_by_business_app");
                 IsError = true;
+            }
+            else if (_cts.IsCancellationRequested)
+            {
+                Status = _languageService.GetText("status.stopped");
+                ResultMessage = _languageService.GetText("job.stopped");
             }
             else
             {
@@ -308,6 +365,11 @@ public class SaveJobViewModel : ViewModelBase
                 IsDone = true;
             }
         }
+        catch (OperationCanceledException)
+        {
+            Status = _languageService.GetText("status.stopped");
+            ResultMessage = _languageService.GetText("job.stopped");
+        }
         catch (Exception ex)
         {
             Status = _languageService.GetText("status.error");
@@ -316,7 +378,10 @@ public class SaveJobViewModel : ViewModelBase
         }
         finally
         {
+            IsPaused = false;
             IsRunning = false;
+            _cts.Dispose();
+            _cts = null;
         }
     }
 
