@@ -1,0 +1,135 @@
+<UserControl x:Class="EasySave.WPF.Views.HelpView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:EasySave.ViewModel;assembly=EasySave.ViewModel"
+             xmlns:res="clr-namespace:EasySave.WPF.Resources"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type={x:Type vm:HelpViewModel}}"
+             Background="{StaticResource SurfaceBrush}">
+
+    <ScrollViewer Style="{StaticResource ThinScrollViewerStyle}"
+                  Padding="40,32"
+                  VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="720" HorizontalAlignment="Left">
+
+            <!-- Page title -->
+            <TextBlock Text="{x:Static res:Strings.Help_Title}"
+                       Style="{StaticResource SectionTitleStyle}"
+                       Margin="0,0,0,32"/>
+
+            <!-- Section: Backup Jobs -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{x:Static res:Strings.Help_Section_Jobs}"
+                               Style="{StaticResource PanelTitleStyle}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock TextWrapping="Wrap"
+                               FontFamily="{StaticResource FontMain}"
+                               FontSize="{StaticResource FontSizeBase}"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               LineHeight="22">
+                        <Run>1. Click "+ Add Job" to create a new backup job.</Run>
+                        <LineBreak/>
+                        <Run>2. Enter a job name, the source folder and the target folder.</Run>
+                        <LineBreak/>
+                        <Run>3. Choose "Full" (copies all files) or "Differential" (copies only changed files).</Run>
+                        <LineBreak/>
+                        <Run>4. Click "Add Job" to save it to the list.</Run>
+                        <LineBreak/>
+                        <Run>5. Select a job and click "Run" to start the backup immediately.</Run>
+                        <LineBreak/>
+                        <Run>6. Use "Run All" to execute every job in sequence.</Run>
+                        <LineBreak/>
+                        <Run>7. You can Pause, Resume or Stop a running job from the detail panel.</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Section: Settings -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{x:Static res:Strings.Help_Section_Settings}"
+                               Style="{StaticResource PanelTitleStyle}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock TextWrapping="Wrap"
+                               FontFamily="{StaticResource FontMain}"
+                               FontSize="{StaticResource FontSizeBase}"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               LineHeight="22">
+                        <Run FontWeight="SemiBold">Log format:</Run>
+                        <Run>JSON (default) or XML. Logs are stored in the application data folder.</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">Language:</Run>
+                        <Run>English or French. A restart is required to apply language changes.</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">Encrypted extensions:</Run>
+                        <Run>Comma-separated list (e.g. .docx, .xlsx). Files with these extensions are encrypted via CryptoSoft before copying.</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">Priority extensions:</Run>
+                        <Run>Files with these extensions are transferred before others during a parallel backup run.</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">Business software:</Run>
+                        <Run>Process name (without .exe) of software that blocks backups when running (e.g. calc).</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">Large file limit (KB):</Run>
+                        <Run>Files larger than this threshold are transferred one at a time to avoid overloading the network.</Run>
+                        <LineBreak/>
+                        <Run FontWeight="SemiBold">CryptoSoft path:</Run>
+                        <Run>Full path to CryptoSoft.exe used for file encryption.</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Section: Logs -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{x:Static res:Strings.Help_Section_Logs}"
+                               Style="{StaticResource PanelTitleStyle}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock TextWrapping="Wrap"
+                               FontFamily="{StaticResource FontMain}"
+                               FontSize="{StaticResource FontSizeBase}"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               LineHeight="22">
+                        <Run>EasySave writes one log file per day in JSON or XML format.</Run>
+                        <LineBreak/>
+                        <Run>Each log entry records: timestamp, job name, source path, target path, file size, and transfer duration.</Run>
+                        <LineBreak/>
+                        <Run>A state file (state.json) is updated in real time during each backup run.</Run>
+                        <LineBreak/>
+                        <Run>Click "Open logs folder" in Settings to open the logs directory in File Explorer.</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- Section: Docker -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,32">
+                <StackPanel>
+                    <TextBlock Text="{x:Static res:Strings.Help_Section_Docker}"
+                               Style="{StaticResource PanelTitleStyle}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock TextWrapping="Wrap"
+                               FontFamily="{StaticResource FontMain}"
+                               FontSize="{StaticResource FontSizeBase}"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               LineHeight="22">
+                        <Run>EasySave can forward logs to a centralized HTTP log server running in Docker.</Run>
+                        <LineBreak/>
+                        <Run>In Settings, set "Log storage mode" to "CentralOnly" or "LocalAndCentral".</Run>
+                        <LineBreak/>
+                        <Run>Enter the log server URL (e.g. http://localhost:5275/logs) in "Central log server URL".</Run>
+                        <LineBreak/>
+                        <Run>When you save with central logging enabled, EasySave automatically runs: docker compose up -d</Run>
+                        <LineBreak/>
+                        <Run>The docker-compose.yml file must be present in or near the application directory.</Run>
+                        <LineBreak/>
+                        <Run>Docker Desktop must be installed and running on your machine for this feature to work.</Run>
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

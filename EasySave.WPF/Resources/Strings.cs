@@ -64,5 +64,11 @@ namespace EasySave.WPF.Resources
         public static string Job_Size                     => Get(nameof(Job_Size));
         public static string Settings_LogMode             => Get(nameof(Settings_LogMode));
         public static string Settings_CentralEndpoint     => Get(nameof(Settings_CentralEndpoint));
+        public static string Nav_Help                     => Get(nameof(Nav_Help));
+        public static string Help_Title                   => Get(nameof(Help_Title));
+        public static string Help_Section_Jobs            => Get(nameof(Help_Section_Jobs));
+        public static string Help_Section_Settings        => Get(nameof(Help_Section_Settings));
+        public static string Help_Section_Logs            => Get(nameof(Help_Section_Logs));
+        public static string Help_Section_Docker          => Get(nameof(Help_Section_Docker));
     }
 }

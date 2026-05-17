@@ -211,10 +211,32 @@ public class SettingsViewModel : ViewModelBase
             return;
         }
 
-        SavedMessage = _languageService.GetText("settings.saved");
+        // Attempt Docker auto-start when central logging is enabled
+        if (s.LogStorageMode == EasyLog.LogStorageMode.CentralOnly ||
+            s.LogStorageMode == EasyLog.LogStorageMode.LocalAndCentral)
+        {
+            var composePath = DockerService.GetCandidatePaths().FirstOrDefault(File.Exists);
+            if (composePath != null)
+            {
+                var docker = new DockerService(composePath);
+                var started = await docker.EnsureLogServerRunningAsync();
+                SavedMessage = started
+                    ? _languageService.GetText("settings.saved") + " (Docker started)"
+                    : _languageService.GetText("settings.saved") + " (Docker unavailable)";
+            }
+            else
+            {
+                SavedMessage = _languageService.GetText("settings.saved") + " (docker-compose.yml not found)";
+            }
+        }
+        else
+        {
+            SavedMessage = _languageService.GetText("settings.saved");
+        }
+
         OnPropertyChanged(nameof(HasSavedMessage));
 
-        await Task.Delay(2000);
+        await Task.Delay(3000);
 
         SavedMessage = string.Empty;
         OnPropertyChanged(nameof(HasSavedMessage));

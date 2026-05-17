@@ -28,16 +28,16 @@
                 <!-- Logo / App name -->
                 <Border DockPanel.Dock="Top"
                         Padding="20,24,20,20"
-                        BorderBrush="{StaticResource BorderBrush}"
+                        BorderBrush="#33FFFFFF"
                         BorderThickness="0,0,0,1">
                     <StackPanel>
                         <TextBlock Text="EasySave"
-                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   Foreground="White"
                                    FontFamily="{StaticResource FontMain}"
                                    FontSize="18"
                                    FontWeight="Bold"/>
-                        <TextBlock Text="v2.0"
-                                   Foreground="{StaticResource TextMutedBrush}"
+                        <TextBlock Text="v3.0"
+                                   Foreground="#B3FFFFFF"
                                    FontFamily="{StaticResource FontMain}"
                                    FontSize="11"
                                    Margin="0,2,0,0"/>
@@ -108,6 +108,30 @@
                             <Style TargetType="Button" BasedOn="{StaticResource NavButtonStyle}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsSettingsPage}" Value="True">
+                                        <Setter Property="Tag" Value="Active"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Command="{Binding ShowHelpCommand}"
+                            Height="44">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="&#xE897;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0"/>
+                            <TextBlock Text="{x:Static res:Strings.Nav_Help}"
+                                       FontFamily="{StaticResource FontMain}"
+                                       FontSize="{StaticResource FontSizeBase}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsHelpPage}" Value="True">
                                         <Setter Property="Tag" Value="Active"/>
                                     </DataTrigger>
                                 </Style.Triggers>
