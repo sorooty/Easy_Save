@@ -25,6 +25,9 @@
   <data name="Nav_Quit" xml:space="preserve">
     <value>Quit</value>
   </data>
+  <data name="Nav_About" xml:space="preserve">
+    <value>About</value>
+  </data>
   <data name="Jobs_Title" xml:space="preserve">
     <value>Backup Jobs</value>
   </data>
@@ -270,5 +273,68 @@
   </data>
   <data name="Help_Docker_Desc6" xml:space="preserve">
     <value>Docker Desktop must be installed and running on your machine for this feature to work.</value>
+  </data>
+  <data name="About_Title" xml:space="preserve">
+    <value>About EasySave</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="About_Date" xml:space="preserve">
+    <value>May 17, 2026</value>
+  </data>
+  <data name="About_Project_Title" xml:space="preserve">
+    <value>Project Overview</value>
+  </data>
+  <data name="About_Project_Desc" xml:space="preserve">
+    <value>EasySave is a backup application developed by ProSoft for the Software Engineering project (PGE A3 FISE INFO 2025-2026).</value>
+  </data>
+  <data name="About_Project_Details" xml:space="preserve">
+    <value>It provides a modern WPF interface for creating, configuring, and executing full or differential backup jobs with advanced features like parallel execution, priority file handling, bandwidth limitations, and centralized Docker logging.</value>
+  </data>
+  <data name="About_Features_Title" xml:space="preserve">
+    <value>Key Features</value>
+  </data>
+  <data name="About_Features_Backup" xml:space="preserve">
+    <value>Full and differential backup modes with real-time progress tracking</value>
+  </data>
+  <data name="About_Features_Parallel" xml:space="preserve">
+    <value>Parallel job execution with thread-safe synchronization</value>
+  </data>
+  <data name="About_Features_Priority" xml:space="preserve">
+    <value>Priority file extension handling for critical data</value>
+  </data>
+  <data name="About_Features_Bandwidth" xml:space="preserve">
+    <value>Bandwidth limitation for large file transfers</value>
+  </data>
+  <data name="About_Features_Docker" xml:space="preserve">
+    <value>Centralized Docker-based log server with HTTP API</value>
+  </data>
+  <data name="About_Technical_Title" xml:space="preserve">
+    <value>Technical Details</value>
+  </data>
+  <data name="About_Tech_Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="About_Tech_Interface" xml:space="preserve">
+    <value>Interface</value>
+  </data>
+  <data name="About_Tech_Platform" xml:space="preserve">
+    <value>Platform</value>
+  </data>
+  <data name="About_Tech_Repository" xml:space="preserve">
+    <value>Repository</value>
+  </data>
+  <data name="About_GetStarted_Title" xml:space="preserve">
+    <value>Getting Started</value>
+  </data>
+  <data name="About_GetStarted_Step1" xml:space="preserve">
+    <value>1. Go to the Jobs tab and click "Add Job" to create a new backup task.</value>
+  </data>
+  <data name="About_GetStarted_Step2" xml:space="preserve">
+    <value>2. Configure your source folder, destination, and backup type (Full or Differential).</value>
+  </data>
+  <data name="About_GetStarted_Step3" xml:space="preserve">
+    <value>3. Click "Run" to start the backup. Monitor progress in the Jobs tab or view logs in the Logs tab.</value>
   </data>
 </root>

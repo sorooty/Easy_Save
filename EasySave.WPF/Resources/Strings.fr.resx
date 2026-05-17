@@ -25,6 +25,9 @@
   <data name="Nav_Quit" xml:space="preserve">
     <value>Quitter</value>
   </data>
+  <data name="Nav_About" xml:space="preserve">
+    <value>A propos</value>
+  </data>
   <data name="Jobs_Title" xml:space="preserve">
     <value>Travaux de sauvegarde</value>
   </data>
@@ -270,5 +273,68 @@
   </data>
   <data name="Help_Docker_Desc6" xml:space="preserve">
     <value>Docker Desktop doit être installé et en cours d'exécution sur votre machine pour que cette fonctionnalité fonctionne.</value>
+  </data>
+  <data name="About_Title" xml:space="preserve">
+    <value>A propos d'EasySave</value>
+  </data>
+  <data name="About_Version" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="About_Date" xml:space="preserve">
+    <value>17 mai 2026</value>
+  </data>
+  <data name="About_Project_Title" xml:space="preserve">
+    <value>Apercu du projet</value>
+  </data>
+  <data name="About_Project_Desc" xml:space="preserve">
+    <value>EasySave est une application de sauvegarde développée par ProSoft pour le projet génie logiciel (PGE A3 FISE INFO 2025-2026).</value>
+  </data>
+  <data name="About_Project_Details" xml:space="preserve">
+    <value>Elle fournit une interface WPF moderne pour créer, configurer et exécuter des travaux de sauvegarde complets ou différentiels avec des fonctionnalités avancées comme l'exécution parallèle, la gestion des fichiers prioritaires, les limitations de bande passante et la journalisation Docker centralisée.</value>
+  </data>
+  <data name="About_Features_Title" xml:space="preserve">
+    <value>Caracteristiques principales</value>
+  </data>
+  <data name="About_Features_Backup" xml:space="preserve">
+    <value>Modes de sauvegarde complets et differentiels avec suivi de la progression en temps réel</value>
+  </data>
+  <data name="About_Features_Parallel" xml:space="preserve">
+    <value>Execution parallele des travaux avec synchronisation thread-safe</value>
+  </data>
+  <data name="About_Features_Priority" xml:space="preserve">
+    <value>Gestion des extensions de fichiers prioritaires pour les donnees critiques</value>
+  </data>
+  <data name="About_Features_Bandwidth" xml:space="preserve">
+    <value>Limitation de bande passante pour les transferts de fichiers volumineux</value>
+  </data>
+  <data name="About_Features_Docker" xml:space="preserve">
+    <value>Serveur de journaux centralisé basé sur Docker avec API HTTP</value>
+  </data>
+  <data name="About_Technical_Title" xml:space="preserve">
+    <value>Details techniques</value>
+  </data>
+  <data name="About_Tech_Language" xml:space="preserve">
+    <value>Langage</value>
+  </data>
+  <data name="About_Tech_Interface" xml:space="preserve">
+    <value>Interface</value>
+  </data>
+  <data name="About_Tech_Platform" xml:space="preserve">
+    <value>Plateforme</value>
+  </data>
+  <data name="About_Tech_Repository" xml:space="preserve">
+    <value>Depot</value>
+  </data>
+  <data name="About_GetStarted_Title" xml:space="preserve">
+    <value>Demarrage</value>
+  </data>
+  <data name="About_GetStarted_Step1" xml:space="preserve">
+    <value>1. Allez dans l'onglet Travaux et cliquez sur "Ajouter un travail" pour créer une nouvelle tâche de sauvegarde.</value>
+  </data>
+  <data name="About_GetStarted_Step2" xml:space="preserve">
+    <value>2. Configurez votre dossier source, destination et type de sauvegarde (Complet ou Differentiel).</value>
+  </data>
+  <data name="About_GetStarted_Step3" xml:space="preserve">
+    <value>3. Cliquez sur "Lancer" pour démarrer la sauvegarde. Suivez la progression dans l'onglet Travaux ou consultez les journaux dans l'onglet Journaux.</value>
   </data>
 </root>

@@ -138,6 +138,30 @@
                             </Style>
                         </Button.Style>
                     </Button>
+
+                    <Button Command="{Binding ShowAboutCommand}"
+                            Height="44">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="&#xE946;"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       FontSize="14"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,10,0"/>
+                            <TextBlock Text="{x:Static res:Strings.Nav_About}"
+                                       FontFamily="{StaticResource FontMain}"
+                                       FontSize="{StaticResource FontSizeBase}"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource NavButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsAboutPage}" Value="True">
+                                        <Setter Property="Tag" Value="Active"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
             </DockPanel>
         </Border>

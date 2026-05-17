@@ -19,6 +19,7 @@ namespace EasySave.WPF.Resources
         public static string Nav_Jobs          => Get(nameof(Nav_Jobs));
         public static string Nav_Settings      => Get(nameof(Nav_Settings));
         public static string Nav_Quit          => Get(nameof(Nav_Quit));
+        public static string Nav_About         => Get(nameof(Nav_About));
         public static string Jobs_Title        => Get(nameof(Jobs_Title));
         public static string Jobs_AddButton    => Get(nameof(Jobs_AddButton));
         public static string Jobs_ExecuteAll   => Get(nameof(Jobs_ExecuteAll));
@@ -101,5 +102,26 @@ namespace EasySave.WPF.Resources
         public static string Help_Docker_Desc4            => Get(nameof(Help_Docker_Desc4));
         public static string Help_Docker_Desc5            => Get(nameof(Help_Docker_Desc5));
         public static string Help_Docker_Desc6            => Get(nameof(Help_Docker_Desc6));
+        public static string About_Title                  => Get(nameof(About_Title));
+        public static string About_Version                => Get(nameof(About_Version));
+        public static string About_Date                   => Get(nameof(About_Date));
+        public static string About_Project_Title          => Get(nameof(About_Project_Title));
+        public static string About_Project_Desc           => Get(nameof(About_Project_Desc));
+        public static string About_Project_Details        => Get(nameof(About_Project_Details));
+        public static string About_Features_Title         => Get(nameof(About_Features_Title));
+        public static string About_Features_Backup        => Get(nameof(About_Features_Backup));
+        public static string About_Features_Parallel      => Get(nameof(About_Features_Parallel));
+        public static string About_Features_Priority      => Get(nameof(About_Features_Priority));
+        public static string About_Features_Bandwidth     => Get(nameof(About_Features_Bandwidth));
+        public static string About_Features_Docker        => Get(nameof(About_Features_Docker));
+        public static string About_Technical_Title        => Get(nameof(About_Technical_Title));
+        public static string About_Tech_Language          => Get(nameof(About_Tech_Language));
+        public static string About_Tech_Interface         => Get(nameof(About_Tech_Interface));
+        public static string About_Tech_Platform          => Get(nameof(About_Tech_Platform));
+        public static string About_Tech_Repository        => Get(nameof(About_Tech_Repository));
+        public static string About_GetStarted_Title       => Get(nameof(About_GetStarted_Title));
+        public static string About_GetStarted_Step1       => Get(nameof(About_GetStarted_Step1));
+        public static string About_GetStarted_Step2       => Get(nameof(About_GetStarted_Step2));
+        public static string About_GetStarted_Step3       => Get(nameof(About_GetStarted_Step3));
     }
 }

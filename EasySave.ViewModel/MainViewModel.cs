@@ -2,13 +2,14 @@ namespace EasySave.ViewModel;
 
 /// <summary>
 /// ViewModel principal de l'application WPF.
-/// Gere la navigation entre Jobs, Parametres et Aide.
+/// Gere la navigation entre Jobs, Parametres, Aide et A propos.
 /// </summary>
 public class MainViewModel : ViewModelBase
 {
     private readonly SaveJobListViewModel _jobs;
     private readonly SettingsViewModel _settings;
     private readonly HelpViewModel _help;
+    private readonly AboutViewModel _about;
     private ViewModelBase _currentView;
     private string _currentPage = "jobs";
 
@@ -30,6 +31,7 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsSettingsPage));
             OnPropertyChanged(nameof(IsHelpPage));
+            OnPropertyChanged(nameof(IsAboutPage));
         }
     }
 
@@ -42,6 +44,7 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsJobsPage));
             OnPropertyChanged(nameof(IsHelpPage));
+            OnPropertyChanged(nameof(IsAboutPage));
         }
     }
 
@@ -54,18 +57,34 @@ public class MainViewModel : ViewModelBase
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsJobsPage));
             OnPropertyChanged(nameof(IsSettingsPage));
+            OnPropertyChanged(nameof(IsAboutPage));
+        }
+    }
+
+    public bool IsAboutPage
+    {
+        get => _currentPage == "about";
+        private set
+        {
+            if (value) _currentPage = "about";
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(IsJobsPage));
+            OnPropertyChanged(nameof(IsSettingsPage));
+            OnPropertyChanged(nameof(IsHelpPage));
         }
     }
 
     public RelayCommand ShowJobsCommand { get; }
     public RelayCommand ShowSettingsCommand { get; }
     public RelayCommand ShowHelpCommand { get; }
+    public RelayCommand ShowAboutCommand { get; }
 
     public MainViewModel(SaveJobListViewModel jobs, SettingsViewModel settings)
     {
         _jobs = jobs;
         _settings = settings;
         _help = new HelpViewModel();
+        _about = new AboutViewModel();
         _currentView = jobs;
 
         ShowJobsCommand = new RelayCommand(_ =>
@@ -84,6 +103,12 @@ public class MainViewModel : ViewModelBase
         {
             CurrentView = _help;
             IsHelpPage = true;
+        });
+
+        ShowAboutCommand = new RelayCommand(_ =>
+        {
+            CurrentView = _about;
+            IsAboutPage = true;
         });
     }
 }
