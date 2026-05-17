@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <xsd:element name="root" type="Root"/>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <data name="AppName" xml:space="preserve">
+        <value>EasySave</value>
+    </data>
+    <data name="Version" xml:space="preserve">
+        <value>3.0</value>
+    </data>
+    <data name="CentralizedLogging" xml:space="preserve">
+        <value>Centralized Logging via Docker</value>
+    </data>
+</root>

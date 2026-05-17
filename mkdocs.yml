@@ -77,8 +77,10 @@ nav:
   - Guide utilisateur:
     - Installation: guide/installation.md
     - Premiers pas: guide/quickstart.md
+    - Travaux de sauvegarde: guide/jobs.md
     - Paramètres généraux: guide/settings.md
     - Accéder aux logs: guide/logs.md
+    - Docker et logs centralisés: guide/docker.md
   - Technique:
     - CryptoSoft: technical/cryptosoft.md
     - Logiciel métier: technical/business-app.md
