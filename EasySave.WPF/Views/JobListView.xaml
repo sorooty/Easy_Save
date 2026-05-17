@@ -179,7 +179,7 @@
             </StackPanel>
 
             <!-- ADD FORM -->
-            <ScrollViewer Padding="32,28"
+            <ScrollViewer Padding="24,20"
                           VerticalScrollBarVisibility="Auto">
                 <ScrollViewer.Style>
                     <Style TargetType="ScrollViewer" BasedOn="{StaticResource ThinScrollViewerStyle}">
@@ -209,17 +209,18 @@
                         </Style.Triggers>
                     </Style>
                 </ScrollViewer.Style>
-                <StackPanel MaxWidth="480" HorizontalAlignment="Left">
-                    <TextBlock Text="{x:Static res:Strings.Form_Title}"
-                               Style="{StaticResource SectionTitleStyle}"
-                               Margin="0,0,0,24"/>
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,12,0">
+                    <StackPanel MaxWidth="480" HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static res:Strings.Form_Title}"
+                                   Style="{StaticResource SectionTitleStyle}"
+                                   Margin="0,0,0,20"/>
 
-                    <!-- Name -->
-                    <TextBlock Text="{x:Static res:Strings.Form_Name}"
-                               Style="{StaticResource FormLabelStyle}"/>
-                    <TextBox Text="{Binding NewJobName, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource InputStyle}"
-                             Margin="0,0,0,16"/>
+                        <!-- Name -->
+                        <TextBlock Text="{x:Static res:Strings.Form_Name}"
+                                   Style="{StaticResource FormLabelStyle}"/>
+                        <TextBox Text="{Binding NewJobName, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource InputStyle}"
+                                 Margin="0,0,0,16"/>
 
                     <!-- Source -->
                     <TextBlock Text="{x:Static res:Strings.Form_Source}"
@@ -289,21 +290,22 @@
                                Visibility="{Binding HasFormError, Converter={StaticResource BoolToVis}}"
                                TextWrapping="Wrap"/>
 
-                    <!-- Buttons -->
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="{x:Static res:Strings.Form_Add}"
-                                Style="{StaticResource PrimaryButtonStyle}"
-                                Command="{Binding AddJobCommand}"
-                                Margin="0,0,12,0"/>
-                        <Button Content="{x:Static res:Strings.Form_Cancel}"
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Command="{Binding CancelAddFormCommand}"/>
+                        <!-- Buttons -->
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="{x:Static res:Strings.Form_Add}"
+                                   Style="{StaticResource PrimaryButtonStyle}"
+                                   Command="{Binding AddJobCommand}"
+                                   Margin="0,0,12,0"/>
+                            <Button Content="{x:Static res:Strings.Form_Cancel}"
+                                   Style="{StaticResource SecondaryButtonStyle}"
+                                   Command="{Binding CancelAddFormCommand}"/>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
+                </Border>
             </ScrollViewer>
 
             <!-- JOB DETAIL (selected job) -->
-            <ScrollViewer Padding="32,28"
+            <ScrollViewer Padding="24,20"
                           VerticalScrollBarVisibility="Auto">
                 <ScrollViewer.Style>
                     <Style TargetType="ScrollViewer" BasedOn="{StaticResource ThinScrollViewerStyle}">
@@ -333,7 +335,8 @@
                         </Style.Triggers>
                     </Style>
                 </ScrollViewer.Style>
-                <StackPanel DataContext="{Binding SelectedJob}">
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,12,0">
+                    <StackPanel DataContext="{Binding SelectedJob}">
 
                     <!-- Job name header + edit + trash icons -->
                     <Grid Margin="0,0,0,20">
@@ -603,6 +606,7 @@
                         </StackPanel>
                     </Border>
                 </StackPanel>
+                </Border>
             </ScrollViewer>
 
         </Grid>

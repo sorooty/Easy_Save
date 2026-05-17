@@ -10,9 +10,9 @@
              Background="{StaticResource SurfaceBrush}">
 
     <ScrollViewer Style="{StaticResource ThinScrollViewerStyle}"
-                  Padding="40,32"
+                  Padding="24,20"
                   VerticalScrollBarVisibility="Auto">
-        <StackPanel MaxWidth="680" HorizontalAlignment="Stretch">
+        <StackPanel MaxWidth="680" HorizontalAlignment="Stretch" Margin="0,0,12,0">
 
             <!-- Title -->
             <TextBlock Text="{x:Static res:Strings.Settings_Title}"
@@ -134,13 +134,39 @@
             </Border>
 
             <!-- === Central log endpoint === -->
-            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,24">
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="{x:Static res:Strings.Settings_CentralEndpoint}"
                                Style="{StaticResource FormLabelStyle}"
                                Margin="0,0,0,8"/>
                     <TextBox Text="{Binding CentralLoggingEndpoint, UpdateSourceTrigger=PropertyChanged}"
                              Style="{StaticResource InputStyle}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- === Docker Container Control === -->
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,24">
+                <StackPanel>
+                    <TextBlock Text="Docker Container Control"
+                               Style="{StaticResource FormLabelStyle}"
+                               Margin="0,0,0,12"/>
+                    <TextBlock Text="Start or stop the centralized log server container"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               FontFamily="{StaticResource FontMain}"
+                               FontSize="{StaticResource FontSizeSmall}"
+                               TextWrapping="Wrap"
+                               Margin="0,0,0,12"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="Start Container"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding StartDockerCommand}"
+                                Margin="0,0,12,0"
+                                Padding="12,8"/>
+                        <Button Content="Stop Container"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Command="{Binding StopDockerCommand}"
+                                Padding="12,8"/>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 
