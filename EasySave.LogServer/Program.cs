@@ -8,7 +8,9 @@ var app = builder.Build();
 
 app.MapPost("/logs", async (LogEntry logEntry) =>
 {
-    string logPath = "central_log.json";
+    string logsDir = Path.Combine(AppContext.BaseDirectory, "logs");
+    Directory.CreateDirectory(logsDir);
+    string logPath = Path.Combine(logsDir, "central_log.json");
 
     List<LogEntry> logs = new();
 
@@ -36,5 +38,4 @@ app.MapPost("/logs", async (LogEntry logEntry) =>
     return Results.Ok();
 });
 
-app.Urls.Add("http://+:5275");
 app.Run();

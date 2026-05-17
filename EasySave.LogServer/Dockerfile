@@ -4,8 +4,10 @@ WORKDIR /app
 
 COPY bin/Release/net10.0/ .
 
-EXPOSE 8080
+EXPOSE 5275
 
-ENV ASPNETCORE_URLS=http://+:8080
+ENV ASPNETCORE_URLS=http://+:5275
+
+VOLUME ["/app/logs"]
 
 ENTRYPOINT ["dotnet", "EasySave.LogServer.dll"]
