@@ -10,14 +10,14 @@
              Background="{StaticResource SurfaceBrush}">
 
     <ScrollViewer Style="{StaticResource ThinScrollViewerStyle}"
-                  Padding="40,32"
+                  Padding="24,20"
                   VerticalScrollBarVisibility="Auto">
-        <StackPanel MaxWidth="720" HorizontalAlignment="Left">
+        <StackPanel MaxWidth="720" HorizontalAlignment="Left" Margin="0,0,12,0">
 
             <!-- Page title -->
             <TextBlock Text="{x:Static res:Strings.Help_Title}"
                        Style="{StaticResource SectionTitleStyle}"
-                       Margin="0,0,0,32"/>
+                       Margin="0,0,0,24"/>
 
             <!-- Section: Backup Jobs -->
             <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
@@ -25,25 +25,15 @@
                     <TextBlock Text="{x:Static res:Strings.Help_Section_Jobs}"
                                Style="{StaticResource PanelTitleStyle}"
                                Margin="0,0,0,12"/>
-                    <TextBlock TextWrapping="Wrap"
-                               FontFamily="{StaticResource FontMain}"
-                               FontSize="{StaticResource FontSizeBase}"
-                               Foreground="{StaticResource TextSecondaryBrush}"
-                               LineHeight="22">
-                        <Run>1. Click "+ Add Job" to create a new backup job.</Run>
-                        <LineBreak/>
-                        <Run>2. Enter a job name, the source folder and the target folder.</Run>
-                        <LineBreak/>
-                        <Run>3. Choose "Full" (copies all files) or "Differential" (copies only changed files).</Run>
-                        <LineBreak/>
-                        <Run>4. Click "Add Job" to save it to the list.</Run>
-                        <LineBreak/>
-                        <Run>5. Select a job and click "Run" to start the backup immediately.</Run>
-                        <LineBreak/>
-                        <Run>6. Use "Run All" to execute every job in sequence.</Run>
-                        <LineBreak/>
-                        <Run>7. You can Pause, Resume or Stop a running job from the detail panel.</Run>
-                    </TextBlock>
+                    <StackPanel>
+                        <TextBlock Text="{x:Static res:Strings.Help_Jobs_Step1}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Jobs_Step2}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Jobs_Step3}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Jobs_Step4}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Jobs_Step5}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Jobs_Step6}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Jobs_Step7}" TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 
@@ -53,32 +43,36 @@
                     <TextBlock Text="{x:Static res:Strings.Help_Section_Settings}"
                                Style="{StaticResource PanelTitleStyle}"
                                Margin="0,0,0,12"/>
-                    <TextBlock TextWrapping="Wrap"
-                               FontFamily="{StaticResource FontMain}"
-                               FontSize="{StaticResource FontSizeBase}"
-                               Foreground="{StaticResource TextSecondaryBrush}"
-                               LineHeight="22">
-                        <Run FontWeight="SemiBold">Log format:</Run>
-                        <Run>JSON (default) or XML. Logs are stored in the application data folder.</Run>
-                        <LineBreak/>
-                        <Run FontWeight="SemiBold">Language:</Run>
-                        <Run>English or French. A restart is required to apply language changes.</Run>
-                        <LineBreak/>
-                        <Run FontWeight="SemiBold">Encrypted extensions:</Run>
-                        <Run>Comma-separated list (e.g. .docx, .xlsx). Files with these extensions are encrypted via CryptoSoft before copying.</Run>
-                        <LineBreak/>
-                        <Run FontWeight="SemiBold">Priority extensions:</Run>
-                        <Run>Files with these extensions are transferred before others during a parallel backup run.</Run>
-                        <LineBreak/>
-                        <Run FontWeight="SemiBold">Business software:</Run>
-                        <Run>Process name (without .exe) of software that blocks backups when running (e.g. calc).</Run>
-                        <LineBreak/>
-                        <Run FontWeight="SemiBold">Large file limit (KB):</Run>
-                        <Run>Files larger than this threshold are transferred one at a time to avoid overloading the network.</Run>
-                        <LineBreak/>
-                        <Run FontWeight="SemiBold">CryptoSoft path:</Run>
-                        <Run>Full path to CryptoSoft.exe used for file encryption.</Run>
-                    </TextBlock>
+                    <StackPanel>
+                        <StackPanel Margin="0,0,0,10">
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_LogFormat_Label}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}"/>
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_LogFormat_Desc}" TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" Margin="0,2,0,0" LineHeight="20"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,10">
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_Language_Label}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}"/>
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_Language_Desc}" TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" Margin="0,2,0,0" LineHeight="20"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,10">
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_Encrypted_Label}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}"/>
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_Encrypted_Desc}" TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" Margin="0,2,0,0" LineHeight="20"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,10">
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_Priority_Label}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}"/>
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_Priority_Desc}" TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" Margin="0,2,0,0" LineHeight="20"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,10">
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_Business_Label}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}"/>
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_Business_Desc}" TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" Margin="0,2,0,0" LineHeight="20"/>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,10">
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_LargeFile_Label}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}"/>
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_LargeFile_Desc}" TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" Margin="0,2,0,0" LineHeight="20"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_CryptoSoft_Label}" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}"/>
+                            <TextBlock Text="{x:Static res:Strings.Help_Settings_CryptoSoft_Desc}" TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" Margin="0,2,0,0" LineHeight="20"/>
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 
@@ -88,45 +82,29 @@
                     <TextBlock Text="{x:Static res:Strings.Help_Section_Logs}"
                                Style="{StaticResource PanelTitleStyle}"
                                Margin="0,0,0,12"/>
-                    <TextBlock TextWrapping="Wrap"
-                               FontFamily="{StaticResource FontMain}"
-                               FontSize="{StaticResource FontSizeBase}"
-                               Foreground="{StaticResource TextSecondaryBrush}"
-                               LineHeight="22">
-                        <Run>EasySave writes one log file per day in JSON or XML format.</Run>
-                        <LineBreak/>
-                        <Run>Each log entry records: timestamp, job name, source path, target path, file size, and transfer duration.</Run>
-                        <LineBreak/>
-                        <Run>A state file (state.json) is updated in real time during each backup run.</Run>
-                        <LineBreak/>
-                        <Run>Click "Open logs folder" in Settings to open the logs directory in File Explorer.</Run>
-                    </TextBlock>
+                    <StackPanel>
+                        <TextBlock Text="{x:Static res:Strings.Help_Logs_Desc1}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Logs_Desc2}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Logs_Desc3}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Logs_Desc4}" TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 
             <!-- Section: Docker -->
-            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,32">
+            <Border Style="{StaticResource CardStyle}" Margin="0,0,0,0">
                 <StackPanel>
                     <TextBlock Text="{x:Static res:Strings.Help_Section_Docker}"
                                Style="{StaticResource PanelTitleStyle}"
                                Margin="0,0,0,12"/>
-                    <TextBlock TextWrapping="Wrap"
-                               FontFamily="{StaticResource FontMain}"
-                               FontSize="{StaticResource FontSizeBase}"
-                               Foreground="{StaticResource TextSecondaryBrush}"
-                               LineHeight="22">
-                        <Run>EasySave can forward logs to a centralized HTTP log server running in Docker.</Run>
-                        <LineBreak/>
-                        <Run>In Settings, set "Log storage mode" to "CentralOnly" or "LocalAndCentral".</Run>
-                        <LineBreak/>
-                        <Run>Enter the log server URL (e.g. http://localhost:5275/logs) in "Central log server URL".</Run>
-                        <LineBreak/>
-                        <Run>When you save with central logging enabled, EasySave automatically runs: docker compose up -d</Run>
-                        <LineBreak/>
-                        <Run>The docker-compose.yml file must be present in or near the application directory.</Run>
-                        <LineBreak/>
-                        <Run>Docker Desktop must be installed and running on your machine for this feature to work.</Run>
-                    </TextBlock>
+                    <StackPanel>
+                        <TextBlock Text="{x:Static res:Strings.Help_Docker_Desc1}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Docker_Desc2}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Docker_Desc3}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Docker_Desc4}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Docker_Desc5}" TextWrapping="Wrap" Margin="0,0,0,8" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                        <TextBlock Text="{x:Static res:Strings.Help_Docker_Desc6}" TextWrapping="Wrap" Foreground="{StaticResource TextSecondaryBrush}" FontFamily="{StaticResource FontMain}" FontSize="{StaticResource FontSizeBase}" LineHeight="20"/>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 

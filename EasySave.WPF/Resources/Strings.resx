@@ -178,4 +178,97 @@
   <data name="Help_Section_Docker" xml:space="preserve">
     <value>Centralized Logs (Docker)</value>
   </data>
+  <data name="Help_Jobs_Step1" xml:space="preserve">
+    <value>Click "+ Add Job" to create a new backup job.</value>
+  </data>
+  <data name="Help_Jobs_Step2" xml:space="preserve">
+    <value>Enter a job name, the source folder and the target folder.</value>
+  </data>
+  <data name="Help_Jobs_Step3" xml:space="preserve">
+    <value>Choose "Full" (copies all files) or "Differential" (copies only changed files).</value>
+  </data>
+  <data name="Help_Jobs_Step4" xml:space="preserve">
+    <value>Click "Add Job" to save it to the list.</value>
+  </data>
+  <data name="Help_Jobs_Step5" xml:space="preserve">
+    <value>Select a job and click "Run" to start the backup immediately.</value>
+  </data>
+  <data name="Help_Jobs_Step6" xml:space="preserve">
+    <value>Use "Run All" to execute every job in sequence.</value>
+  </data>
+  <data name="Help_Jobs_Step7" xml:space="preserve">
+    <value>You can Pause, Resume or Stop a running job from the detail panel.</value>
+  </data>
+  <data name="Help_Settings_LogFormat_Label" xml:space="preserve">
+    <value>Log format:</value>
+  </data>
+  <data name="Help_Settings_LogFormat_Desc" xml:space="preserve">
+    <value>JSON (default) or XML. Logs are stored in the application data folder.</value>
+  </data>
+  <data name="Help_Settings_Language_Label" xml:space="preserve">
+    <value>Language:</value>
+  </data>
+  <data name="Help_Settings_Language_Desc" xml:space="preserve">
+    <value>English or French. A restart is required to apply language changes.</value>
+  </data>
+  <data name="Help_Settings_Encrypted_Label" xml:space="preserve">
+    <value>Encrypted extensions:</value>
+  </data>
+  <data name="Help_Settings_Encrypted_Desc" xml:space="preserve">
+    <value>Comma-separated list (e.g. .docx, .xlsx). Files with these extensions are encrypted via CryptoSoft before copying.</value>
+  </data>
+  <data name="Help_Settings_Priority_Label" xml:space="preserve">
+    <value>Priority extensions:</value>
+  </data>
+  <data name="Help_Settings_Priority_Desc" xml:space="preserve">
+    <value>Files with these extensions are transferred before others during a parallel backup run.</value>
+  </data>
+  <data name="Help_Settings_Business_Label" xml:space="preserve">
+    <value>Business software:</value>
+  </data>
+  <data name="Help_Settings_Business_Desc" xml:space="preserve">
+    <value>Process name (without .exe) of software that blocks backups when running (e.g. calc).</value>
+  </data>
+  <data name="Help_Settings_LargeFile_Label" xml:space="preserve">
+    <value>Large file limit (KB):</value>
+  </data>
+  <data name="Help_Settings_LargeFile_Desc" xml:space="preserve">
+    <value>Files larger than this threshold are transferred one at a time to avoid overloading the network.</value>
+  </data>
+  <data name="Help_Settings_CryptoSoft_Label" xml:space="preserve">
+    <value>CryptoSoft path:</value>
+  </data>
+  <data name="Help_Settings_CryptoSoft_Desc" xml:space="preserve">
+    <value>Full path to CryptoSoft.exe used for file encryption.</value>
+  </data>
+  <data name="Help_Logs_Desc1" xml:space="preserve">
+    <value>EasySave writes one log file per day in JSON or XML format.</value>
+  </data>
+  <data name="Help_Logs_Desc2" xml:space="preserve">
+    <value>Each log entry records: timestamp, job name, source path, target path, file size, and transfer duration.</value>
+  </data>
+  <data name="Help_Logs_Desc3" xml:space="preserve">
+    <value>A state file (state.json) is updated in real time during each backup run.</value>
+  </data>
+  <data name="Help_Logs_Desc4" xml:space="preserve">
+    <value>Click "Open logs folder" in Settings to open the logs directory in File Explorer.</value>
+  </data>
+  <data name="Help_Docker_Desc1" xml:space="preserve">
+    <value>EasySave can forward logs to a centralized HTTP log server running in Docker.</value>
+  </data>
+  <data name="Help_Docker_Desc2" xml:space="preserve">
+    <value>In Settings, set "Log storage mode" to "CentralOnly" or "LocalAndCentral".</value>
+  </data>
+  <data name="Help_Docker_Desc3" xml:space="preserve">
+    <value>Enter the log server URL (e.g. http://localhost:5275/logs) in "Central log server URL".</value>
+  </data>
+  <data name="Help_Docker_Desc4" xml:space="preserve">
+    <value>When you save with central logging enabled, EasySave automatically runs: docker compose up -d</value>
+  </data>
+  <data name="Help_Docker_Desc5" xml:space="preserve">
+    <value>The docker-compose.yml file must be present in or near the application directory.</value>
+  </data>
+  <data name="Help_Docker_Desc6" xml:space="preserve">
+    <value>Docker Desktop must be installed and running on your machine for this feature to work.</value>
+  </data>
 </root>
