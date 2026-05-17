@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+    <app name="EasySave" version="3.0">
+        <feature name="backup">
+            <type>full</type>
+            <type>differential</type>
+        </feature>
+        <logging enabled="true">
+            <local enabled="true"/>
+            <centralized enabled="true" endpoint="http://localhost:5275"/>
+        </logging>
+    </app>
+</settings>
