@@ -1,6 +1,9 @@
 using EasySave.Core.Model.Entities;
 using EasySave.Core.Model.Service;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace EasySave.ViewModel;
 
@@ -131,6 +134,8 @@ public class SettingsViewModel : ViewModelBase
 
     public RelayCommand SaveCommand { get; }
     public RelayCommand OpenLogsFolderCommand { get; }
+    public RelayCommand StartDockerCommand { get; }
+    public RelayCommand StopDockerCommand { get; }
 
     /// <summary>Injected by App.xaml.cs — opens the logs directory in Explorer.</summary>
     public Action? OpenLogsFolder { get; set; }
@@ -142,6 +147,8 @@ public class SettingsViewModel : ViewModelBase
 
         SaveCommand           = new RelayCommand(_ => Save());
         OpenLogsFolderCommand = new RelayCommand(_ => OpenLogsFolder?.Invoke());
+        StartDockerCommand    = new RelayCommand(_ => StartDocker());
+        StopDockerCommand     = new RelayCommand(_ => StopDocker());
 
         Load();
         _initialLanguage = UseFrench ? "fr" : "en";
@@ -211,10 +218,110 @@ public class SettingsViewModel : ViewModelBase
             return;
         }
 
-        SavedMessage = _languageService.GetText("settings.saved");
+        // Attempt Docker auto-start when central logging is enabled
+        if (s.LogStorageMode == EasyLog.LogStorageMode.CentralOnly ||
+            s.LogStorageMode == EasyLog.LogStorageMode.LocalAndCentral)
+        {
+            var composePath = DockerService.GetCandidatePaths().FirstOrDefault(File.Exists);
+            if (composePath != null)
+            {
+                var docker = new DockerService(composePath);
+                var started = await docker.EnsureLogServerRunningAsync();
+                SavedMessage = started
+                    ? _languageService.GetText("settings.saved") + " (Docker started)"
+                    : _languageService.GetText("settings.saved") + " (Docker unavailable)";
+            }
+            else
+            {
+                SavedMessage = _languageService.GetText("settings.saved") + " (docker-compose.yml not found)";
+            }
+        }
+        else
+        {
+            SavedMessage = _languageService.GetText("settings.saved");
+        }
+
         OnPropertyChanged(nameof(HasSavedMessage));
 
-        await Task.Delay(2000);
+        await Task.Delay(3000);
+
+        SavedMessage = string.Empty;
+        OnPropertyChanged(nameof(HasSavedMessage));
+    }
+
+    private async void StartDocker()
+    {
+        var composePath = DockerService.GetCandidatePaths().FirstOrDefault(File.Exists);
+        if (composePath == null)
+        {
+            SavedMessage = "docker-compose.yml not found";
+            OnPropertyChanged(nameof(HasSavedMessage));
+            await Task.Delay(2000);
+            SavedMessage = string.Empty;
+            OnPropertyChanged(nameof(HasSavedMessage));
+            return;
+        }
+
+        var docker = new DockerService(composePath);
+        var started = await docker.EnsureLogServerRunningAsync();
+        SavedMessage = started
+            ? "Docker container started successfully"
+            : "Failed to start Docker container";
+        OnPropertyChanged(nameof(HasSavedMessage));
+
+        await Task.Delay(3000);
+
+        SavedMessage = string.Empty;
+        OnPropertyChanged(nameof(HasSavedMessage));
+    }
+
+    private async void StopDocker()
+    {
+        var composePath = DockerService.GetCandidatePaths().FirstOrDefault(File.Exists);
+        if (composePath == null)
+        {
+            SavedMessage = "docker-compose.yml not found";
+            OnPropertyChanged(nameof(HasSavedMessage));
+            await Task.Delay(2000);
+            SavedMessage = string.Empty;
+            OnPropertyChanged(nameof(HasSavedMessage));
+            return;
+        }
+
+        try
+        {
+            var processInfo = new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "docker",
+                Arguments = "compose -f \"" + composePath + "\" down",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
+
+            using (var process = System.Diagnostics.Process.Start(processInfo))
+            {
+                if (process != null)
+                {
+                    await process.WaitForExitAsync();
+                    SavedMessage = process.ExitCode == 0
+                        ? "Docker container stopped successfully"
+                        : "Failed to stop Docker container";
+                }
+                else
+                {
+                    SavedMessage = "Failed to stop Docker container";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            SavedMessage = "Error stopping container: " + ex.Message;
+        }
+
+        OnPropertyChanged(nameof(HasSavedMessage));
+
+        await Task.Delay(3000);
 
         SavedMessage = string.Empty;
         OnPropertyChanged(nameof(HasSavedMessage));

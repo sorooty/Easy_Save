@@ -179,21 +179,48 @@
             </StackPanel>
 
             <!-- ADD FORM -->
-            <ScrollViewer Style="{StaticResource ThinScrollViewerStyle}"
-                          Padding="32,28"
-                          VerticalScrollBarVisibility="Auto"
-                          Visibility="{Binding IsAddingJob, Converter={StaticResource BoolToVis}}">
-                <StackPanel MaxWidth="480" HorizontalAlignment="Left">
-                    <TextBlock Text="{x:Static res:Strings.Form_Title}"
-                               Style="{StaticResource SectionTitleStyle}"
-                               Margin="0,0,0,24"/>
+            <ScrollViewer Padding="24,20"
+                          VerticalScrollBarVisibility="Auto">
+                <ScrollViewer.Style>
+                    <Style TargetType="ScrollViewer" BasedOn="{StaticResource ThinScrollViewerStyle}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsAddingJob}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard Name="FadeInAdd">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                             From="0" To="1" Duration="0:0:0.2"/>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                From="0,12,0,0" To="0,0,0,0"
+                                                                Duration="0:0:0.2">
+                                                <ThicknessAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut"/>
+                                                </ThicknessAnimation.EasingFunction>
+                                            </ThicknessAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <StopStoryboard BeginStoryboardName="FadeInAdd"/>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ScrollViewer.Style>
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,12,0">
+                    <StackPanel MaxWidth="480" HorizontalAlignment="Left">
+                        <TextBlock Text="{x:Static res:Strings.Form_Title}"
+                                   Style="{StaticResource SectionTitleStyle}"
+                                   Margin="0,0,0,20"/>
 
-                    <!-- Name -->
-                    <TextBlock Text="{x:Static res:Strings.Form_Name}"
-                               Style="{StaticResource FormLabelStyle}"/>
-                    <TextBox Text="{Binding NewJobName, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource InputStyle}"
-                             Margin="0,0,0,16"/>
+                        <!-- Name -->
+                        <TextBlock Text="{x:Static res:Strings.Form_Name}"
+                                   Style="{StaticResource FormLabelStyle}"/>
+                        <TextBox Text="{Binding NewJobName, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource InputStyle}"
+                                 Margin="0,0,0,16"/>
 
                     <!-- Source -->
                     <TextBlock Text="{x:Static res:Strings.Form_Source}"
@@ -263,25 +290,53 @@
                                Visibility="{Binding HasFormError, Converter={StaticResource BoolToVis}}"
                                TextWrapping="Wrap"/>
 
-                    <!-- Buttons -->
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="{x:Static res:Strings.Form_Add}"
-                                Style="{StaticResource PrimaryButtonStyle}"
-                                Command="{Binding AddJobCommand}"
-                                Margin="0,0,12,0"/>
-                        <Button Content="{x:Static res:Strings.Form_Cancel}"
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Command="{Binding CancelAddFormCommand}"/>
+                        <!-- Buttons -->
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="{x:Static res:Strings.Form_Add}"
+                                   Style="{StaticResource PrimaryButtonStyle}"
+                                   Command="{Binding AddJobCommand}"
+                                   Margin="0,0,12,0"/>
+                            <Button Content="{x:Static res:Strings.Form_Cancel}"
+                                   Style="{StaticResource SecondaryButtonStyle}"
+                                   Command="{Binding CancelAddFormCommand}"/>
+                        </StackPanel>
                     </StackPanel>
-                </StackPanel>
+                </Border>
             </ScrollViewer>
 
             <!-- JOB DETAIL (selected job) -->
-            <ScrollViewer Style="{StaticResource ThinScrollViewerStyle}"
-                          Padding="32,28"
-                          VerticalScrollBarVisibility="Auto"
-                          Visibility="{Binding HasSelectedJob, Converter={StaticResource BoolToVis}}">
-                <StackPanel DataContext="{Binding SelectedJob}">
+            <ScrollViewer Padding="24,20"
+                          VerticalScrollBarVisibility="Auto">
+                <ScrollViewer.Style>
+                    <Style TargetType="ScrollViewer" BasedOn="{StaticResource ThinScrollViewerStyle}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ShowDetailPanel}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard Name="FadeInDetail">
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                             From="0" To="1" Duration="0:0:0.2"/>
+                                            <ThicknessAnimation Storyboard.TargetProperty="Margin"
+                                                                From="0,12,0,0" To="0,0,0,0"
+                                                                Duration="0:0:0.2">
+                                                <ThicknessAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut"/>
+                                                </ThicknessAnimation.EasingFunction>
+                                            </ThicknessAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <StopStoryboard BeginStoryboardName="FadeInDetail"/>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ScrollViewer.Style>
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,12,0">
+                    <StackPanel DataContext="{Binding SelectedJob}">
 
                     <!-- Job name header + edit + trash icons -->
                     <Grid Margin="0,0,0,20">
@@ -551,6 +606,7 @@
                         </StackPanel>
                     </Border>
                 </StackPanel>
+                </Border>
             </ScrollViewer>
 
         </Grid>

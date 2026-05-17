@@ -1,0 +1,4 @@
+"Timestamp","JobName","Status","FilesCount"
+"2026-05-17T14:00:00","backup-job-1","Success",245
+"2026-05-17T15:00:00","backup-job-2","Success",128
+"2026-05-17T16:00:00","backup-job-3","Failed",0

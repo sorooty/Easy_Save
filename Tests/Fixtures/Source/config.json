@@ -1,0 +1,11 @@
+{
+  "features": [
+    "Full Backup",
+    "Differential Backup",
+    "Centralized Logging",
+    "Settings Management"
+  ],
+  "version": "3.0",
+  "author": "sorooty",
+  "application": "EasySave"
+}

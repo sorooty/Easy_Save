@@ -45,13 +45,15 @@ public class SaveJobListViewModel : ViewModelBase
         {
             Set(ref _selectedJob, value);
             OnPropertyChanged(nameof(HasSelectedJob));
+            OnPropertyChanged(nameof(ShowDetailPanel));
             OnPropertyChanged(nameof(ShowEmptyState));
             DeleteJobCommand.RaiseCanExecuteChanged();
         }
     }
 
-    public bool HasSelectedJob => _selectedJob != null;
-    public bool ShowEmptyState => !_isAddingJob && _selectedJob == null;
+    public bool HasSelectedJob  => _selectedJob != null;
+    public bool ShowDetailPanel => _selectedJob != null && !_isAddingJob;
+    public bool ShowEmptyState  => !_isAddingJob && _selectedJob == null;
 
     public bool IsAddingJob
     {
@@ -59,6 +61,7 @@ public class SaveJobListViewModel : ViewModelBase
         private set
         {
             Set(ref _isAddingJob, value);
+            OnPropertyChanged(nameof(ShowDetailPanel));
             OnPropertyChanged(nameof(ShowEmptyState));
         }
     }

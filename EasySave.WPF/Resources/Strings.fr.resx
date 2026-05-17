@@ -85,6 +85,9 @@
   <data name="Job_Status" xml:space="preserve">
     <value>Statut</value>
   </data>
+  <data name="Job_Size" xml:space="preserve">
+    <value>Taille</value>
+  </data>
   <data name="Settings_Title" xml:space="preserve">
     <value>Paramètres</value>
   </data>
@@ -156,5 +159,116 @@
   </data>
   <data name="Settings_CentralEndpoint" xml:space="preserve">
     <value>URL du serveur de logs centralisés</value>
+  </data>
+  <data name="Nav_Help" xml:space="preserve">
+    <value>Aide</value>
+  </data>
+  <data name="Help_Title" xml:space="preserve">
+    <value>Guide d'utilisation</value>
+  </data>
+  <data name="Help_Section_Jobs" xml:space="preserve">
+    <value>Travaux de sauvegarde</value>
+  </data>
+  <data name="Help_Section_Settings" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="Help_Section_Logs" xml:space="preserve">
+    <value>Journaux</value>
+  </data>
+  <data name="Help_Section_Docker" xml:space="preserve">
+    <value>Logs centralisés (Docker)</value>
+  </data>
+  <data name="Help_Jobs_Step1" xml:space="preserve">
+    <value>Cliquez sur "+ Ajouter un travail" pour créer un nouveau travail de sauvegarde.</value>
+  </data>
+  <data name="Help_Jobs_Step2" xml:space="preserve">
+    <value>Entrez le nom du travail, le dossier source et le dossier cible.</value>
+  </data>
+  <data name="Help_Jobs_Step3" xml:space="preserve">
+    <value>Choisissez "Complet" (copie tous les fichiers) ou "Différentiel" (copie uniquement les fichiers modifiés).</value>
+  </data>
+  <data name="Help_Jobs_Step4" xml:space="preserve">
+    <value>Cliquez sur "Ajouter un travail" pour l'enregistrer dans la liste.</value>
+  </data>
+  <data name="Help_Jobs_Step5" xml:space="preserve">
+    <value>Sélectionnez un travail et cliquez sur "Exécuter" pour démarrer la sauvegarde immédiatement.</value>
+  </data>
+  <data name="Help_Jobs_Step6" xml:space="preserve">
+    <value>Utilisez "Exécuter tout" pour exécuter tous les travaux en séquence.</value>
+  </data>
+  <data name="Help_Jobs_Step7" xml:space="preserve">
+    <value>Vous pouvez Pause, Reprendre ou Arrêter un travail en cours depuis le panneau de détail.</value>
+  </data>
+  <data name="Help_Settings_LogFormat_Label" xml:space="preserve">
+    <value>Format des journaux :</value>
+  </data>
+  <data name="Help_Settings_LogFormat_Desc" xml:space="preserve">
+    <value>JSON (par défaut) ou XML. Les journaux sont stockés dans le dossier des données d'application.</value>
+  </data>
+  <data name="Help_Settings_Language_Label" xml:space="preserve">
+    <value>Langue :</value>
+  </data>
+  <data name="Help_Settings_Language_Desc" xml:space="preserve">
+    <value>Anglais ou Français. Un redémarrage est requis pour appliquer les changements de langue.</value>
+  </data>
+  <data name="Help_Settings_Encrypted_Label" xml:space="preserve">
+    <value>Extensions chiffrées :</value>
+  </data>
+  <data name="Help_Settings_Encrypted_Desc" xml:space="preserve">
+    <value>Liste séparée par des virgules (ex. .docx, .xlsx). Les fichiers avec ces extensions sont chiffrés via CryptoSoft avant la copie.</value>
+  </data>
+  <data name="Help_Settings_Priority_Label" xml:space="preserve">
+    <value>Extensions prioritaires :</value>
+  </data>
+  <data name="Help_Settings_Priority_Desc" xml:space="preserve">
+    <value>Les fichiers avec ces extensions sont transférés avant les autres lors d'une exécution de sauvegarde parallèle.</value>
+  </data>
+  <data name="Help_Settings_Business_Label" xml:space="preserve">
+    <value>Logiciel métier :</value>
+  </data>
+  <data name="Help_Settings_Business_Desc" xml:space="preserve">
+    <value>Nom du processus (sans .exe) du logiciel qui bloque les sauvegardes quand il est en cours d'exécution (ex. calc).</value>
+  </data>
+  <data name="Help_Settings_LargeFile_Label" xml:space="preserve">
+    <value>Limite de fichier volumineux (Ko) :</value>
+  </data>
+  <data name="Help_Settings_LargeFile_Desc" xml:space="preserve">
+    <value>Les fichiers dépassant ce seuil sont transférés un par un pour éviter de surcharger le réseau.</value>
+  </data>
+  <data name="Help_Settings_CryptoSoft_Label" xml:space="preserve">
+    <value>Chemin CryptoSoft :</value>
+  </data>
+  <data name="Help_Settings_CryptoSoft_Desc" xml:space="preserve">
+    <value>Chemin complet vers CryptoSoft.exe utilisé pour le chiffrement des fichiers.</value>
+  </data>
+  <data name="Help_Logs_Desc1" xml:space="preserve">
+    <value>EasySave écrit un fichier journal par jour en format JSON ou XML.</value>
+  </data>
+  <data name="Help_Logs_Desc2" xml:space="preserve">
+    <value>Chaque entrée de journal enregistre : horodatage, nom du travail, chemin source, chemin cible, taille du fichier et durée de transfert.</value>
+  </data>
+  <data name="Help_Logs_Desc3" xml:space="preserve">
+    <value>Un fichier d'état (state.json) est mis à jour en temps réel pendant chaque exécution de sauvegarde.</value>
+  </data>
+  <data name="Help_Logs_Desc4" xml:space="preserve">
+    <value>Cliquez sur "Ouvrir le dossier des journaux" dans Paramètres pour ouvrir le répertoire des journaux dans l'Explorateur de fichiers.</value>
+  </data>
+  <data name="Help_Docker_Desc1" xml:space="preserve">
+    <value>EasySave peut transférer les journaux vers un serveur de journaux HTTP centralisé s'exécutant dans Docker.</value>
+  </data>
+  <data name="Help_Docker_Desc2" xml:space="preserve">
+    <value>Dans Paramètres, réglez le "Mode de stockage des journaux" sur "Centralisé uniquement" ou "Local et centralisé".</value>
+  </data>
+  <data name="Help_Docker_Desc3" xml:space="preserve">
+    <value>Entrez l'URL du serveur de journaux (ex. http://localhost:5275/logs) dans "URL du serveur de journaux centralisé".</value>
+  </data>
+  <data name="Help_Docker_Desc4" xml:space="preserve">
+    <value>Quand vous enregistrez avec la journalisation centralisée activée, EasySave exécute automatiquement : docker compose up -d</value>
+  </data>
+  <data name="Help_Docker_Desc5" xml:space="preserve">
+    <value>Le fichier docker-compose.yml doit être présent dans ou à proximité du répertoire de l'application.</value>
+  </data>
+  <data name="Help_Docker_Desc6" xml:space="preserve">
+    <value>Docker Desktop doit être installé et en cours d'exécution sur votre machine pour que cette fonctionnalité fonctionne.</value>
   </data>
 </root>
